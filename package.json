@@ -1,0 +1,24 @@
+{
+  "name": "webgl",
+  "version": "0.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": " node_modules/.bin/karma start --single-run"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "dependencies": {},
+  "devDependencies": {
+    "jasmine-core": "~2.5.2",
+    "karma": "~1.3.0",
+    "karma-jasmine": "~1.0.2",
+    "karma-browserify": "~5.1.0",
+    "watchify": "~3.7.0",
+    "browserify": "~13.1.0",
+    "requirejs": "~2.3.2",
+    "karma-requirejs": "~1.1.0",
+    "karma-chrome-launcher": "~2.0.0",
+    "karma-phantomjs-launcher": "~1.0.2"
+  }
+}
