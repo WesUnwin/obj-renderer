@@ -40,9 +40,41 @@ Matrix.prototype.translate = function(x, y, z) {
 };
 
 Matrix.prototype.rotate = function(degrees, x,y,z) {
+  var a = degrees * 3.141592 / 180.0; // convert to radians
+  var s = Math.sin(a);
+  var c = Math.cos(a);
+  var t = 1.0 - c;
 
+  var tx = t * x;
+  var ty = t * y;
+  var tz = t * z;
+	
+  var sz = s * z;
+  var sy = s * y;
+  var sx = s * x;
 
+  var m = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0];
+  m[0] = tx * x + c;
+  m[1] = tx * y + sz;
+  m[2] = tx * z - sy;
+  m[3] = 0;
 
+  m[4]  = tx * y - sz;
+  m[5]  = ty * y + c;
+  m[6]  = ty * z + sx;
+  m[7]  = 0;
+
+  m[8]  = tx * z + sy;
+  m[9]  = ty * z - sx;
+  m[10] = tz * z + c;
+  m[11] = 0;
+
+  m[12] = 0;
+  m[13] = 0; 
+  m[14] = 0;
+  m[15] = 1; 
+
+  this.multiply(m);
 };
 
   // function setMatrixUniforms() {
