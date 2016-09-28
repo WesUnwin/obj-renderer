@@ -1,15 +1,14 @@
-var Matrix = class {
+var Matrix = function(values) {
 
-  constructor(values) {
-    this.values = values;
-  },
+  this.values = values;
 
-  loadIdentity() {
-    this.values = [1, 0, 0, 0, 
+  this.loadIdentity = function() {
+    this.values = [1, 0, 0, 0,
                    0, 1, 0, 0,
                    0, 0, 1, 0,
                    0, 0, 0, 1];
-  }
+  };
+};
   // function loadIdentity() {
   //   mvMatrix = Matrix.I(4);
   // }
@@ -29,10 +28,5 @@ var Matrix = class {
   //   var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
   //   gl.uniformMatrix4fv(mvUniform, false, new Float32Array(mvMatrix.flatten()));
   // }
-
-
-
-
-};
 
 module.exports = Matrix;
