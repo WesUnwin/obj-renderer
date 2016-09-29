@@ -1,7 +1,12 @@
 var Matrix = function(values) {
+  if (!values) {
+    this.loadIdentity();
+    return;
+  } else if (typeof values.length == 'undefined' || values.length != 16) {
+    throw 'Matrix constructor requires an array of 16 values, given: ' + values;
+  }
 
   this.values = values;
-
 };
 
 Matrix.prototype.loadIdentity = function() {
@@ -11,10 +16,14 @@ Matrix.prototype.loadIdentity = function() {
                  0, 0, 0, 1];
 };
 
-Matrix.prototype.transformVector = function(vector) {
-
-
-
+Matrix.prototype.transform = function(vector) {
+  var m = this.values;
+  var v = vector;
+  var r1 = m[0]*v[0] + m[1]*v[1] + m[2]*v[2] + m[3]*v[3];
+  var r2 = m[4]*v[0] + m[5]*v[1] + m[6]*v[2] + m[7]*v[3];
+  var r3 = m[8]*v[0] + m[9]*v[1] + m[10]*v[2] + m[11]*v[3];
+  var r4 = m[12]*v[0] + m[13]*v[1] + m[14]*v[2] + m[15]*v[3];
+  return [r1, r2, r3, r4];
 };
 
 Matrix.prototype.multiply = function(matrix) {
@@ -76,13 +85,5 @@ Matrix.prototype.rotate = function(degrees, x,y,z) {
 
   this.multiply(m);
 };
-
-  // function setMatrixUniforms() {
-  //   var pUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-  //   gl.uniformMatrix4fv(pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
-
-  //   var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-  //   gl.uniformMatrix4fv(mvUniform, false, new Float32Array(mvMatrix.flatten()));
-  // }
 
 module.exports = Matrix;

@@ -1,5 +1,7 @@
 var Shaders = require('./shaders.js');
 
+window.Matrix = require('./matrix.js');
+
 window.start = function() {
 
   alert('start!');
