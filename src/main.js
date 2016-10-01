@@ -1,14 +1,12 @@
 var Shaders = require('./shaders.js');
-
 window.Matrix = require('./matrix.js');
 
 window.start = function() {
-
-  alert('start!');
+  console.log('Application started');
   var canvas = document.getElementById('mycanvas');
 
   gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-      if (!gl) alert('Unable to obtain WebGL/Experiment WebGL context');
+  if (!gl) alert('Unable to obtain WebGL/Experiment WebGL context');
 
   gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
