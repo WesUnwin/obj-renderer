@@ -17,11 +17,11 @@ describe('Matrix', () => {
 
     it('raises an error if given array of more than 16 values', () => {
       var v = [1,2,3,4, 5,6,7,8, 9,10,11,12, 13,14,15,16, 17];
-      expect(function() { Matrix(v) }).toThrow();
+      expect(() => { Matrix(v) }).toThrow();
     });
 
     it('raises an error if the argument is not an array', () => {
-      expect(function() { Matrix("poo"); }).toThrow();
+      expect(() => { Matrix("poo"); }).toThrow();
     });
 
   });
