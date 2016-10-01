@@ -7,8 +7,6 @@ class Matrix {
     } else if (typeof values.length == 'undefined' || values.length != 16) {
       throw 'Matrix constructor requires an array of 16 values, given: ' + values;
     }
-    var b = (a) => { console.log(a) };
-    b(111);
     this.values = values;
   }
 
