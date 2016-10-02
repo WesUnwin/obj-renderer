@@ -28,9 +28,6 @@ var Object3D = function() {
   };
 
   this.render = function(gl) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, squareVerticesBuffer);
-    gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
-    setMatrixUniforms();
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
   };
 };

@@ -32,11 +32,6 @@ module.exports = {
 
     gl.useProgram(shaderProgram);
 
-    var pUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-    //gl.uniformMatrix4fv(pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
-
-    var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-    //gl.uniformMatrix4fv(mvUniform, false, new Float32Array(mvMatrix.flatten()));
 
     return shaderProgram;
   }
