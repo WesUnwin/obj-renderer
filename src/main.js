@@ -1,8 +1,9 @@
 var Shaders = require('./shaders.js');
 window.Matrix = require('./matrix.js');
+var Scene = require('./scene.js');
 
 window.start = function() {
-  console.log('Application started');
+  console.log('Application started!');
   var canvas = document.getElementById('mycanvas');
 
   gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
@@ -19,23 +20,28 @@ window.start = function() {
 
   var shaderProgram = Shaders.setupShaders(gl);
 
-  vertexPositionAttribute = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
+  var vertexPositionAttribute = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
   gl.enableVertexAttribArray(vertexPositionAttribute);
 
 
 
-  squareVerticesBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, squareVerticesBuffer);
 
-  // var vertices = [
-  //   1.0,  1.0,  0.0,
-  //   -1.0, 1.0,  0.0,
-  //   1.0,  -1.0, 0.0,
-  //   -1.0, -1.0, 0.0
-  // ];
+  window.squareVerticesBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, window.squareVerticesBuffer);
 
-  // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+  var vertices = [
+    1.0,  1.0,  0.0,
+    -1.0, 1.0,  0.0,
+    1.0,  -1.0, 0.0,
+    -1.0, -1.0, 0.0
+  ];
 
-  // setInterval(drawScene, 15);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+  var scene = new Scene();
+
+  setInterval(() => { 
+    scene.render(gl, shaderProgram); 
+  }, 1500);
 
 }
