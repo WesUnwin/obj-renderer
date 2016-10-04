@@ -86,6 +86,17 @@ class Matrix {
 
     this.multiply(m);
   }
+
+  toString() {
+    var s = '';
+    for(var r = 0; r<4; r++) {
+      s += '[ ';
+      for(var c = 0; c < 4; c++)
+        s += this.values[c + (r*4)] + ' ';
+      s += "]\n";
+    }
+    return s;
+  }
 };
 
 module.exports = Matrix;

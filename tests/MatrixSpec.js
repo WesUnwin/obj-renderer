@@ -47,9 +47,18 @@ describe('Matrix', () => {
   });
 
   describe('translate', () => {
-    
+
     it('multiples the matrix by a translation matrix that shifts points by x,y,z units', () => {
 
+    });
+
+  });
+
+  describe('toString', () => {
+
+    it('returns a string representation of the 4x4 matrix values', () => {
+      var stringRep = new Matrix().toString();
+      expect(stringRep).toContain("[ 1 0 0 0 ]\n[ 0 1 0 0 ]\n[ 0 0 1 0 ]\n[ 0 0 0 1 ]\n");
     });
 
   });
