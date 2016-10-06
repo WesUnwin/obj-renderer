@@ -1,12 +1,21 @@
 var Shaders = require('./shaders.js');
 window.Matrix = require('./matrix.js');
 var Scene = require('./scene.js');
+var sobj = require('../data/unitcube.obj');
 
 window.start = function() {
   console.log('Application started!');
+
+  console.log(sobj);
+  var lines = sobj.split("\n");
+  for(var t = 0; t<lines.length; t++) {
+    console.log("NEXT LINE \n");
+    console.log(lines[t]);
+  }
+  console.log('---------------');
   var canvas = document.getElementById('mycanvas');
 
-  gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
   if (!gl) alert('Unable to obtain WebGL/Experiment WebGL context');
 
   gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque

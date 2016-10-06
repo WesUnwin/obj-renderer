@@ -51,9 +51,9 @@ class Scene {
 
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-    // for(var i = 0; i < this.objects.length; i++) {
-    //   this.objects[i].render();
-    // }
+    for(var i = 0; i < this.objects.length; i++) {
+      this.objects[i].render();
+    }
   }
 
 }
