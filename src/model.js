@@ -5,6 +5,7 @@ class Model {
     this.vertices = [];
     this.textureCoords = [];
     this.vertexNormals = [];
+    this.polygons = [];
   }
 
   addVertex(x, y, z) {
@@ -17,6 +18,10 @@ class Model {
 
   addVertexNormal(x, y, z) {
     this.vertexNormals.push({x: x, y: y, z: z});
+  }
+
+  addPolygon(polygon) {
+    this.polygons.push(polygon);
   }
 }
 

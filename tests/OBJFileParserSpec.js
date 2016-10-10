@@ -47,6 +47,59 @@ describe('OBJ File Parser', () => {
 
   });
 
+  describe('Polygon Definition', () => {
+
+    it('f statements throw an error if given less than 3 vertices', () => {
+      var fileContents = "f 1 2";
+      expect(new OBJFile(fileContents).parse).toThrow();
+    });
+
+    it('f statements with single values define a face with the given vertex indices', () => {
+      var fileContents = "f 1 2 3";
+      var model = new OBJFile(fileContents).parse().models[0];  
+      expect(model.polygons.length).toBe(1);
+      expect(model.polygons[0].vertices).toEqual([
+        { vertexIndex: 1, textureCoordsIndex: 0, normalIndex: 0 },
+        { vertexIndex: 2, textureCoordsIndex: 0, normalIndex: 0 },
+        { vertexIndex: 3, textureCoordsIndex: 0, normalIndex: 0 }
+      ]);
+    });
+
+    it('f statements with double values define a face with the given vertex indices / texture Coords', () => {
+      var fileContents = "f 1/4 2/5 3/6";
+      var model = new OBJFile(fileContents).parse().models[0];  
+      expect(model.polygons.length).toBe(1);
+      expect(model.polygons[0].vertices).toEqual([
+        { vertexIndex: 1, textureCoordsIndex: 4, normalIndex: 0 },
+        { vertexIndex: 2, textureCoordsIndex: 5, normalIndex: 0 },
+        { vertexIndex: 3, textureCoordsIndex: 6, normalIndex: 0 }
+      ]);
+    });
+
+    it('f statements with triple values define a face with the given vertex indices / texture Coords / vertex normals', () => {
+      var fileContents = "f 1/4/7 2/5/8 3/6/9";
+      var model = new OBJFile(fileContents).parse().models[0];  
+      expect(model.polygons.length).toBe(1);
+      expect(model.polygons[0].vertices).toEqual([
+        { vertexIndex: 1, textureCoordsIndex: 4, normalIndex: 7 },
+        { vertexIndex: 2, textureCoordsIndex: 5, normalIndex: 8 },
+        { vertexIndex: 3, textureCoordsIndex: 6, normalIndex: 9 }
+      ]);
+    });
+
+    it('f statements may omit texture coord indices', () => {
+      var fileContents = "f 1//7 2//8 3//9";
+      var model = new OBJFile(fileContents).parse().models[0];  
+      expect(model.polygons.length).toBe(1);
+      expect(model.polygons[0].vertices).toEqual([
+        { vertexIndex: 1, textureCoordsIndex: 0, normalIndex: 7 },
+        { vertexIndex: 2, textureCoordsIndex: 0, normalIndex: 8 },
+        { vertexIndex: 3, textureCoordsIndex: 0, normalIndex: 9 }
+      ]);
+    });
+
+  });
+
   describe('Materials', () => {
 
     it('returns a list of referenced material libraries', () => {

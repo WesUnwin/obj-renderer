@@ -129,6 +129,14 @@ class OBJFile {
       if(vertexValues.length > 2)
         vertexNormalIndex = parseInt(vertexValues[2]);
       
+      if (vertexIndex == 0)
+        throw "Faces uses invalid vertex index of 0";
+
+      // Negative vertex indices refer to the nth last defined vertex
+      // convert these to postive indices for simplicity
+      if (vertexIndex < 0)
+        vertexIndex = this._currentModel().vertices.length + 1 + vertexIndex;
+
       polygon.addVertex(vertexIndex, textureCoordsIndex, vertexNormalIndex);
     }
     this._currentModel().addPolygon(polygon);
