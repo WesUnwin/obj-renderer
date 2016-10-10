@@ -3,8 +3,9 @@ let Polygon = require('./polygon.js');
 
 class OBJFile {
 
-  constructor() {
+  constructor(fileContents) {
     this._reset();
+    this.fileContents = fileContents;
   }
 
   _reset() {
@@ -13,22 +14,22 @@ class OBJFile {
     this.materialLibs = [];
   }
 
-  parseFile(fileContents) {
+  parse() {
     this._reset();
 
-    const lines = fileContents.split("\n");
+    const lines = this.fileContents.split("\n");
     for(let i = 0; i < lines.length; i++) {
-      const line = lines[i];
+      const line = this._stripComments(lines[i]);
 
       const lineItems = line.replace(/\s\s+/g, ' ').trim().split(' ');
-
-      for(let s = 0; s < lineItems.length; s++)
-        console.log('sym' + lineItems[s]);
       
       switch(lineItems[0].toLowerCase())
       {
         case 'o':  // Start A New Model
           this._parseObject(lineItems);
+          break;
+        case 'g': // Start a new polygon group
+
           break;
         case 'v':  // Define a vertex for the current model
           this._parseVertexCoords(lineItems);
@@ -55,7 +56,10 @@ class OBJFile {
 
     }
 
-    return this.models; 
+    return {
+      models: this.models,
+      materialLibs: this.materialLibs
+    };
   }
 
   _currentModel() {
@@ -63,6 +67,14 @@ class OBJFile {
       this.models.push(new Model("Untitled"));
 
     return this.models[this.models.length - 1];
+  }
+
+  _stripComments(lineString) {
+    let commentIndex = lineString.indexOf('#');
+    if(commentIndex > -1)
+      return lineString.substring(0, commentIndex);
+    else
+      return lineString;
   }
 
   _parseObject(lineItems) {
