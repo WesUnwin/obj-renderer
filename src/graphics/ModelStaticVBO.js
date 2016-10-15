@@ -6,7 +6,14 @@
 class ModelStaticVBO {
 
   constructor(model) {
-    this.model = model;
+    var m = {
+      vertices: [
+       { x: 0.0, y: 0.5, z: 0.0 },
+       { x: -0.5, y: -0.5, z: 0.0 },
+       { x: 0.5, y: -0.5, z: 0.0 }
+      ]
+    };
+    this.model = m;
   }
 
   render(gl, shaderProgram) {
@@ -31,22 +38,68 @@ class ModelStaticVBO {
   }
 
   _buffer(gl) {
+    let vertexPositions = [];
+    let vertexTextureCoords = [];
+    let vertexNormals = [];
+
+    let meshes = []; // Array of objects, 1 for each material { startIndex, endIndex }
+
+    // Group polygons by material
+    let modelMaterials = this.model.getMaterialsUsed();
+
+    let index = 0;
+    modelMaterials.forEach((material) => {
+      let mesh = { material: material, startIndex: };
+
+      let polygons = this.model.getPolygonsByMaterial(material);
+
+      polygons.forEach((polygon) => {
+        polygon.vertices.forEach((vertex) => {
+          let vertexCoords = this.model.vertices[v.vertexIndex - 1];
+          vertexPositions.push(v.x);
+          vertexPositions.push(v.y);
+          vertexPositions.push(v.z);
+
+          if (! vertex.textureCoordsIndex) {
+            vertexTextureCoords.push(0);
+            vertexTextureCoords.push(0);
+          } else {
+            let vertexTextureCoord = this.model.textureCoords[vertex.textureCoordsIndex - 1];
+            vertexTextureCoords.push(vertexTextureCoord.u);
+            vertexTextureCoords.push(vertexTextureCoord.v);
+          }
+
+          if (! vertex.normalIndex) {
+            vertexNormals.push(0);
+            vertexNormals.push(0);
+          } else {
+            let vertexNormal = this.model.vertexNormals[vertex.normalIndex - 1];
+            vertexNormals.push(vertexNormal.x);
+            vertexNormals.push(vertexNormal.y);
+          }
+
+          index += 1;
+        });
+      });
+
+      mesh.endIndex = index - 1;
+      meshes.push(mesh);
+    });
+
+
     // Load Vertex Coords into a Buffer Object
+
+    this.model.vertices.forEach(function(v) {
+      vertexPositions.push(v.x);
+      vertexPositions.push(v.y);
+      vertexPositions.push(v.z);
+    });
+
+    // Set Data for the current buffer bound to target: ARRAY_BUFFER
     this.vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositions), gl.STATIC_DRAW);
 
-    var vertices = [
-       0.0,  0.5,  0.0,
-      -0.5, -0.5,  0.0,
-       0.5, -0.5,  0.0
-    ];
-
-    // Set Data for current buffer bound to target: ARRAY_BUFFER
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
-
-    this.vertexColorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexColorBuffer);
 
     var vertexColor = [
       1.0, 0.0, 0.0, 1.0,
@@ -54,6 +107,8 @@ class ModelStaticVBO {
       0.0, 0.0, 1.0, 1.0,   
     ];
 
+    this.vertexColorBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexColorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexColor), gl.STATIC_DRAW);
 
     this.buffered = true;

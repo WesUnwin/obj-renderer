@@ -1,4 +1,4 @@
-let OBJFile = require('../src/OBJFile.js');
+let OBJFile = require('../../src/modeling/OBJFile.js');
 
 describe('OBJ File Parser', () => {
 
