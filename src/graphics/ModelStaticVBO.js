@@ -1,3 +1,5 @@
+let Model = require('../modeling/model.js');
+let Polygon = require('../modeling/polygon.js');
 
 /**
  * Represents that has non-changing
@@ -6,13 +8,20 @@
 class ModelStaticVBO {
 
   constructor(model) {
-    var m = {
-      vertices: [
+    let m = new Model();
+     m.vertices = [
        { x: 0.0, y: 0.5, z: 0.0 },
        { x: -0.5, y: -0.5, z: 0.0 },
        { x: 0.5, y: -0.5, z: 0.0 }
-      ]
-    };
+     ];
+
+     let triangle = new Polygon('');
+     triangle.addVertex(1, 0, 0);
+     triangle.addVertex(2, 0, 0);
+     triangle.addVertex(3, 0, 0);
+
+     m.polygons = [triangle];
+
     this.model = m;
   }
 
@@ -20,21 +29,27 @@ class ModelStaticVBO {
     if (!this.buffered)
       this._buffer(gl);
 
-    // Make the vertex buffer the source of the Vertex Position Attribute
-    var vertexPositionAttribute = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
-    gl.enableVertexAttribArray(vertexPositionAttribute);
+    this.materialMeshes.forEach((mesh) => {
+      // Draw one material (a mesh) of the model at a time
+      let currentMaterial = mesh.material;
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-    gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+      // Make the vertex buffer the source of the Vertex Position Attribute
+      var vertexPositionAttribute = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
+      gl.enableVertexAttribArray(vertexPositionAttribute);
 
-    var colorAttribute = gl.getAttribLocation(shaderProgram, 'aVertexColor');
-    gl.enableVertexAttribArray(colorAttribute);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+      gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexColorBuffer);
-    gl.vertexAttribPointer(colorAttribute, 4, gl.FLOAT, false, 0, 0);
+      var colorAttribute = gl.getAttribLocation(shaderProgram, 'aVertexColor');
+      gl.enableVertexAttribArray(colorAttribute);
 
-    // Draw the first 3 vertices from the parrallel arrays of attribute data, starting at vertex 0
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexColorBuffer);
+      gl.vertexAttribPointer(colorAttribute, 4, gl.FLOAT, false, 0, 0);
+
+        // Draw this material mesh
+      let totalMeshVertices = mesh.endIndex - mesh.startIndex + 1;
+      gl.drawArrays(gl.TRIANGLES, mesh.startIndex, totalMeshVertices);
+    });
   }
 
   _buffer(gl) {
@@ -49,16 +64,16 @@ class ModelStaticVBO {
 
     let index = 0;
     modelMaterials.forEach((material) => {
-      let mesh = { material: material, startIndex: };
+      let mesh = { material: material, startIndex: index};
 
       let polygons = this.model.getPolygonsByMaterial(material);
 
       polygons.forEach((polygon) => {
         polygon.vertices.forEach((vertex) => {
-          let vertexCoords = this.model.vertices[v.vertexIndex - 1];
-          vertexPositions.push(v.x);
-          vertexPositions.push(v.y);
-          vertexPositions.push(v.z);
+          let vertexCoords = this.model.vertices[vertex.vertexIndex - 1];
+          vertexPositions.push(vertexCoords.x);
+          vertexPositions.push(vertexCoords.y);
+          vertexPositions.push(vertexCoords.z);
 
           if (! vertex.textureCoordsIndex) {
             vertexTextureCoords.push(0);
@@ -86,6 +101,7 @@ class ModelStaticVBO {
       meshes.push(mesh);
     });
 
+    this.materialMeshes = meshes;
 
     // Load Vertex Position data into a Buffer Object
     this.vertexBuffer = gl.createBuffer();

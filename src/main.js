@@ -6,13 +6,6 @@ var sobj = require('../data/unitcube.obj');
 window.start = function() {
   console.log('Application started!');
 
-  console.log(sobj);
-  var lines = sobj.split("\n");
-  for(var t = 0; t<lines.length; t++) {
-    console.log("NEXT LINE \n");
-    console.log(lines[t]);
-  }
-  console.log('---------------');
   var canvas = document.getElementById('mycanvas');
 
   var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
