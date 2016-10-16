@@ -87,15 +87,7 @@ class ModelStaticVBO {
     });
 
 
-    // Load Vertex Coords into a Buffer Object
-
-    this.model.vertices.forEach(function(v) {
-      vertexPositions.push(v.x);
-      vertexPositions.push(v.y);
-      vertexPositions.push(v.z);
-    });
-
-    // Set Data for the current buffer bound to target: ARRAY_BUFFER
+    // Load Vertex Position data into a Buffer Object
     this.vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositions), gl.STATIC_DRAW);
