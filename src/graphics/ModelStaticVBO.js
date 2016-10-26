@@ -46,6 +46,12 @@ class ModelStaticVBO {
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexColorBuffer);
       gl.vertexAttribPointer(colorAttribute, 4, gl.FLOAT, false, 0, 0);
 
+      var textureCoordsAttribute = gl.getAttribLocation(shaderProgram, 'aVertexTextureCoords');
+      gl.enableVertexAttribArray(textureCoordsAttribute);
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuferr);
+      gl.vertexAttribPointer(textureCoordsAttribute, 3, gl.FLOAT, false, 0, 0);
+
         // Draw this material mesh
       let totalMeshVertices = mesh.endIndex - mesh.startIndex + 1;
       gl.drawArrays(gl.TRIANGLES, mesh.startIndex, totalMeshVertices);
@@ -112,14 +118,22 @@ class ModelStaticVBO {
     var vertexColor = [
       1.0, 0.0, 0.0, 1.0,
       0.0, 1.0, 0.0, 1.0,
-      0.0, 0.0, 1.0, 1.0,   
+      0.0, 0.0, 1.0, 1.0
     ];
 
     this.vertexColorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexColorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexColor), gl.STATIC_DRAW);
 
+
+    // load Texture Coords into a Buffer Object
+    this.textureCoordBuferr = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuferr);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexTextureCoords), gl.STATIC_DRAW);
+
     this.buffered = true;
+
+
   }
 }
 

@@ -2,10 +2,24 @@ var Shaders = require('./shaders.js');
 window.Matrix = require('./matrix.js');
 var Scene = require('./scene.js');
 var sobj = require('../data/unitcube.obj');
+var ImageManager = require('./graphics/ImageManager.js');
 
 window.start = function() {
   console.log('Application started!');
 
+  ImageManager.loadImages(
+    ['data/textures/brick.png'],
+    () => { 
+      console.log("IMAGES LOADED"); 
+      window.init();
+    },
+    () => {
+      console.log("IMAGE LOADING FAILED");
+    }
+  );
+}
+
+window.init = function() {
   var canvas = document.getElementById('mycanvas');
 
   var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
@@ -25,11 +39,9 @@ window.start = function() {
   var vertexPositionAttribute = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
   gl.enableVertexAttribArray(vertexPositionAttribute);
 
-
   var scene = new Scene();
 
   setInterval(() => { 
     scene.render(gl, shaderProgram); 
   }, 1500);
-
 }
