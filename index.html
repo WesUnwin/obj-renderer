@@ -1,39 +1,10 @@
 <body>
-    <canvas id="mycanvas" width="640" height="480">
-    </canvas>
+  <canvas id="mycanvas" width="640" height="480">
+  </canvas>
 
-    <script id='shader-fs' type='x-shader/x-fragment'>
-      precision mediump float;
+  <script src="bundle.js" type="text/javascript"></script>
 
-      varying vec4 vColor;
-
-      void main(void) {
-        gl_FragColor = vColor;
-      }
-    </script>
-
-    <script id='shader-vs' type='x-shader/x-vertex'>
-      attribute vec3 aVertexPosition;
-      attribute vec4 aVertexColor;
-      attribute vec3 aVertexTextureCoords;
-
-      uniform mat4 uMVMatrix;
-      uniform mat4 uPMatrix;
-      
-      varying vec4 vColor;
-      varying vec3 vTextureCoords;
-
-      void main(void) {
-        vColor = aVertexColor;
-        vTextureCoords = aVertexTextureCoords;
-
-        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-      }
-    </script>
-
-    <script src="bundle.js" type="text/javascript"></script>
-
-    <script>
-      window.start();
-    </script>
+  <script>
+    window.start();
+  </script>
 </body>
