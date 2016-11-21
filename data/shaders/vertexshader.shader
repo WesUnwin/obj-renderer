@@ -6,7 +6,7 @@ uniform mat4 uMVMatrix;
 uniform mat4 uPMatrix;
 
 varying vec4 vColor;
-varying vec3 vTextureCoords;
+varying vec3 vTextureCoords; // unused! don't getAttribLocation() on
 
 void main(void) {
   vColor = aVertexColor;

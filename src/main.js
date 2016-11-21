@@ -3,6 +3,9 @@ window.Matrix = require('./matrix.js');
 var Scene = require('./scene.js');
 var sobj = require('../data/unitcube.obj');
 var ImageManager = require('./graphics/ImageManager.js');
+var ShaderProgram = require('./graphics/ShaderProgram.js');
+let DefaultVertexShaderSource = require('../data/shaders/vertexshader.shader');
+let DefaultFragmentShaderSource = require('../data/shaders/fragmentshader.shader');
 
 window.start = function() {
   console.log('Application started!');
@@ -34,14 +37,17 @@ window.init = function() {
   gl.viewportHeight = 480;
   gl.viewport(0, 0, canvas.width, canvas.height);
 
-  var shaderProgram = Shaders.setupShaders(gl);
+  //var shaderProgram = Shaders.setupShaders(gl);
+  const defaultShaderProgram = new ShaderProgram(gl, DefaultVertexShaderSource, DefaultFragmentShaderSource);
+  defaultShaderProgram.use(gl);
 
-  var vertexPositionAttribute = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
+  var vertexPositionAttribute = gl.getAttribLocation(defaultShaderProgram.getWebGLProgram(), 'aVertexPosition');
+  console.log(vertexPositionAttribute);
   gl.enableVertexAttribArray(vertexPositionAttribute);
 
   var scene = new Scene();
 
-  setInterval(() => { 
-    scene.render(gl, shaderProgram); 
+  setInterval(() => {
+    scene.render(gl, defaultShaderProgram.getWebGLProgram()); 
   }, 1500);
 }

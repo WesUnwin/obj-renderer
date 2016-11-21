@@ -46,11 +46,11 @@ class ModelStaticVBO {
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexColorBuffer);
       gl.vertexAttribPointer(colorAttribute, 4, gl.FLOAT, false, 0, 0);
 
-      var textureCoordsAttribute = gl.getAttribLocation(shaderProgram, 'aVertexTextureCoords');
-      gl.enableVertexAttribArray(textureCoordsAttribute);
+      // var textureCoordsAttribute = gl.getAttribLocation(shaderProgram, 'aVertexTextureCoords');
+      // gl.enableVertexAttribArray(textureCoordsAttribute);
 
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuferr);
-      gl.vertexAttribPointer(textureCoordsAttribute, 3, gl.FLOAT, false, 0, 0);
+      // gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuferr);
+      // gl.vertexAttribPointer(textureCoordsAttribute, 3, gl.FLOAT, false, 0, 0);
 
         // Draw this material mesh
       let totalMeshVertices = mesh.endIndex - mesh.startIndex + 1;
