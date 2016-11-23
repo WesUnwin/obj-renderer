@@ -6,7 +6,7 @@
   "scripts": {
     "test": " node_modules/.bin/karma start --single-run",
     "build": "webpack src/main.js bundle.js",
-    "serve": "webpack-dev-server --progress --colors""
+    "serve": "webpack-dev-server --progress --colors"
   },
   "author": "",
   "license": "BSD-2-Clause",
