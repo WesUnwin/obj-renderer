@@ -6,7 +6,7 @@
   "scripts": {
     "test": " node_modules/.bin/karma start --single-run",
     "build": "browserify src/main.js -o bundle.js -t [babelify --presets [es2015] ] -t [ stringify --extensions [.obj .shader] ]",
-    "beef": "beefy main.js:bundle.js --index ../index.html --live"
+    "beef": "cd src/ && beefy main.js --index ../index.html --browserify -t [ stringify --extensions [.obj .shader] ] --live"
   },
   "author": "",
   "license": "BSD-2-Clause",
