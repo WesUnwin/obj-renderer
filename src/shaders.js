@@ -1,5 +1,5 @@
-let DefaultVertexShaderSource = require('../data/shaders/vertexshader.shader');
-let DefaultFragmentShaderSource = require('../data/shaders/fragmentshader.shader');
+let DefaultVertexShaderSource = require('raw-loader!../data/shaders/vertexshader.shader');
+let DefaultFragmentShaderSource = require('raw-loader!../data/shaders/fragmentshader.shader');
 
 module.exports = {
 

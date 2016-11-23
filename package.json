@@ -5,15 +5,16 @@
   "main": "main.js",
   "scripts": {
     "test": " node_modules/.bin/karma start --single-run",
-    "build": "browserify src/main.js -o bundle.js -t [babelify --presets [es2015] ] -t [ stringify --extensions [.obj .shader] ]",
-    "beef": "cd src/ && beefy main.js --index ../index.html --browserify -t [ stringify --extensions [.obj .shader] ] --live"
+    "build": "webpack src/main.js bundle.js",
+    "serve": "webpack-dev-server --progress --colors""
   },
   "author": "",
   "license": "BSD-2-Clause",
   "dependencies": {
     "babel-preset-es2015": "^6.16.0",
     "babelify": "^7.3.0",
-    "stringify": "^5.1.0"
+    "stringify": "^5.1.0",
+    "raw-loader": "~0.5.1"
   },
   "devDependencies": {
     "jasmine-core": "~2.5.2",

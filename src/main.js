@@ -1,11 +1,11 @@
 var Shaders = require('./shaders.js');
 window.Matrix = require('./matrix.js');
 var Scene = require('./scene.js');
-var sobj = require('../data/unitcube.obj');
+var sobj = require('raw-loader!../data/unitcube.obj');
 var ImageManager = require('./graphics/ImageManager.js');
 var ShaderProgram = require('./graphics/ShaderProgram.js');
-let DefaultVertexShaderSource = require('../data/shaders/vertexshader.shader');
-let DefaultFragmentShaderSource = require('../data/shaders/fragmentshader.shader');
+let DefaultVertexShaderSource = require('raw-loader!../data/shaders/vertexshader.shader');
+let DefaultFragmentShaderSource = require('raw-loader!../data/shaders/fragmentshader.shader');
 
 window.start = function() {
   console.log('Application started!');
