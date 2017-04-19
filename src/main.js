@@ -8,6 +8,7 @@ let DefaultVertexShaderSource = require('raw-loader!../data/shaders/vertexshader
 let DefaultFragmentShaderSource = require('raw-loader!../data/shaders/fragmentshader.shader');
 
 window.start = function() {
+  console.clear();
   console.log('Application started!');
 
   ImageManager.loadImages(
