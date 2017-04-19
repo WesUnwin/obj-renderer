@@ -28,7 +28,7 @@ class ImageManager {
     this.checkComplete();
   }
 
-  static _onImageLoadFailed(imgs) {
+  static _onImageLoadFailed(img) {
     console.log('IMAGE LOAD FAILED: ' + img.src);
     this.imageStatuses[img.src] = 'failed';
     this.checkComplete();

@@ -11,7 +11,7 @@ window.start = function() {
   console.log('Application started!');
 
   ImageManager.loadImages(
-    ['data/textures/brick.png'],
+    ['brick.png'],
     () => { 
       console.log("IMAGES LOADED"); 
       window.init();
@@ -51,3 +51,5 @@ window.init = function() {
     scene.render(gl, defaultShaderProgram.getWebGLProgram()); 
   }, 1500);
 }
+
+window.start();

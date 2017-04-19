@@ -4,9 +4,9 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": " node_modules/.bin/karma start --single-run",
-    "build": "webpack src/main.js bundle.js",
-    "serve": "webpack-dev-server --progress --colors"
+    "test": "node_modules/.bin/karma start --single-run",
+    "build": "webpack src/main.js build/bundle.js",
+    "serve": "webpack-dev-server --content-base build/ --quiet"
   },
   "author": "",
   "license": "BSD-2-Clause",
@@ -26,6 +26,7 @@
     "requirejs": "~2.3.2",
     "karma-requirejs": "~1.1.0",
     "karma-chrome-launcher": "~2.0.0",
-    "karma-phantomjs-launcher": "~1.0.2"
+    "karma-phantomjs-launcher": "~1.0.2",
+    "webpack": "~2.4.1"
   }
 }
