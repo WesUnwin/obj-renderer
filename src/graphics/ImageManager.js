@@ -23,7 +23,6 @@ class ImageManager {
   }
 
   static _onImageLoaded(img) {
-    console.log('IMAGE LOADED: ' + img.src);
     this.imageStatuses[img.src] = 'loaded';
     this.checkComplete();
   }

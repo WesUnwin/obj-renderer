@@ -1,6 +1,3 @@
-let Model = require('../modeling/model.js');
-let Polygon = require('../modeling/polygon.js');
-
 /**
  * Represents that has non-changing
  * vertex/textureCoord/normal data that comes from a single model.
@@ -8,21 +5,7 @@ let Polygon = require('../modeling/polygon.js');
 class ModelStaticVBO {
 
   constructor(model) {
-    let m = new Model();
-     m.vertices = [
-       { x: 0.0, y: 0.5, z: 0.0 },
-       { x: -0.5, y: -0.5, z: 0.0 },
-       { x: 0.5, y: -0.5, z: 0.0 }
-     ];
-
-     let triangle = new Polygon('');
-     triangle.addVertex(1, 0, 0);
-     triangle.addVertex(2, 0, 0);
-     triangle.addVertex(3, 0, 0);
-
-     m.polygons = [triangle];
-
-    this.model = m;
+    this.model = model;
   }
 
   render(gl, shaderProgram) {
