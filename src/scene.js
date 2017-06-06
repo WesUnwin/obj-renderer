@@ -7,10 +7,11 @@ class Scene {
 
   constructor(gl) {
     this.gl = gl;
-    this.objects = [];
-    this.projectionMatrix = new Matrix();
 
-    this.modelViewMatrix = new Matrix([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0.0,1]);
+    this.objects = [];
+
+    this.projectionMatrix = new Matrix();
+    this.modelViewMatrix = new Matrix();
 
     this.defaultShaderProgram = new ShaderProgram(this.gl, DefaultVertexShaderSource, DefaultFragmentShaderSource);
   }
