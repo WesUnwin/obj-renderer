@@ -1,5 +1,7 @@
+const Material = require('./Material.js');
 
-const _materials = [];
+
+let _materials = [];
 
 module.exports = {
 
@@ -8,14 +10,15 @@ module.exports = {
   },
 
   getMaterial: function(materialName) {
+  	if (_materials.length == 0) {
+  		const defaultMaterial = new Material('');
+
+  		_materials = [ defaultMaterial ];
+  	}
+
   	return _materials.find(mat => {
   		return mat.name == materialName;
   	})
-  },
-
-  useMaterial: function(materialName) {
-  	const material = this.getMaterial(materialName);
-  	material.useMaterial();
   }
 
 };

@@ -16,6 +16,10 @@ class Material {
 
   }
 
+  getShaderProgram() {
+    return window.defaultShaderProgram;
+  }
+
 }
 
 module.exports = Material;

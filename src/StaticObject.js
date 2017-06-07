@@ -9,8 +9,8 @@ class StaticObject {
 	  this._matrix = new Matrix();
   }
 
-  render(gl, shaderProgram) {
-  	this.modelStaticVBO.render(gl, shaderProgram);
+  render(gl, projectionMatrix, modelViewMatrix) {
+  	this.modelStaticVBO.render(gl, projectionMatrix, modelViewMatrix);
   }
 
 }

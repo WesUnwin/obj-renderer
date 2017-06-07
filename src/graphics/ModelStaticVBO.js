@@ -1,3 +1,6 @@
+const MaterialManager = require('../materials/MaterialManager.js');
+
+
 /**
  * Represents that has non-changing
  * vertex/textureCoord/normal data that comes from a single model.
@@ -8,34 +11,39 @@ class ModelStaticVBO {
     this.model = model;
   }
 
-  render(gl, shaderProgram) {
+  render(gl, projectionMatrix, modelViewMatrix) {
     if (!this.buffered)
       this._buffer(gl);
 
     this.materialMeshes.forEach((mesh) => {
       // Draw one material (a mesh) of the model at a time
-      let currentMaterial = mesh.material;
+      let currentMaterial = MaterialManager.getMaterial(mesh.materialName);
+      const shaderProgram = currentMaterial.getShaderProgram();
+      shaderProgram.use(gl);
+      shaderProgram.setProjectionMatrix(gl, projectionMatrix);
+      shaderProgram.setModelViewMatrix(gl, modelViewMatrix);
 
       // Make the vertex buffer the source of the Vertex Position Attribute
-      var vertexPositionAttribute = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
+      var vertexPositionAttribute = gl.getAttribLocation(shaderProgram.getWebGLProgram(), 'aVertexPosition');
       gl.enableVertexAttribArray(vertexPositionAttribute);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
       gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 
-      var colorAttribute = gl.getAttribLocation(shaderProgram, 'aVertexColor');
+      var colorAttribute = gl.getAttribLocation(shaderProgram.getWebGLProgram(), 'aVertexColor');
       gl.enableVertexAttribArray(colorAttribute);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexColorBuffer);
       gl.vertexAttribPointer(colorAttribute, 4, gl.FLOAT, false, 0, 0);
 
-      // var textureCoordsAttribute = gl.getAttribLocation(shaderProgram, 'aVertexTextureCoords');
-      // gl.enableVertexAttribArray(textureCoordsAttribute);
+      var textureCoordsAttribute = gl.getAttribLocation(shaderProgram.getWebGLProgram(), 'aVertexTextureCoords');
+      if (textureCoordsAttribute) {
+        gl.enableVertexAttribArray(textureCoordsAttribute);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
+        gl.vertexAttribPointer(textureCoordsAttribute, 3, gl.FLOAT, false, 0, 0);
+      }
 
-      // gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuferr);
-      // gl.vertexAttribPointer(textureCoordsAttribute, 3, gl.FLOAT, false, 0, 0);
-
-        // Draw this material mesh
+      // Draw this material mesh
       let totalMeshVertices = mesh.endIndex - mesh.startIndex + 1;
       gl.drawArrays(gl.TRIANGLES, mesh.startIndex, totalMeshVertices);
     });
@@ -53,7 +61,7 @@ class ModelStaticVBO {
 
     let index = 0;
     modelMaterials.forEach((material) => {
-      let mesh = { material: material, startIndex: index};
+      let mesh = { materialName: material, startIndex: index};
 
       let polygons = this.model.getPolygonsByMaterial(material);
 
@@ -110,8 +118,8 @@ class ModelStaticVBO {
 
 
     // load Texture Coords into a Buffer Object
-    this.textureCoordBuferr = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuferr);
+    this.textureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexTextureCoords), gl.STATIC_DRAW);
 
     this.buffered = true;

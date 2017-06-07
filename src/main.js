@@ -1,3 +1,3 @@
 
 // Load and run the HelloWorld.js example:
-const helloWorld = require('../examples/HelloWorld.js');
+const application = require('../examples/HelloWorld.js');
