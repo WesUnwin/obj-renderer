@@ -48,6 +48,12 @@ class ImageManager {
     }
   }
 
+  static getImage(filePath) {
+    // TODO fix this sketchy look up logic
+    return this.images.find(image => {
+      return image.src.includes(filePath);
+    });
+  }
 }
 
 module.exports = ImageManager;

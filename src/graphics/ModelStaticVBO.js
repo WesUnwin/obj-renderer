@@ -23,6 +23,7 @@ class ModelStaticVBO {
       shaderProgram.setProjectionMatrix(gl, projectionMatrix);
       shaderProgram.setModelViewMatrix(gl, modelViewMatrix);
 
+
       // Make the vertex buffer the source of the Vertex Position Attribute
       var vertexPositionAttribute = gl.getAttribLocation(shaderProgram.getWebGLProgram(), 'aVertexPosition');
       gl.enableVertexAttribArray(vertexPositionAttribute);
@@ -30,11 +31,13 @@ class ModelStaticVBO {
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
       gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 
+
       var colorAttribute = gl.getAttribLocation(shaderProgram.getWebGLProgram(), 'aVertexColor');
       gl.enableVertexAttribArray(colorAttribute);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexColorBuffer);
       gl.vertexAttribPointer(colorAttribute, 4, gl.FLOAT, false, 0, 0);
+
 
       var textureCoordsAttribute = gl.getAttribLocation(shaderProgram.getWebGLProgram(), 'aVertexTextureCoords');
       if (textureCoordsAttribute) {

@@ -5,6 +5,7 @@ const ImageManager = require('../src/graphics/ImageManager.js');
 const Model = require('../src/modeling/Model.js');
 const Polygon = require('../src/modeling/polygon.js');
 const StaticObject = require('../src/StaticObject.js');
+const MaterialManager = require('../src/materials/MaterialManager.js');
 
 
 window.helloWorld = function() {
@@ -20,6 +21,9 @@ window.helloWorld = function() {
     gl.viewportHeight = 480;
     gl.viewport(0, 0, canvas.width, canvas.height);
 
+    // Load Materials
+    MaterialManager.loadMaterialFile(gl);
+
     // CREATE A SCENE
     let scene = new Scene(gl);
 
@@ -31,7 +35,7 @@ window.helloWorld = function() {
      { x: 0.5, y: -0.5, z: 0.0 }
     ];
 
-    let triangle = new Polygon('');
+    let triangle = new Polygon('textured');
     triangle.addVertex(1, 0, 0);
     triangle.addVertex(2, 0, 0);
     triangle.addVertex(3, 0, 0);

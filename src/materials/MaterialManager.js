@@ -1,21 +1,27 @@
 const Material = require('./Material.js');
+const Texture = require('./Texture.js');
+const ImageManager = require('../graphics/ImageManager.js');
 
 
 let _materials = [];
 
 module.exports = {
 
-  loadMaterialFile: function(file) {
+  loadMaterialFile: function(gl) {
+  	// TODO replace this temp function implementation with real, permanent logic
+		const defaultMaterial = new Material('');
+		_materials.push(defaultMaterial);
 
+		// TEMP ADD TEXTURE MATERIAL
+		const image = ImageManager.getImage('brick.png');
+		debugger;
+		const texturedMaterial = new Material('textured');
+		const texture = new Texture(gl, image);
+		texturedMaterial.setTexture(texture);
+		_materials.push(texturedMaterial);
   },
 
   getMaterial: function(materialName) {
-  	if (_materials.length == 0) {
-  		const defaultMaterial = new Material('');
-
-  		_materials = [ defaultMaterial ];
-  	}
-
   	return _materials.find(mat => {
   		return mat.name == materialName;
   	})
