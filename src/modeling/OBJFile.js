@@ -1,4 +1,4 @@
-let Model = require('./model.js');
+let Model = require('./Model.js');
 let Polygon = require('./polygon.js');
 
 class OBJFile {
@@ -29,7 +29,7 @@ class OBJFile {
           this._parseObject(lineItems);
           break;
         case 'g': // Start a new polygon group
-
+          throw "NOT IMPLEMENTED";
           break;
         case 'v':  // Define a vertex for the current model
           this._parseVertexCoords(lineItems);
@@ -153,7 +153,7 @@ class OBJFile {
   }
 
   _parseSmoothShadingStatement(lineItems) {
-
+    throw "NOT IMPLEMENTED";
   }
 }
 

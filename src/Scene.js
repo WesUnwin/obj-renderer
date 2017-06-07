@@ -1,7 +1,8 @@
-var Matrix = require('./matrix.js');
-var ShaderProgram = require('./graphics/ShaderProgram.js');
-let DefaultVertexShaderSource = require('raw-loader!../data/shaders/vertexshader.shader');
-let DefaultFragmentShaderSource = require('raw-loader!../data/shaders/fragmentshader.shader');
+const Matrix = require('./Matrix.js');
+const ShaderProgram = require('./graphics/ShaderProgram.js');
+const DefaultVertexShaderSource = require('raw-loader!../data/shaders/vertexshader.shader');
+const DefaultFragmentShaderSource = require('raw-loader!../data/shaders/fragmentshader.shader');
+
 
 class Scene {
 
@@ -16,7 +17,7 @@ class Scene {
     this.defaultShaderProgram = new ShaderProgram(this.gl, DefaultVertexShaderSource, DefaultFragmentShaderSource);
   }
 
-  addGameObject(object) {
+  addObject(object) {
     this.objects.push(object);
   }
 

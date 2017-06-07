@@ -1,11 +1,10 @@
 const Shaders = require('../src/shaders.js');
-window.Matrix = require('../src/matrix.js');
-const Scene = require('../src/scene.js');
+const Scene = require('../src/Scene.js');
 const sobj = require('raw-loader!../data/unitcube.obj');
 const ImageManager = require('../src/graphics/ImageManager.js');
-const Model = require('../src/modeling/model.js');
+const Model = require('../src/modeling/Model.js');
 const Polygon = require('../src/modeling/polygon.js');
-const GameObject = require('../src/GameObject.js');
+const StaticObject = require('../src/StaticObject.js');
 
 
 window.helloWorld = function() {
@@ -40,9 +39,9 @@ window.helloWorld = function() {
     m.polygons = [triangle];
 
     // Create a static game object (that uses the model)
-    const gameObject = new GameObject(m);
+    const gameObject = new StaticObject(m);
 
-    scene.addGameObject(gameObject);
+    scene.addObject(gameObject);
 
     scene.render();
   };
