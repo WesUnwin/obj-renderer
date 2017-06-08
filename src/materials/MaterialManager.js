@@ -14,7 +14,6 @@ module.exports = {
 
 		// TEMP ADD TEXTURE MATERIAL
 		const image = ImageManager.getImage('brick.png');
-		debugger;
 		const texturedMaterial = new Material('textured');
 		const texture = new Texture(gl, image);
 		texturedMaterial.setTexture(texture);
@@ -24,7 +23,7 @@ module.exports = {
   getMaterial: function(materialName) {
   	return _materials.find(mat => {
   		return mat.name == materialName;
-  	})
+  	});
   }
 
 };

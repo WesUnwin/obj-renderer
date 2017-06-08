@@ -2,6 +2,8 @@ const Matrix = require('./Matrix.js');
 const ShaderProgram = require('./graphics/ShaderProgram.js');
 const DefaultVertexShaderSource = require('raw-loader!../data/shaders/vertexshader.shader');
 const DefaultFragmentShaderSource = require('raw-loader!../data/shaders/fragmentshader.shader');
+const TexturedVertexShaderSource = require('raw-loader!../data/shaders/TexturedVertexShader.shader');
+const TexturedFragmentShaderSource = require('raw-loader!../data/shaders/TexturedFragmentShader.shader');
 
 
 class Scene {
@@ -15,6 +17,7 @@ class Scene {
     this.modelViewMatrix = new Matrix();
 
     window.defaultShaderProgram = new ShaderProgram(this.gl, DefaultVertexShaderSource, DefaultFragmentShaderSource);
+    window.texturedShaderProgram = new ShaderProgram(this.gl, TexturedVertexShaderSource, TexturedFragmentShaderSource);
   }
 
   addObject(object) {

@@ -9,6 +9,7 @@ class ShaderProgram {
     gl.attachShader(this.shaderProgram, fragmentShader);
     gl.linkProgram(this.shaderProgram);
     if (!gl.getProgramParameter(this.shaderProgram, gl.LINK_STATUS)) {
+      console.error(gl.getProgramInfoLog(this.shaderProgram));
       throw 'shader program did not link';
     }
 	}
