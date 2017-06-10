@@ -27,7 +27,7 @@ window.helloWorld = function() {
     // CREATE A SCENE
     let scene = new Scene(gl);
 
-    // CREATE A MODEL (Containing just a single, colored triangle)
+    // CREATE A MODEL (Containing just a single, textured triangle)
     let m = new Model();
     m.vertices = [
      { x: 0.0, y: 0.5, z: 0.0 },

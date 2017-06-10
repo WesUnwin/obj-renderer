@@ -6,7 +6,7 @@
   "scripts": {
     "test": "node_modules/.bin/karma start --single-run",
     "build": "webpack src/main.js build/bundle.js",
-    "serve": "webpack-dev-server --content-base build/ --quiet"
+    "server": "webpack-dev-server --content-base build/ --quiet"
   },
   "author": "",
   "license": "BSD-2-Clause",
