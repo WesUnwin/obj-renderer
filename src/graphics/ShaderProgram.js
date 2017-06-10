@@ -36,6 +36,11 @@ class ShaderProgram {
     gl.uniformMatrix4fv(mvUniform, false, new Float32Array(matrix.values));
   }
 
+  setUniformValue(gl, uniformName, value) {
+    const uniformLocation = gl.getUniformLocation(this.shaderProgram, uniformName);
+    gl.uniform1i(uniformLocation, value);
+  }
+
   _compileShader(gl, type, source) {
   	const shader = gl.createShader(type);
     gl.shaderSource(shader, source);

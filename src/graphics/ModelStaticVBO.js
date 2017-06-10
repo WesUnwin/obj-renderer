@@ -18,11 +18,13 @@ class ModelStaticVBO {
     this.materialMeshes.forEach((mesh) => {
       // Draw one material (a mesh) of the model at a time
       let currentMaterial = MaterialManager.getMaterial(mesh.materialName);
+      currentMaterial.useMaterial(gl);
       const shaderProgram = currentMaterial.getShaderProgram();
       shaderProgram.use(gl);
       shaderProgram.setProjectionMatrix(gl, projectionMatrix);
       shaderProgram.setModelViewMatrix(gl, modelViewMatrix);
 
+      shaderProgram.setUniformValue(gl, "uSampler", 0);
 
       // Make the vertex buffer the source of the Vertex Position Attribute
       var vertexPositionAttribute = gl.getAttribLocation(shaderProgram.getWebGLProgram(), 'aVertexPosition');
@@ -40,11 +42,9 @@ class ModelStaticVBO {
 
 
       var textureCoordsAttribute = gl.getAttribLocation(shaderProgram.getWebGLProgram(), 'aVertexTextureCoords');
-      if (textureCoordsAttribute) {
-        gl.enableVertexAttribArray(textureCoordsAttribute);
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
-        gl.vertexAttribPointer(textureCoordsAttribute, 3, gl.FLOAT, false, 0, 0);
-      }
+      gl.enableVertexAttribArray(textureCoordsAttribute);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
+      gl.vertexAttribPointer(textureCoordsAttribute, 2, gl.FLOAT, false, 0, 0);
 
       // Draw this material mesh
       let totalMeshVertices = mesh.endIndex - mesh.startIndex + 1;
@@ -63,19 +63,19 @@ class ModelStaticVBO {
     let modelMaterials = this.model.getMaterialsUsed();
 
     let index = 0;
-    modelMaterials.forEach((material) => {
-      let mesh = { materialName: material, startIndex: index};
+    modelMaterials.forEach((materialName) => {
+      const mesh = { materialName: materialName, startIndex: index};
 
-      let polygons = this.model.getPolygonsByMaterial(material);
+      const polygons = this.model.getPolygonsByMaterial(materialName);
 
       polygons.forEach((polygon) => {
         polygon.vertices.forEach((vertex) => {
-          let vertexCoords = this.model.vertices[vertex.vertexIndex - 1];
+          const vertexCoords = this.model.vertices[vertex.vertexIndex - 1];
           vertexPositions.push(vertexCoords.x);
           vertexPositions.push(vertexCoords.y);
           vertexPositions.push(vertexCoords.z);
 
-          if (! vertex.textureCoordsIndex) {
+          if (!vertex.textureCoordsIndex) {
             vertexTextureCoords.push(0);
             vertexTextureCoords.push(0);
           } else {
@@ -84,7 +84,7 @@ class ModelStaticVBO {
             vertexTextureCoords.push(vertexTextureCoord.v);
           }
 
-          if (! vertex.normalIndex) {
+          if (!vertex.normalIndex) {
             vertexNormals.push(0);
             vertexNormals.push(0);
           } else {

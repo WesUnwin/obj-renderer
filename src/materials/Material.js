@@ -13,11 +13,16 @@ class Material {
   }
 
   useMaterial(gl) {
-
+    if (this.texture) {
+      this.texture.use(gl);
+    }
   }
 
   getShaderProgram() {
-    return window.defaultShaderProgram;
+    if (this.texture)
+      return window.texturedShaderProgram;
+    else
+      return window.defaultShaderProgram;
   }
 
 }

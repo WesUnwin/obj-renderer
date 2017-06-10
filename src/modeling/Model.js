@@ -29,15 +29,15 @@ class Model {
   getMaterialsUsed() {
     let materials = [];
     this.polygons.forEach((p) => {
-      if (materials.indexOf(p.material) === -1)
-        materials.push(p.material);
+      if (materials.indexOf(p.materialName) === -1)
+        materials.push(p.materialName);
     });
     return materials;
   }
 
-  getPolygonsByMaterial(material) {
+  getPolygonsByMaterial(materialName) {
     return this.polygons.filter((p) => {
-      return p.material === material;
+      return p.materialName === materialName;
     });
   }
 

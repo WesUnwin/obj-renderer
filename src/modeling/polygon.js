@@ -1,8 +1,8 @@
 
 class Polygon {
 
-  constructor(material) {
-    this.material = material;
+  constructor(materialName) {
+    this.materialName = materialName;
     this.vertices = [];
   }
 

@@ -1,3 +1,3 @@
 
-// Load and run the HelloWorld.js example:
-const application = require('../examples/HelloWorld.js');
+// Load and run the example application:
+const application = require('../examples/Texture.js');
