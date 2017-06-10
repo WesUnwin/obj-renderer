@@ -12,10 +12,17 @@ class Material {
   	this.texture = texture;
   }
 
-  useMaterial(gl) {
+  use(gl, projectionMatrix, modelViewMatrix) {
     if (this.texture) {
       this.texture.use(gl);
     }
+
+    const shaderProgram = this.getShaderProgram();
+    shaderProgram.use(gl);
+    shaderProgram.setProjectionMatrix(gl, projectionMatrix);
+    shaderProgram.setModelViewMatrix(gl, modelViewMatrix);
+
+    shaderProgram.setUniformValue(gl, "uSampler", 0);
   }
 
   getShaderProgram() {

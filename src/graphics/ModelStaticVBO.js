@@ -18,35 +18,38 @@ class ModelStaticVBO {
     this.materialMeshes.forEach((mesh) => {
       // Draw one material (a mesh) of the model at a time
       let currentMaterial = MaterialManager.getMaterial(mesh.materialName);
-      currentMaterial.useMaterial(gl);
+      currentMaterial.use(gl, projectionMatrix, modelViewMatrix);
+
+
+
+      // TELL THE SHADER PROGRAM THE VALUES FOR EACH VERTEX ATTRIBUTE
       const shaderProgram = currentMaterial.getShaderProgram();
-      shaderProgram.use(gl);
-      shaderProgram.setProjectionMatrix(gl, projectionMatrix);
-      shaderProgram.setModelViewMatrix(gl, modelViewMatrix);
 
-      shaderProgram.setUniformValue(gl, "uSampler", 0);
-
-      // Make the vertex buffer the source of the Vertex Position Attribute
+      // Position data
       var vertexPositionAttribute = gl.getAttribLocation(shaderProgram.getWebGLProgram(), 'aVertexPosition');
       gl.enableVertexAttribArray(vertexPositionAttribute);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
       gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 
-
+      // Color data
       var colorAttribute = gl.getAttribLocation(shaderProgram.getWebGLProgram(), 'aVertexColor');
       gl.enableVertexAttribArray(colorAttribute);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexColorBuffer);
       gl.vertexAttribPointer(colorAttribute, 4, gl.FLOAT, false, 0, 0);
 
-
+      // Texture Coord. data
       var textureCoordsAttribute = gl.getAttribLocation(shaderProgram.getWebGLProgram(), 'aVertexTextureCoords');
-      gl.enableVertexAttribArray(textureCoordsAttribute);
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
-      gl.vertexAttribPointer(textureCoordsAttribute, 2, gl.FLOAT, false, 0, 0);
+      if (textureCoordsAttribute != -1) {
+        gl.enableVertexAttribArray(textureCoordsAttribute);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
+        gl.vertexAttribPointer(textureCoordsAttribute, 2, gl.FLOAT, false, 0, 0);
+      }
 
-      // Draw this material mesh
+
+
+      // DRAW THE MESH
       let totalMeshVertices = mesh.endIndex - mesh.startIndex + 1;
       gl.drawArrays(gl.TRIANGLES, mesh.startIndex, totalMeshVertices);
     });
