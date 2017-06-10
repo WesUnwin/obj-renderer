@@ -1,4 +1,3 @@
-const Shaders = require('../src/shaders.js');
 const Scene = require('../src/Scene.js');
 const sobj = require('raw-loader!../data/unitcube.obj');
 const ImageManager = require('../src/graphics/ImageManager.js');
