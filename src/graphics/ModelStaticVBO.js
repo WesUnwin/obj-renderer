@@ -59,6 +59,7 @@ class ModelStaticVBO {
     let vertexPositions = [];
     let vertexTextureCoords = [];
     let vertexNormals = [];
+    const vertexColors = [];
 
     let meshes = []; // Array of objects, 1 for each material { startIndex, endIndex }
 
@@ -69,6 +70,7 @@ class ModelStaticVBO {
     modelMaterials.forEach((materialName) => {
       const mesh = { materialName: materialName, startIndex: index};
 
+      let currentMaterial = MaterialManager.getMaterial(materialName);
       const polygons = this.model.getPolygonsByMaterial(materialName);
 
       polygons.forEach((polygon) => {
@@ -77,6 +79,11 @@ class ModelStaticVBO {
           vertexPositions.push(vertexCoords.x);
           vertexPositions.push(vertexCoords.y);
           vertexPositions.push(vertexCoords.z);
+
+          vertexColors.push(currentMaterial.red);
+          vertexColors.push(currentMaterial.green);
+          vertexColors.push(currentMaterial.blue);
+          vertexColors.push(currentMaterial.alpha);
 
           if (!vertex.textureCoordsIndex) {
             vertexTextureCoords.push(0);
@@ -112,15 +119,9 @@ class ModelStaticVBO {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositions), gl.STATIC_DRAW);
 
 
-    var vertexColor = [
-      1.0, 0.0, 0.0, 1.0,
-      0.0, 1.0, 0.0, 1.0,
-      0.0, 0.0, 1.0, 1.0
-    ];
-
     this.vertexColorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexColorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexColor), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexColors), gl.STATIC_DRAW);
 
 
     // load Texture Coords into a Buffer Object

@@ -2,10 +2,15 @@ class Material {
 
   constructor(name) {
     this.name = name;
-    this.red = 255;
-    this.green = 255;
-    this.blue = 255;
+    this.setColor(1,0,0);
     this.texture = null;
+  }
+
+  setColor(red, green, blue, alpha = 1.0) {
+    this.red = red;
+    this.green = green;
+    this.blue = blue;
+    this.alpha = alpha; 
   }
 
   setTexture(texture) {

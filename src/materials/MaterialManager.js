@@ -20,9 +20,14 @@ module.exports = {
 		_materials.push(texturedMaterial);
   },
 
+  getDefaultMaterial: function() {
+  	return this.getMaterial();
+  },
+
   getMaterial: function(materialName) {
+  	const matName = materialName || '';
   	return _materials.find(mat => {
-  		return mat.name == materialName;
+  		return mat.name == matName;
   	});
   }
 
