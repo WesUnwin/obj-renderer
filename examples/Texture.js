@@ -29,14 +29,14 @@ window.helloWorld = function() {
     // CREATE A MODEL (Containing just a single, textured triangle)
     let m = new Model();
     m.vertices = [
-     { x: 0.0, y: 0.5, z: 0.0 },
+     { x: -0.5, y: 0.5, z: 0.0 },
      { x: -0.5, y: -0.5, z: 0.0 },
      { x: 0.5, y: -0.5, z: 0.0 }
     ];
 
-    m.addTextureCoords(1,0,0);
-    m.addTextureCoords(0,1,0);
+    m.addTextureCoords(0,1,0); // U = 0, V = 1  (upper left of texture image)
     m.addTextureCoords(1,1,0);
+    m.addTextureCoords(0,1,0);
 
     let triangle = new Polygon('textured');
     triangle.addVertex(1, 0, 0);
