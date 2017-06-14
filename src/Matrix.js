@@ -17,6 +17,11 @@ class Matrix {
                    0, 0, 0, 1];
   }
 
+  clone() {
+    const valuesClone = this.values.slice(0)
+    return new Matrix(valuesClone);
+  }
+
   tranform(vector) {
     var m = this.values;
     var v = vector;
@@ -30,7 +35,7 @@ class Matrix {
   multiply(matrix) {
     var result = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0];
     var a = this.values;
-    var b = matrix;
+    var b = matrix.values;
     var s1, s2, s3, s4;
     for(var c = 0; c < 4; c++) // column in result matrix
       for(var r = 0; r < 4; r++) { // row in result matrix
@@ -41,6 +46,12 @@ class Matrix {
         result[c + (r*4)] = s1 + s2 + s3 + s4;
       }
     this.values = result;
+  }
+
+  setTranslation(x,y,z) {
+    this.values[12] = x;
+    this.values[13] = y;
+    this.values[14] = z;
   }
 
   translate(x,y,z) {

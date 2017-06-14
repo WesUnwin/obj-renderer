@@ -6,11 +6,20 @@ class StaticObject {
 
   constructor(model) {
 		this.modelStaticVBO = new ModelStaticVBO(model);
-	  this._matrix = new Matrix();
+	  this.transform = new Matrix();
+  }
+
+  setPosition(x,y,z) {
+  	this.transform.setTranslation(x,y,z);
   }
 
   render(gl, projectionMatrix, modelViewMatrix) {
-  	this.modelStaticVBO.render(gl, projectionMatrix, modelViewMatrix);
+  	console.log(modelViewMatrix.toString());
+  	const mvMatrix = modelViewMatrix.clone();
+
+  	mvMatrix.multiply(this.transform);
+  	  	console.log(mvMatrix.toString());
+  	this.modelStaticVBO.render(gl, projectionMatrix, mvMatrix);
   }
 
 }
