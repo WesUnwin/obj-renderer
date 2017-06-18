@@ -1,3 +1,3 @@
 
 // Load and run the example application:
-const application = require('../examples/Transforms.js');
+const application = require('../examples/RotatingCube.js');
