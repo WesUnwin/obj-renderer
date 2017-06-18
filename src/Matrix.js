@@ -74,7 +74,7 @@ class Matrix {
     var sy = s * y;
     var sx = s * x;
 
-    var m = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0];
+    let m = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0];
     m[0] = tx * x + c;
     m[1] = tx * y + sz;
     m[2] = tx * z - sy;
@@ -95,7 +95,7 @@ class Matrix {
     m[14] = 0;
     m[15] = 1; 
 
-    this.multiply(m);
+    this.multiply(new Matrix(m));
   }
 
   toString() {

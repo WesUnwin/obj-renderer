@@ -20,6 +20,15 @@ module.exports = {
 		_materials.push(texturedMaterial);
   },
 
+  createMaterial: function(name, red, green, blue) {
+    if (_materials.indexOf(name) != -1) {
+      throw new Error('Material with name ' + name + ' already exists');
+    }
+    const mat = new Material(name);
+    mat.setColor(red, green, blue);
+    _materials.push(mat);
+  },
+
   getDefaultMaterial: function() {
   	return this.getMaterial();
   },

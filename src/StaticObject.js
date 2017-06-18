@@ -7,19 +7,28 @@ class StaticObject {
   constructor(model) {
 		this.modelStaticVBO = new ModelStaticVBO(model);
 	  this.transform = new Matrix();
+    this.subObjects = [];
   }
 
   setPosition(x,y,z) {
   	this.transform.setTranslation(x,y,z);
   }
 
-  render(gl, projectionMatrix, modelViewMatrix) {
-  	console.log(modelViewMatrix.toString());
-  	const mvMatrix = modelViewMatrix.clone();
+  rotate(degrees, x, y, z) {
+    this.transform.rotate(degrees, x, y, z);
+  }
 
+  addObject(object) {
+    this.subObjects.push(object);
+  }
+
+  render(gl, projectionMatrix, modelViewMatrix) {
+  	const mvMatrix = modelViewMatrix.clone();
   	mvMatrix.multiply(this.transform);
-  	  	console.log(mvMatrix.toString());
   	this.modelStaticVBO.render(gl, projectionMatrix, mvMatrix);
+    this.subObjects.forEach(subObject => {
+      subObject.render(gl, projectionMatrix, mvMatrix);
+    });
   }
 
 }

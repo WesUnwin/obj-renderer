@@ -26,21 +26,29 @@ class Scene {
 
   render() {
     console.log('RENDER');
+    const gl = this.gl;
 
-    this.gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
-    this.gl.clearDepth(1.0);                 // Clear everything
-    this.gl.enable(this.gl.DEPTH_TEST);           // Enable depth testing
-    this.gl.depthFunc(this.gl.LEQUAL);            // Near things obscure far things
+    // Face Culling
+    // gl.enable(gl.CULL_FACE);   // Turn on face-culling
+    // gl.frontFace(gl.CCW);      // Counter clockwise (CCW) vertex winding means your facing the front of a polygon
+    // gl.cullFace(gl.BACK);      // Cull (don't draw) polygons when their back is facing the camera
 
+    // Depth Testing
+    gl.enable(gl.DEPTH_TEST);  // Enable depth testing
+    gl.depthFunc(gl.LESS);     // Draw pixels with a Z value less than the z value of the pixel already drawn at the same location on the frame buffer
+    gl.depthMask(true);        // allow writing to Z-buffer
 
+    // Set values to clear framebuffer bits to:
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
+    gl.clearDepth(1.0);                 // Clear everything
 
+    // Clear the framebuffer
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.squareVerticesBuffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVerticesBuffer);
 
     for(var i = 0; i < this.objects.length; i++) {
-      this.objects[i].render(this.gl, this.projectionMatrix, this.modelViewMatrix);
+      this.objects[i].render(gl, this.projectionMatrix, this.modelViewMatrix);
     }
   }
 
