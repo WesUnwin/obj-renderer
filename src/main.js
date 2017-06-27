@@ -1,3 +1,3 @@
 
 // Load and run the example application:
-const application = require('../examples/ObjFiles/ObjFiles.js');
+const application = require('../examples/ExamplePicker.js');

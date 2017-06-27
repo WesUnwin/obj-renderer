@@ -7,56 +7,59 @@ const StaticObject = require('StaticObject.js');
 const MaterialManager = require('materials/MaterialManager.js');
 const objFileContents = require('raw-loader!./Cube.obj');
 
-window.helloWorld = function() {
-  console.clear();
-  console.log('Application started');
 
-  const onImagesLoaded = () => {
-    const canvas = document.getElementById('mycanvas');
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-    if (!gl) alert('Unable to obtain WebGL/Experiment WebGL context');
+module.exports = {
 
-    gl.viewportWidth = 640;
-    gl.viewportHeight = 480;
-    gl.viewport(0, 0, canvas.width, canvas.height);
+  start: function() {
+    console.clear();
+    console.log('Application started');
 
-    MaterialManager.loadMaterialFile(gl);
+    const onImagesLoaded = () => {
+      const canvas = document.getElementById('mycanvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      if (!gl) alert('Unable to obtain WebGL/Experiment WebGL context');
 
-    // Load Materials
-    MaterialManager.createMaterial('front', 1, 0, 0);         // red
-    MaterialManager.createMaterial('right', 0, 1, 0);         // green
-    MaterialManager.createMaterial('back',  0, 0, 1);         // blue
-    MaterialManager.createMaterial('left',  1, 1, 0);         // yellow
-    MaterialManager.createMaterial('top',  1, 1, 1);          // white
-    MaterialManager.createMaterial('bottom',  0.5, 0.5, 0.5); // grey
+      gl.viewportWidth = 640;
+      gl.viewportHeight = 480;
+      gl.viewport(0, 0, canvas.width, canvas.height);
 
-    // CREATE A SCENE
-    const scene = new Scene(gl);
+      MaterialManager.loadMaterialFile(gl);
 
-    const objFile = new OBJFile(objFileContents);
-    const { models, materialLibs } = objFile.parse();
+      // Load Materials
+      MaterialManager.createMaterial('front', 1, 0, 0);         // red
+      MaterialManager.createMaterial('right', 0, 1, 0);         // green
+      MaterialManager.createMaterial('back',  0, 0, 1);         // blue
+      MaterialManager.createMaterial('left',  1, 1, 0);         // yellow
+      MaterialManager.createMaterial('top',  1, 1, 1);          // white
+      MaterialManager.createMaterial('bottom',  0.5, 0.5, 0.5); // grey
 
-    const cube = models[0];
+      // CREATE A SCENE
+      const scene = new Scene(gl);
 
-    // Create a static game object (that uses the model)
-    const gameObject = new StaticObject(cube);
-    gameObject.setPosition(0,0,0);
+      const objFile = new OBJFile(objFileContents);
+      const { models, materialLibs } = objFile.parse();
 
-    scene.addObject(gameObject);
-    gameObject.rotate(45, 1, 0, 0);
+      const cube = models[0];
 
-    setInterval(() => {
-      gameObject.rotate(1, 0,1,0);
-      scene.render();
-    }, 16);
-    
-  };
+      // Create a static game object (that uses the model)
+      const gameObject = new StaticObject(cube);
+      gameObject.setPosition(0,0,0);
 
-  const onImagesLoadFailed = () => {
-    console.log("IMAGE LOADING FAILED");
-  };
+      scene.addObject(gameObject);
+      gameObject.rotate(45, 1, 0, 0);
 
-  ImageManager.loadImages(['brick.png'], onImagesLoaded, onImagesLoadFailed);
-}
+      setInterval(() => {
+        gameObject.rotate(1, 0,1,0);
+        scene.render();
+      }, 16);
+      
+    };
 
-window.helloWorld();
+    const onImagesLoadFailed = () => {
+      console.log("IMAGE LOADING FAILED");
+    };
+
+    ImageManager.loadImages(['brick.png'], onImagesLoaded, onImagesLoadFailed);
+  }
+
+};

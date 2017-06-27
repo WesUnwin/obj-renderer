@@ -1,17 +1,19 @@
-const Scene = require('../src/Scene.js');
-const sobj = require('raw-loader!../data/unitcube.obj');
-const ImageManager = require('../src/graphics/ImageManager.js');
-const Model = require('../src/modeling/Model.js');
-const Polygon = require('../src/modeling/polygon.js');
-const StaticObject = require('../src/StaticObject.js');
-const MaterialManager = require('../src/materials/MaterialManager.js');
+const Scene = require('../../src/Scene.js');
+const sobj = require('raw-loader!../../data/unitcube.obj');
+const ImageManager = require('../../src/graphics/ImageManager.js');
+const Model = require('../../src/modeling/Model.js');
+const Polygon = require('../../src/modeling/polygon.js');
+const StaticObject = require('../../src/StaticObject.js');
+const MaterialManager = require('../../src/materials/MaterialManager.js');
 
 
-window.helloWorld = function() {
-  console.clear();
-  console.log('Application started');
+module.exports = {
 
-  const onImagesLoaded = () => {
+  start: function() {
+    console.clear();
+    console.log('Application started');
+
+    const onImagesLoaded = () => {
     const canvas = document.getElementById('mycanvas');
     const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
     if (!gl) alert('Unable to obtain WebGL/Experiment WebGL context');
@@ -118,14 +120,14 @@ window.helloWorld = function() {
       gameObject.rotate(1, 0,1,0);
       scene.render();
     }, 16);
-    
-  };
 
-  const onImagesLoadFailed = () => {
+    };
+
+    const onImagesLoadFailed = () => {
     console.log("IMAGE LOADING FAILED");
-  };
+    };
 
-  ImageManager.loadImages(['brick.png'], onImagesLoaded, onImagesLoadFailed);
-}
+    ImageManager.loadImages(['brick.png'], onImagesLoaded, onImagesLoadFailed);
+  }
 
-window.helloWorld();
+};
