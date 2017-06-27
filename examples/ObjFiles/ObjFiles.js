@@ -1,11 +1,11 @@
-const Scene = require('../src/Scene.js');
-const sobj = require('raw-loader!../data/unitcube.obj');
-const ImageManager = require('../src/graphics/ImageManager.js');
-const Model = require('../src/modeling/Model.js');
-const Polygon = require('../src/modeling/polygon.js');
-const StaticObject = require('../src/StaticObject.js');
-const MaterialManager = require('../src/materials/MaterialManager.js');
-
+const Scene = require('Scene.js');
+const ImageManager = require('graphics/ImageManager.js');
+const OBJFile = require('modeling/OBJFile.js');
+const Model = require('modeling/Model.js');
+const Polygon = require('modeling/polygon.js');
+const StaticObject = require('StaticObject.js');
+const MaterialManager = require('materials/MaterialManager.js');
+const objFileContents = require('raw-loader!./Cube.obj');
 
 window.helloWorld = function() {
   console.clear();
@@ -20,6 +20,8 @@ window.helloWorld = function() {
     gl.viewportHeight = 480;
     gl.viewport(0, 0, canvas.width, canvas.height);
 
+    MaterialManager.loadMaterialFile(gl);
+
     // Load Materials
     MaterialManager.createMaterial('front', 1, 0, 0);         // red
     MaterialManager.createMaterial('right', 0, 1, 0);         // green
@@ -31,81 +33,10 @@ window.helloWorld = function() {
     // CREATE A SCENE
     const scene = new Scene(gl);
 
-    // CREATE A MODEL (Containing just a single, colored triangle)
-    const cube = new Model();
-    cube.vertices = [
-     { x: -0.5, y: 0.5, z: 0.5 },   // 1 Front, top left
-     { x: -0.5, y: -0.5, z: 0.5 },  // 2 Front, bottom left
-     { x: 0.5, y: -0.5, z: 0.5 },   // 3 Front, bottom right
-     { x: 0.5, y: 0.5, z: 0.5 },    // 4 Front, top right
+    const objFile = new OBJFile(objFileContents);
+    const { models, materialLibs } = objFile.parse();
 
-     { x: -0.5, y: 0.5, z: -0.5 },  // 5 Back, top left
-     { x: -0.5, y: -0.5, z: -0.5 }, // 6 Back, bottom left
-     { x: 0.5, y: -0.5, z: -0.5 },  // 7 Back, bottom right
-     { x: 0.5, y: 0.5, z: -0.5 }    // 8 Back, top right
-    ];
-
-    const front1 = new Polygon('front');
-    front1.addVertex(1, 0, 0);
-    front1.addVertex(2, 0, 0);
-    front1.addVertex(3, 0, 0);
-
-    const front2 = new Polygon('front');
-    front2.addVertex(4, 0, 0);
-    front2.addVertex(1, 0, 0);
-    front2.addVertex(3, 0, 0);
-
-    const leftSide1 = new Polygon('left');
-    leftSide1.addVertex(5, 0, 0);
-    leftSide1.addVertex(6, 0, 0);
-    leftSide1.addVertex(2, 0, 0);
-
-    const leftSide2 = new Polygon('left');
-    leftSide2.addVertex(5, 0, 0);
-    leftSide2.addVertex(2, 0, 0);
-    leftSide2.addVertex(1, 0, 0);
-
-    const rightSide1 = new Polygon('right');
-    rightSide1.addVertex(4, 0, 0);
-    rightSide1.addVertex(3, 0, 0);
-    rightSide1.addVertex(7, 0, 0);
-
-    const rightSide2 = new Polygon('right');
-    rightSide2.addVertex(4, 0, 0);
-    rightSide2.addVertex(7, 0, 0);
-    rightSide2.addVertex(8, 0, 0);
-
-    const back1 = new Polygon('back');
-    back1.addVertex(5, 0, 0);
-    back1.addVertex(6, 0, 0);
-    back1.addVertex(7, 0, 0);
-
-    const back2 = new Polygon('back');
-    back2.addVertex(8, 0, 0);
-    back2.addVertex(5, 0, 0);
-    back2.addVertex(7, 0, 0);
-
-    const top1 = new Polygon('top');
-    top1.addVertex(5, 0, 0);
-    top1.addVertex(1, 0, 0);
-    top1.addVertex(4, 0, 0);
-
-    const top2 = new Polygon('top');
-    top2.addVertex(5, 0, 0);
-    top2.addVertex(4, 0, 0);
-    top2.addVertex(8, 0, 0);
-
-    const bottom1 = new Polygon('bottom');
-    bottom1.addVertex(6, 0, 0);
-    bottom1.addVertex(2, 0, 0);
-    bottom1.addVertex(3, 0, 0);
-
-    const bottom2 = new Polygon('bottom');
-    bottom2.addVertex(6, 0, 0);
-    bottom2.addVertex(3, 0, 0);
-    bottom2.addVertex(7, 0, 0);
-
-    cube.polygons = [front1, front2, rightSide1, rightSide2, back1, back2, leftSide1, leftSide2, top1, top2, bottom1, bottom2];
+    const cube = models[0];
 
     // Create a static game object (that uses the model)
     const gameObject = new StaticObject(cube);

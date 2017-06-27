@@ -10,6 +10,13 @@ module.exports = {
     path: path.resolve(__dirname, 'build'),
     publicPath: '/assets/',
     filename: 'bundle.js'
+  },
+
+  resolve: {
+    root: [
+      path.resolve('./'),
+      path.resolve('./src')
+    ]
   }
 
 };
