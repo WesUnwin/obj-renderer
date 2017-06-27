@@ -56,6 +56,9 @@ module.exports = {
     };
 
     ImageManager.loadImages(['brick.png'], onImagesLoaded, onImagesLoadFailed);
+  },
+
+  stop: function() {
   }
 
 };

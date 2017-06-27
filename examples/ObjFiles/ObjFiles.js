@@ -7,6 +7,7 @@ const StaticObject = require('StaticObject.js');
 const MaterialManager = require('materials/MaterialManager.js');
 const objFileContents = require('raw-loader!./Cube.obj');
 
+let _interval;
 
 module.exports = {
 
@@ -48,7 +49,7 @@ module.exports = {
       scene.addObject(gameObject);
       gameObject.rotate(45, 1, 0, 0);
 
-      setInterval(() => {
+      _interval = setInterval(() => {
         gameObject.rotate(1, 0,1,0);
         scene.render();
       }, 16);
@@ -60,6 +61,10 @@ module.exports = {
     };
 
     ImageManager.loadImages(['brick.png'], onImagesLoaded, onImagesLoadFailed);
+  },
+
+  stop: function() {
+    clearInterval(_interval);
   }
 
 };

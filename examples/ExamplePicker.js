@@ -13,8 +13,36 @@ const examples = {
 
 
 const showExample = (exampleName) => {
-	examples[exampleName].start();
+	if (window.currentExample) window.currentExample.stop();
+	window.currentExample = examples[exampleName];
+	window.currentExample.start();
 };
 
+window.radioClicked = () => {
+  let radios = document.getElementsByName('example');
+	for (var i = 0, length = radios.length; i < length; i++) {
+	    if (radios[i].checked) {
+	        showExample(radios[i].value);
+	        break;
+	    }
+	}
+};
 
-showExample('ObjFiles');
+let html = "";
+html += "<table>";
+html += "  <tr>";
+html += "    <td with='200px'>";
+for (let key in examples) {
+	html += "      <input type='radio' name='example' value='" + key + "' onClick='radioClicked()'>" + key + "</input><br />";
+}
+html += "    </td>";
+html += "    <td>";
+html += "      <canvas id='mycanvas' width='640' height='480'></canvas>";
+html += "    </td>";
+html += "  </tr>";
+html += "</table>";
+
+document.getElementById('examplepicker').innerHTML += html;
+
+
+showExample('HelloWorld');
