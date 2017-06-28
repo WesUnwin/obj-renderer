@@ -33,7 +33,7 @@ html += "<table>";
 html += "  <tr>";
 html += "    <td with='200px'>";
 for (let key in examples) {
-	html += "      <input type='radio' name='example' value='" + key + "' onClick='radioClicked()'>" + key + "</input><br />";
+	html += "      <label><input type='radio' name='example' value='" + key + "' onClick='radioClicked()'/>" + key + "</label><br />";
 }
 html += "    </td>";
 html += "    <td>";

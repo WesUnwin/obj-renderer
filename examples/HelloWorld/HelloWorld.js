@@ -22,8 +22,7 @@ module.exports = {
       gl.viewportHeight = 480;
       gl.viewport(0, 0, canvas.width, canvas.height);
 
-      // Load Materials
-      MaterialManager.loadMaterialFile(gl);
+      MaterialManager.createMaterial(gl, null, 1, 0, 0);
 
       // CREATE A SCENE
       let scene = new Scene(gl);

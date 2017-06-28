@@ -25,12 +25,12 @@ module.exports = {
     gl.viewport(0, 0, canvas.width, canvas.height);
 
     // Load Materials
-    MaterialManager.createMaterial('front', 1, 0, 0);         // red
-    MaterialManager.createMaterial('right', 0, 1, 0);         // green
-    MaterialManager.createMaterial('back',  0, 0, 1);         // blue
-    MaterialManager.createMaterial('left',  1, 1, 0);         // yellow
-    MaterialManager.createMaterial('top',  1, 1, 1);          // white
-    MaterialManager.createMaterial('bottom',  0.5, 0.5, 0.5); // grey
+    MaterialManager.createMaterial(gl, 'front', 1, 0, 0);         // red
+    MaterialManager.createMaterial(gl, 'right', 0, 1, 0);         // green
+    MaterialManager.createMaterial(gl, 'back2',  0, 0, 1);         // blue
+    MaterialManager.createMaterial(gl, 'left',  1, 1, 0);         // yellow
+    MaterialManager.createMaterial(gl, 'top',  1, 1, 1);          // white
+    MaterialManager.createMaterial(gl, 'bottom',  0.5, 0.5, 0.5); // grey
 
     // CREATE A SCENE
     const scene = new Scene(gl);
@@ -79,12 +79,12 @@ module.exports = {
     rightSide2.addVertex(7, 0, 0);
     rightSide2.addVertex(8, 0, 0);
 
-    const back1 = new Polygon('back');
+    const back1 = new Polygon('back2');
     back1.addVertex(5, 0, 0);
     back1.addVertex(6, 0, 0);
     back1.addVertex(7, 0, 0);
 
-    const back2 = new Polygon('back');
+    const back2 = new Polygon('back2');
     back2.addVertex(8, 0, 0);
     back2.addVertex(5, 0, 0);
     back2.addVertex(7, 0, 0);

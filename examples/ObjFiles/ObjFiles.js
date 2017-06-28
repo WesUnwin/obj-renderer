@@ -24,15 +24,13 @@ module.exports = {
       gl.viewportHeight = 480;
       gl.viewport(0, 0, canvas.width, canvas.height);
 
-      MaterialManager.loadMaterialFile(gl);
-
       // Load Materials
-      MaterialManager.createMaterial('front', 1, 0, 0);         // red
-      MaterialManager.createMaterial('right', 0, 1, 0);         // green
-      MaterialManager.createMaterial('back',  0, 0, 1);         // blue
-      MaterialManager.createMaterial('left',  1, 1, 0);         // yellow
-      MaterialManager.createMaterial('top',  1, 1, 1);          // white
-      MaterialManager.createMaterial('bottom',  0.5, 0.5, 0.5); // grey
+      MaterialManager.createMaterial(gl, 'front', 1, 0, 0);         // red
+      MaterialManager.createMaterial(gl, 'right', 0, 1, 0);         // green
+      MaterialManager.createMaterial(gl, 'back',  0, 0, 0, ImageManager.getImage('brick.png'));         // blue
+      MaterialManager.createMaterial(gl, 'left',  1, 1, 0);         // yellow
+      MaterialManager.createMaterial(gl, 'top',  1, 1, 1);          // white
+      MaterialManager.createMaterial(gl, 'bottom',  0.5, 0.5, 0.5); // grey
 
       // CREATE A SCENE
       const scene = new Scene(gl);
@@ -47,7 +45,6 @@ module.exports = {
       gameObject.setPosition(0,0,0);
 
       scene.addObject(gameObject);
-      gameObject.rotate(45, 1, 0, 0);
 
       _interval = setInterval(() => {
         gameObject.rotate(1, 0,1,0);

@@ -1,7 +1,7 @@
 class Material {
 
   constructor(name) {
-    this.name = name;
+    this.name = name || '';
     this.setColor(1,0,0);
     this.texture = null;
   }

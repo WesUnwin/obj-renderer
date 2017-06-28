@@ -7,25 +7,15 @@ let _materials = [];
 
 module.exports = {
 
-  loadMaterialFile: function(gl) {
-  	// TODO replace this temp function implementation with real, permanent logic
-		const defaultMaterial = new Material('');
-		_materials.push(defaultMaterial);
-
-		// TEMP ADD TEXTURE MATERIAL
-		const image = ImageManager.getImage('brick.png');
-		const texturedMaterial = new Material('textured');
-		const texture = new Texture(gl, image);
-		texturedMaterial.setTexture(texture);
-		_materials.push(texturedMaterial);
-  },
-
-  createMaterial: function(name, red, green, blue) {
+  createMaterial: function(gl, name, red, green, blue, textureImage) {
     if (_materials.indexOf(name) != -1) {
       throw new Error('Material with name ' + name + ' already exists');
     }
     const mat = new Material(name);
     mat.setColor(red, green, blue);
+    if (textureImage) {
+      mat.setTexture(new Texture(gl, textureImage));
+    }
     _materials.push(mat);
   },
 

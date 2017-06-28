@@ -21,8 +21,7 @@ module.exports = {
       gl.viewportHeight = 480;
       gl.viewport(0, 0, canvas.width, canvas.height);
 
-      // Load Materials
-      MaterialManager.loadMaterialFile(gl);
+      MaterialManager.createMaterial(gl, 'textured', 0,0,0, ImageManager.getImage('brick.png'));
 
       // CREATE A SCENE
       let scene = new Scene(gl);
