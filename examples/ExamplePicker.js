@@ -1,6 +1,7 @@
 const HelloWorld = require('./HelloWorld/HelloWorld.js');
 const TexturedSquare = require('./TexturedSquare/TexturedSquare.js');
 const RotatingCube = require('./RotatingCube/RotatingCube.js');
+const Perspective = require('./Perspective/Perspective.js');
 const ObjFiles = require('./ObjFiles/ObjFiles.js');
 
 
@@ -8,6 +9,7 @@ const examples = {
 	'HelloWorld': HelloWorld,
 	'TexturedSquare': TexturedSquare,
 	'RotatingCube': RotatingCube,
+	'Perspective': Perspective,
 	'ObjFiles': ObjFiles
 };
 

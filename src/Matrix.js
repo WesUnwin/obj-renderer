@@ -17,6 +17,23 @@ class Matrix {
                    0, 0, 0, 1];
   }
 
+  perspective(fieldOfViewInRadions = 1.570796, aspectRatio = 1.3333, near = 1, far = 50) {
+    // Sets the values of this matrix to a projection matrix
+    // that will satisfy the given parameters:
+    //   fieldOfViewInRadions - the angle from left to right edge of the camera (eg. PI / 2)
+    //   aspectRatio          - typically viewport width / viewport height
+    //   near                 - near clipping plane
+    //   far                  - far clipping plan
+    const f = 1.0 / Math.tan(fieldOfViewInRadions / 2);
+    const rangeInv = 1 / (near - far);
+    this.values = [
+      f / aspectRatio, 0, 0, 0,
+      0, f, 0, 0,
+      0, 0, (near + far) * rangeInv, -1,
+      0, 0, near * far * rangeInv * 2, 0
+    ];
+  }
+
   clone() {
     const valuesClone = this.values.slice(0)
     return new Matrix(valuesClone);

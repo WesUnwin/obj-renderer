@@ -24,6 +24,14 @@ class Scene {
     this.objects.push(object);
   }
 
+  userPerspectiveView(fieldOfViewInRadians = 1.570796, aspectRatio = 1.3333, near = 1, far = 50) {
+    this.projectionMatrix.perspective(fieldOfViewInRadians, aspectRatio, near, far);
+  }
+
+  useOrthogonalView() {
+    this.projectionMatrix.loadIdentity();
+  }
+
   render() {
     console.log('RENDER');
     const gl = this.gl;
