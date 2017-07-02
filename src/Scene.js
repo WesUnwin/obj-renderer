@@ -5,6 +5,7 @@ const DefaultFragmentShaderSource = require('raw-loader!../data/shaders/fragment
 const TexturedVertexShaderSource = require('raw-loader!../data/shaders/TexturedVertexShader.shader');
 const TexturedFragmentShaderSource = require('raw-loader!../data/shaders/TexturedFragmentShader.shader');
 
+// happy 150th birthday Canada
 
 class Scene {
 
