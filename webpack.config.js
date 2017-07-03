@@ -13,7 +13,7 @@ module.exports = {
   },
 
   resolve: {
-    modules: [ __dirname, 'node_modules', './', './src']
+    modules: ['node_modules', './', './src']
   }
 
 };
