@@ -13,10 +13,7 @@ module.exports = {
   },
 
   resolve: {
-    root: [
-      path.resolve('./'),
-      path.resolve('./src')
-    ]
+    modules: [ __dirname, 'node_modules', './', './src']
   }
 
 };
