@@ -3,14 +3,15 @@ const RotatingCube = require('./2_RotatingCube/RotatingCube.js');
 const Perspective = require('./3_Perspective/Perspective.js');
 const TexturedSquare = require('./4_TexturedSquare/TexturedSquare.js');
 const ObjFiles = require('./5_ObjFiles/ObjFiles.js');
-
+const SubObjects = require('./6_SubObjects/SubObjects.js');
 
 const examples = {
 	'HelloWorld': HelloWorld,
 	'TexturedSquare': TexturedSquare,
 	'RotatingCube': RotatingCube,
 	'Perspective': Perspective,
-	'ObjFiles': ObjFiles
+	'ObjFiles': ObjFiles,
+	'SubObjects': SubObjects
 };
 
 
