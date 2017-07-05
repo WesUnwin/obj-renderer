@@ -1,8 +1,8 @@
-const HelloWorld = require('./HelloWorld/HelloWorld.js');
-const TexturedSquare = require('./TexturedSquare/TexturedSquare.js');
-const RotatingCube = require('./RotatingCube/RotatingCube.js');
-const Perspective = require('./Perspective/Perspective.js');
-const ObjFiles = require('./ObjFiles/ObjFiles.js');
+const HelloWorld = require('./1_HelloWorld/HelloWorld.js');
+const RotatingCube = require('./2_RotatingCube/RotatingCube.js');
+const Perspective = require('./3_Perspective/Perspective.js');
+const TexturedSquare = require('./4_TexturedSquare/TexturedSquare.js');
+const ObjFiles = require('./5_ObjFiles/ObjFiles.js');
 
 
 const examples = {
