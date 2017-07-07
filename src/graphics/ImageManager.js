@@ -9,12 +9,12 @@ class ImageManager {
     imagePaths.forEach((imagePath) => {
       this.imageStatuses[imagePath] = "loading";
       let img = new Image();
-      let self = this;
+
       img.onload = () => { 
-        self._onImageLoaded(img);
+        this._onImageLoaded(img);
       };
       img.onerror = () => {
-        self._onImageLoadFailed(img);
+        this._onImageLoadFailed(img);
       };
       img.src =  imagePath;
 
