@@ -2,50 +2,22 @@ class ImageManager {
 
   static loadImages(imagePaths, onLoadComplete, onFailure) {
     this.images = [];
-    this.imageStatuses = {};
-    this.successCallback = onLoadComplete;
-    this.errorCallback = onFailure;
 
-    imagePaths.forEach((imagePath) => {
-      this.imageStatuses[imagePath] = "loading";
-      let img = new Image();
-
-      img.onload = () => { 
-        this._onImageLoaded(img);
-      };
-      img.onerror = () => {
-        this._onImageLoadFailed(img);
-      };
-      img.src =  imagePath;
-
-      this.images.push(img);
+    const promises = imagePaths.map(imagePath => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onerror = () => reject(img);
+        img.onload = () => resolve(img);
+        img.src = imagePath;
+      });
     });
-  }
 
-  static _onImageLoaded(img) {
-    this.imageStatuses[img.src] = 'loaded';
-    this.checkComplete();
-  }
+    const onImagesSuccessfullyLoaded = (images) => {
+      this.images = images;
+      onLoadComplete();
+    };
 
-  static _onImageLoadFailed(img) {
-    console.log('IMAGE LOAD FAILED: ' + img.src);
-    this.imageStatuses[img.src] = 'failed';
-    this.checkComplete();
-  }
-
-  static checkComplete() {
-    let incomplete = this.images.find((image) => {
-      return this.imageStatuses[image.src] == 'loading';
-    });
-    if (incomplete) return;
-    let failed = this.images.find((image) => {
-      return this.imageStatuses[image.src] == 'failed';
-    });
-    if (failed) {
-      this.errorCallback();
-    } else {
-      this.successCallback();
-    }
+    Promise.all(promises).then(onImagesSuccessfullyLoaded, onFailure);
   }
 
   static getImage(filePath) {
