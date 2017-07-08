@@ -78,6 +78,9 @@ class Matrix {
   }
 
   rotate(degrees, x, y, z) {
+    // imagine your at the origin and facing the direction of a vector from the origin
+    // to point (x,y,z). This will rotate everything clockwise around this vector by
+    // the specified number of degrees.
     var a = degrees * 3.141592 / 180.0; // convert to radians
     var s = Math.sin(a);
     var c = Math.cos(a);
