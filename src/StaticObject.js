@@ -69,9 +69,9 @@ class StaticObject {
   }
 
   render(gl, projectionMatrix, modelViewMatrix) {
-  	const mvMatrix = modelViewMatrix.clone();
-  	mvMatrix.multiply(this.transform);
-  	this.modelStaticVBO.render(gl, projectionMatrix, mvMatrix);
+    const mvMatrix = this.transform.clone();
+    mvMatrix.multiply(modelViewMatrix);
+    this.modelStaticVBO.render(gl, projectionMatrix, mvMatrix);
     this.subObjects.forEach(subObject => {
       subObject.render(gl, projectionMatrix, mvMatrix);
     });

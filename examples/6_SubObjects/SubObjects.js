@@ -41,6 +41,11 @@ module.exports = {
       const box = new StaticObject(boxModel);
       box.setPosition(0, -2, -10);
 
+      const miniBox = new StaticObject(boxModel);
+      miniBox.setScale(0.5, 0.5, 0.5);
+      miniBox.setPosition(3, 0, 0);
+      box.addObject(miniBox);
+
       scene.addObject(box);
 
       let pitch = 0;
@@ -49,6 +54,7 @@ module.exports = {
         if (pitch >= 360) pitch = 0;
 
         box.setPitch(pitch);
+        miniBox.setPitch(pitch);
 
         scene.render();
       }, 15);
