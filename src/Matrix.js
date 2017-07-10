@@ -50,9 +50,13 @@ class Matrix {
   }
 
   multiply(matrix) {
+    this._multiply(matrix.values);
+  }
+
+  _multiply(matrixValues) {
     var result = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0];
     var a = this.values;
-    var b = matrix.values;
+    var b = matrixValues;
     var s1, s2, s3, s4;
     for(var c = 0; c < 4; c++) // column in result matrix
       for(var r = 0; r < 4; r++) { // row in result matrix
@@ -63,6 +67,16 @@ class Matrix {
         result[c + (r*4)] = s1 + s2 + s3 + s4;
       }
     this.values = result;
+  }
+
+  scale(sx, sy, sz) {
+    const scaleMatrixValues = [
+      sx,  0,  0,  0,
+      0,  sy,  0,  0,
+      0,   0, sz,  0,
+      0,   0,  0,  1
+    ];
+    this._multiply(scaleMatrixValues);
   }
 
   setTranslation(x,y,z) {

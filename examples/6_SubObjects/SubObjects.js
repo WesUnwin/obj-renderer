@@ -30,7 +30,7 @@ module.exports = {
       MaterialManager.createMaterial(gl, 'crate', 0, 0, 0, ImageManager.getImage('Crate.png'));
 
       const scene = new Scene(gl);
-      scene.userPerspectiveView();
+      scene.usePerspectiveView();
 
       const groundModel = new OBJFile(groundObj).parse().models[0];
       const ground = new StaticObject(groundModel);
@@ -39,15 +39,19 @@ module.exports = {
 
       const boxModel = new OBJFile(boxObj).parse().models[0];
       const box = new StaticObject(boxModel);
+      box.setPosition(0, -2, -10);
 
       scene.addObject(box);
 
+      let pitch = 0;
       _interval = setInterval(() => {
-        box.setPosition(0,0,0);
-        box.rotate(1, 1,1,0); // causing precision leak to due successive ope
-              box.setPosition(0, -2, -8);
+        pitch += 1;
+        if (pitch >= 360) pitch = 0;
+
+        box.setPitch(pitch);
+
         scene.render();
-      }, 16);
+      }, 15);
     };
 
     const onImagesLoadFailed = () => {
