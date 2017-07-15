@@ -24,6 +24,12 @@ class Scene {
     this.objects.push(object);
   }
 
+  removeObject(object) {
+    this.objects = this.objects.filter(obj => {
+      return obj != object;
+    });
+  }
+
   usePerspectiveView(fieldOfViewInRadians = 1.570796, aspectRatio = 1.3333, near = 1, far = 50) {
     this.projectionMatrix.perspective(fieldOfViewInRadians, aspectRatio, near, far);
   }
@@ -32,14 +38,20 @@ class Scene {
     this.projectionMatrix.loadIdentity();
   }
 
+  enableBackFaceCulling(cullBackFaces = true) {
+    const gl = this.gl;
+    if (cullBackFaces) {
+      gl.enable(gl.CULL_FACE);   // Turn on face-culling
+      gl.frontFace(gl.CCW);      // Counter clockwise (CCW) vertex winding means your facing the front of a polygon
+      gl.cullFace(gl.BACK);      // Cull (don't draw) polygons when their back is facing the camera
+    } else {
+      gl.disable(gl.CULL_FACE);
+    }
+  }
+
   render() {
     console.log('RENDER');
     const gl = this.gl;
-
-    // Face Culling
-    // gl.enable(gl.CULL_FACE);   // Turn on face-culling
-    // gl.frontFace(gl.CCW);      // Counter clockwise (CCW) vertex winding means your facing the front of a polygon
-    // gl.cullFace(gl.BACK);      // Cull (don't draw) polygons when their back is facing the camera
 
     // Depth Testing
     gl.enable(gl.DEPTH_TEST);  // Enable depth testing
