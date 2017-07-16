@@ -34,7 +34,7 @@ module.exports = {
 
     // CREATE A SCENE
     const scene = new Scene(gl);
-    scene.userPerspectiveView();
+    scene.camera.usePerspectiveView();
 
     // CREATE A MODEL (Containing just a single, colored triangle)
     const cube = new Model();

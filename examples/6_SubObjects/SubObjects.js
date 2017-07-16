@@ -30,7 +30,7 @@ module.exports = {
       MaterialManager.createMaterial(gl, 'crate', 0, 0, 0, ImageManager.getImage('Crate.png'));
 
       const scene = new Scene(gl);
-      scene.usePerspectiveView();
+      scene.camera.usePerspectiveView();
 
       const groundModel = new OBJFile(groundObj).parse().models[0];
       const ground = new StaticObject(groundModel);
