@@ -21,19 +21,13 @@ module.exports = {
 
     const onImagesLoaded = () => {
       const canvas = document.getElementById('mycanvas');
-      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-      if (!gl) alert('Unable to obtain WebGL/Experiment WebGL context');
 
-      gl.viewportWidth = 640;
-      gl.viewportHeight = 480;
-      gl.viewport(0, 0, canvas.width, canvas.height);
-
-      MaterialManager.createMaterial(gl, 'ground',  0, 0, 0, ImageManager.getImage('grass.png'));
-
-      MaterialManager.createMaterial(gl, 'crate', 0, 0, 0, ImageManager.getImage('Crate.png'));
-
-      const scene = new Scene(gl);
+      const scene = new Scene(canvas);
       scene.camera.usePerspectiveView();
+
+      MaterialManager.createMaterial(scene.gl, 'ground',  0, 0, 0, ImageManager.getImage('grass.png'));
+
+      MaterialManager.createMaterial(scene.gl, 'crate', 0, 0, 0, ImageManager.getImage('Crate.png'));
 
       const groundModel = new OBJFile(groundObj).parse().models[0];
       const ground = new StaticObject(groundModel);

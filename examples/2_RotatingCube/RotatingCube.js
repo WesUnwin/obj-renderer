@@ -17,23 +17,17 @@ module.exports = {
 
     const onImagesLoaded = () => {
     const canvas = document.getElementById('mycanvas');
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-    if (!gl) alert('Unable to obtain WebGL/Experiment WebGL context');
-
-    gl.viewportWidth = 640;
-    gl.viewportHeight = 480;
-    gl.viewport(0, 0, canvas.width, canvas.height);
-
-    // Load Materials
-    MaterialManager.createMaterial(gl, 'front', 1, 0, 0);         // red
-    MaterialManager.createMaterial(gl, 'right', 0, 1, 0);         // green
-    MaterialManager.createMaterial(gl, 'back2',  0, 0, 1);         // blue
-    MaterialManager.createMaterial(gl, 'left',  1, 1, 0);         // yellow
-    MaterialManager.createMaterial(gl, 'top',  1, 1, 1);          // white
-    MaterialManager.createMaterial(gl, 'bottom',  0.5, 0.5, 0.5); // grey
 
     // CREATE A SCENE
-    const scene = new Scene(gl);
+    const scene = new Scene(canvas);
+
+    // Load Materials
+    MaterialManager.createMaterial(scene.gl, 'front', 1, 0, 0);         // red
+    MaterialManager.createMaterial(scene.gl, 'right', 0, 1, 0);         // green
+    MaterialManager.createMaterial(scene.gl, 'back2',  0, 0, 1);         // blue
+    MaterialManager.createMaterial(scene.gl, 'left',  1, 1, 0);         // yellow
+    MaterialManager.createMaterial(scene.gl, 'top',  1, 1, 1);          // white
+    MaterialManager.createMaterial(scene.gl, 'bottom',  0.5, 0.5, 0.5); // grey
 
     // CREATE A MODEL (Containing just a single, colored triangle)
     const cube = new Model();

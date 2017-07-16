@@ -15,17 +15,11 @@ module.exports = {
 
     const onImagesLoaded = () => {
       const canvas = document.getElementById('mycanvas');
-      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-      if (!gl) alert('Unable to obtain WebGL/Experiment WebGL context');
-
-      gl.viewportWidth = 640;
-      gl.viewportHeight = 480;
-      gl.viewport(0, 0, canvas.width, canvas.height);
-
-      MaterialManager.createMaterial(gl, null, 1, 0, 0);
 
       // CREATE A SCENE
-      let scene = new Scene(gl);
+      let scene = new Scene(canvas);
+
+      MaterialManager.createMaterial(scene.gl, null, 1, 0, 0);
 
       // CREATE A MODEL (Containing just a single, colored triangle)
       let m = new Model();

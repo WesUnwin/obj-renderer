@@ -14,17 +14,10 @@ module.exports = {
 
     const onImagesLoaded = () => {
       const canvas = document.getElementById('mycanvas');
-      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-      if (!gl) alert('Unable to obtain WebGL/Experiment WebGL context');
-
-      gl.viewportWidth = 640;
-      gl.viewportHeight = 480;
-      gl.viewport(0, 0, canvas.width, canvas.height);
-
-      MaterialManager.createMaterial(gl, 'textured', 0,0,0, ImageManager.getImage('brick.png'));
-
       // CREATE A SCENE
-      let scene = new Scene(gl);
+      let scene = new Scene(canvas);
+
+      MaterialManager.createMaterial(scene.gl, 'textured', 0,0,0, ImageManager.getImage('brick.png'));
 
       // CREATE A MODEL (Containing just a single, textured triangle)
       let m = new Model();

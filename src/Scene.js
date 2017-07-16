@@ -11,8 +11,13 @@ const Camera = require('./Camera.js');
 
 class Scene {
 
-  constructor(gl) {
-    this.gl = gl;
+  constructor(canvasElement, viewportX, viewportY, viewportWidth, viewportHeight) {
+    this.canvas = canvasElement;
+
+    this.gl = this.canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    if (!this.gl) alert('Unable to obtain WebGL/Experiment WebGL context');
+
+    this.setViewPort(viewportX, viewportY, viewportWidth, viewportHeight);
 
     this.camera = new Camera();
 
@@ -20,6 +25,12 @@ class Scene {
 
     window.defaultShaderProgram = new ShaderProgram(this.gl, DefaultVertexShaderSource, DefaultFragmentShaderSource);
     window.texturedShaderProgram = new ShaderProgram(this.gl, TexturedVertexShaderSource, TexturedFragmentShaderSource);
+  }
+
+  setViewPort(x = 0, y = 0, width = this.canvas.width, height = this.canvas.height) {
+    this.gl.viewportWidth = 640;
+    this.gl.viewportHeight = 480;
+    this.gl.viewport(x, y, width, height);
   }
 
   addObject(object) {
