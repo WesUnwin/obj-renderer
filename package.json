@@ -4,7 +4,6 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": "node_modules/.bin/karma start --single-run",
     "build": "webpack src/main.js build/bundle.js",
     "server": "webpack-dev-server --content-base build/ --quiet"
   },
@@ -13,21 +12,12 @@
   "dependencies": {
     "babel-preset-es2015": "^6.16.0",
     "babelify": "^7.3.0",
-    "stringify": "^5.1.0",
     "raw-loader": "~0.5.1",
-    "shrinkwrap": "~0.4.0"
+    "shrinkwrap": "~0.4.0",
+    "stringify": "^5.1.0"
   },
   "devDependencies": {
-    "jasmine-core": "~2.5.2",
-    "karma": "~1.3.0",
-    "karma-jasmine": "~1.0.2",
-    "karma-browserify": "~5.1.0",
     "watchify": "~3.7.0",
-    "browserify": "~13.1.0",
-    "requirejs": "~2.3.2",
-    "karma-requirejs": "~1.1.0",
-    "karma-chrome-launcher": "~2.0.0",
-    "karma-phantomjs-launcher": "~1.0.2",
     "webpack": "~2.4.1"
   }
 }
