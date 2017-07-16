@@ -28,8 +28,6 @@ class Scene {
   }
 
   setViewPort(x = 0, y = 0, width = this.canvas.width, height = this.canvas.height) {
-    this.gl.viewportWidth = 640;
-    this.gl.viewportHeight = 480;
     this.gl.viewport(x, y, width, height);
   }
 
@@ -76,8 +74,6 @@ class Scene {
 
     // Clear the framebuffer bits:  (to the currently set clearColor and clearDepth values)
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVerticesBuffer);
 
     const projMatrix = this.camera.getProjectionMatrix();
     const modelViewMatrix = this.camera.getModelViewMatrix();
