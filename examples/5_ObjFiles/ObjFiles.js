@@ -12,8 +12,6 @@ let _interval;
 module.exports = {
 
   start: function() {
-    console.clear();
-    console.log('Application started');
 
     const onImagesLoaded = () => {
       const canvas = document.getElementById('mycanvas');

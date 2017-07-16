@@ -9,18 +9,16 @@ const MaterialManager = require('../../src/materials/MaterialManager.js');
 module.exports = {
 
   start: function() {
-    console.clear();
-    console.log('Application started');
 
     const onImagesLoaded = () => {
       const canvas = document.getElementById('mycanvas');
-      // CREATE A SCENE
-      let scene = new Scene(canvas);
+
+      const scene = new Scene(canvas);
 
       MaterialManager.createMaterial(scene.gl, 'textured', 0,0,0, ImageManager.getImage('brick.png'));
 
       // CREATE A MODEL (Containing just a single, textured triangle)
-      let m = new Model();
+      const m = new Model();
       m.vertices = [
        { x: -0.5, y: 0.5, z: 0.0 },   // left, top
        { x: -0.5, y: -0.5, z: 0.0 },  // left, bottom
@@ -33,12 +31,12 @@ module.exports = {
       m.addTextureCoords(1,1,0);
       m.addTextureCoords(1,0,0);
 
-      let triangle = new Polygon('textured');
+      const triangle = new Polygon('textured');
       triangle.addVertex(1, 1, 0);
       triangle.addVertex(2, 2, 0);
       triangle.addVertex(3, 3, 0);
 
-      let triangle2 = new Polygon('textured');
+      const triangle2 = new Polygon('textured');
       triangle2.addVertex(1, 1, 0);
       triangle2.addVertex(3, 3, 0);
       triangle2.addVertex(4, 4, 0);

@@ -7,9 +7,11 @@ class Camera {
 
   constructor() {
     this._projectionMatrix = new Matrix();
+
     this._x = 0;
     this._y = 0;
     this._z = 0;
+
     this._pitch = 0; // in degrees
     this._yaw = 0; // in degrees
 

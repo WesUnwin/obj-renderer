@@ -10,26 +10,23 @@ const MaterialManager = require('../../src/materials/MaterialManager.js');
 module.exports = {
 
   start: function() {
-    console.clear();
-    console.log('Application started');
 
     const onImagesLoaded = () => {
       const canvas = document.getElementById('mycanvas');
 
-      // CREATE A SCENE
-      let scene = new Scene(canvas);
+      const scene = new Scene(canvas);
 
       MaterialManager.createMaterial(scene.gl, null, 1, 0, 0);
 
       // CREATE A MODEL (Containing just a single, colored triangle)
-      let m = new Model();
+      const m = new Model();
       m.vertices = [
        { x: 0.0, y: 0.5, z: 0.0 },
        { x: -0.5, y: -0.5, z: 0.0 },
        { x: 0.5, y: -0.5, z: 0.0 }
       ];
 
-      let triangle = new Polygon();
+      const triangle = new Polygon();
       triangle.addVertex(1, 0, 0);
       triangle.addVertex(2, 0, 0);
       triangle.addVertex(3, 0, 0);
