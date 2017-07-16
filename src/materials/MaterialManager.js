@@ -1,3 +1,5 @@
+'use strict';
+
 const Material = require('./Material.js');
 const Texture = require('./Texture.js');
 const ImageManager = require('../graphics/ImageManager.js');

@@ -1,5 +1,8 @@
-let Model = require('./Model.js');
-let Polygon = require('./polygon.js');
+'use strict';
+
+const Model = require('./Model.js');
+const Polygon = require('./polygon.js');
+
 
 class OBJFile {
 

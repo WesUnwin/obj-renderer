@@ -1,3 +1,5 @@
+'use strict';
+
 class Material {
 
   constructor(name) {

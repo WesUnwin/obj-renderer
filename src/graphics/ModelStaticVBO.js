@@ -1,3 +1,5 @@
+'use strict';
+
 const MaterialManager = require('../materials/MaterialManager.js');
 
 

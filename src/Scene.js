@@ -95,7 +95,7 @@ class Scene {
 
   _setRenderingDefaults() {
     this.gl.clearDepth(1.0);  // Sets the value to clear the depth buffer to when using gl.clear() 
-                         // (does not actual clear the buffer)
+                              // (does not actual clear the buffer)
 
     this.setBackDropColor(0, 0, 0);
     this.enableBackFaceCulling(false);

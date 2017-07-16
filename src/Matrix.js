@@ -1,3 +1,5 @@
+'use strict';
+
 class Matrix {
 
   constructor(values) {

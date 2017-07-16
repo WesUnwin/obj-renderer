@@ -1,3 +1,5 @@
+'use strict';
+
 class ImageManager {
 
   static loadImages(imagePaths, onLoadComplete, onFailure) {

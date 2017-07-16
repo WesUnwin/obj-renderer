@@ -1,3 +1,5 @@
+'use strict';
+
 class ShaderProgram {
 
 	constructor(gl, vertexShaderSource, fragmentShaderSource) {
