@@ -1,3 +1,5 @@
+'use strict';
+
 const Scene = require('Scene.js');
 const ImageManager = require('graphics/ImageManager.js');
 const OBJFile = require('modeling/OBJFile.js');
@@ -7,6 +9,7 @@ const StaticObject = require('StaticObject.js');
 const MaterialManager = require('materials/MaterialManager.js');
 const groundObj = require('raw-loader!./Ground.obj');
 const boxObj = require('raw-loader!./Box.obj');
+
 
 let _interval;
 
@@ -34,12 +37,12 @@ module.exports = {
 
       const groundModel = new OBJFile(groundObj).parse().models[0];
       const ground = new StaticObject(groundModel);
-      ground.setPosition(0, -3, -10);
+      ground.setPosition(0, 0, 0);
       scene.addObject(ground);
 
       const boxModel = new OBJFile(boxObj).parse().models[0];
       const box = new StaticObject(boxModel);
-      box.setPosition(0, -2, -10);
+      box.setPosition(0, 1, 0);
 
       const miniBox = new StaticObject(boxModel);
       miniBox.setScale(0.5, 0.5, 0.5);
@@ -47,6 +50,9 @@ module.exports = {
       box.addObject(miniBox);
 
       scene.addObject(box);
+
+      scene.camera.setPosition(0, 2,10);
+      scene.camera.setYaw(-20);
 
       let pitch = 0;
       _interval = setInterval(() => {
