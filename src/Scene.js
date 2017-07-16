@@ -1,9 +1,12 @@
+'use strict';
+
 const Matrix = require('./Matrix.js');
 const ShaderProgram = require('./graphics/ShaderProgram.js');
 const DefaultVertexShaderSource = require('raw-loader!../data/shaders/vertexshader.shader');
 const DefaultFragmentShaderSource = require('raw-loader!../data/shaders/fragmentshader.shader');
 const TexturedVertexShaderSource = require('raw-loader!../data/shaders/TexturedVertexShader.shader');
 const TexturedFragmentShaderSource = require('raw-loader!../data/shaders/TexturedFragmentShader.shader');
+const Camera = require('./Camera.js');
 
 
 class Scene {
@@ -11,10 +14,9 @@ class Scene {
   constructor(gl) {
     this.gl = gl;
 
-    this.objects = [];
+    this.camera = new Camera();
 
-    this.projectionMatrix = new Matrix();
-    this.modelViewMatrix = new Matrix();
+    this.objects = [];
 
     window.defaultShaderProgram = new ShaderProgram(this.gl, DefaultVertexShaderSource, DefaultFragmentShaderSource);
     window.texturedShaderProgram = new ShaderProgram(this.gl, TexturedVertexShaderSource, TexturedFragmentShaderSource);
@@ -28,14 +30,6 @@ class Scene {
     this.objects = this.objects.filter(obj => {
       return obj != object;
     });
-  }
-
-  usePerspectiveView(fieldOfViewInRadians = 1.570796, aspectRatio = 1.3333, near = 1, far = 50) {
-    this.projectionMatrix.perspective(fieldOfViewInRadians, aspectRatio, near, far);
-  }
-
-  useOrthogonalView() {
-    this.projectionMatrix.loadIdentity();
   }
 
   enableBackFaceCulling(cullBackFaces = true) {
@@ -67,8 +61,11 @@ class Scene {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVerticesBuffer);
 
+    const projMatrix = this.camera.getProjectionMatrix();
+    const modelViewMatrix = this.camera.getModelViewMatrix();
+
     for(var i = 0; i < this.objects.length; i++) {
-      this.objects[i].render(gl, this.projectionMatrix, this.modelViewMatrix);
+      this.objects[i].render(gl, projMatrix, modelViewMatrix);
     }
   }
 
