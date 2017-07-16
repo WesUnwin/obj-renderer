@@ -1,11 +1,11 @@
 {
   "name": "webgl",
   "version": "0.0.0",
-  "description": "",
-  "main": "main.js",
+  "description": "A simple WebGL based graphical rendering engine, that works with .OBJ 3D files.",
+  "main": "src/main.js",
   "scripts": {
     "build": "webpack src/main.js build/bundle.js",
-    "server": "webpack-dev-server --content-base build/ --quiet"
+    "examples": "webpack-dev-server --content-base build/ --quiet"
   },
   "author": "",
   "license": "BSD-2-Clause",
