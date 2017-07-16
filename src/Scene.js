@@ -55,7 +55,6 @@ class Scene {
   }
 
   render() {
-    console.log('RENDER');
     const gl = this.gl;
 
     // Depth Testing
