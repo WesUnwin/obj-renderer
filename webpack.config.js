@@ -16,10 +16,6 @@ module.exports = {
     modules: [
       path.join(__dirname, 'src'),
       'node_modules'
-    ],
-    modulesDirectories: [
-      path.join(__dirname, 'src'),
-      'node_modules'
     ]
   }
 
