@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "/assets/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 27);
+/******/ 	return __webpack_require__(__webpack_require__.s = 15);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -112,8 +112,8 @@ module.exports = ImageManager;
 "use strict";
 
 
-const Material = __webpack_require__(28);
-const Texture = __webpack_require__(29);
+const Material = __webpack_require__(27);
+const Texture = __webpack_require__(28);
 const ImageManager = __webpack_require__(0);
 
 
@@ -702,12 +702,529 @@ module.exports = OBJFile;
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const HelloWorld = __webpack_require__(10);
-const RotatingCube = __webpack_require__(11);
-const Perspective = __webpack_require__(12);
-const TexturedSquare = __webpack_require__(13);
-const ObjFiles = __webpack_require__(14);
-const SubObjects = __webpack_require__(15);
+const Scene = __webpack_require__(4);
+const sobj = __webpack_require__(7);
+const ImageManager = __webpack_require__(0);
+const Model = __webpack_require__(2);
+const Polygon = __webpack_require__(3);
+const StaticObject = __webpack_require__(5);
+const MaterialManager = __webpack_require__(1);
+
+
+module.exports = {
+
+  start: function() {
+    const canvas = document.getElementById('mycanvas');
+
+    const scene = new Scene(canvas);
+
+    MaterialManager.createMaterial(scene.gl, null, 1, 0, 0);
+
+    // CREATE A MODEL (Containing just a single, colored triangle)
+    const m = new Model();
+    m.vertices = [
+     { x: 0.0, y: 0.5, z: 0.0 },
+     { x: -0.5, y: -0.5, z: 0.0 },
+     { x: 0.5, y: -0.5, z: 0.0 }
+    ];
+
+    const triangle = new Polygon();
+    triangle.addVertex(1, 0, 0);
+    triangle.addVertex(2, 0, 0);
+    triangle.addVertex(3, 0, 0);
+
+    m.polygons = [triangle];
+
+    // Create a static game object (that uses the model)
+    const gameObject = new StaticObject(m);
+
+    scene.addObject(gameObject);
+
+    scene.render();
+  },
+
+  stop: function() {
+  }
+
+};
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const Scene = __webpack_require__(4);
+const sobj = __webpack_require__(7);
+const ImageManager = __webpack_require__(0);
+const Model = __webpack_require__(2);
+const Polygon = __webpack_require__(3);
+const StaticObject = __webpack_require__(5);
+const MaterialManager = __webpack_require__(1);
+
+
+let _interval;
+
+module.exports = {
+
+  start: function() {
+    const canvas = document.getElementById('mycanvas');
+
+    const scene = new Scene(canvas);
+
+    // Load Materials
+    MaterialManager.createMaterial(scene.gl, 'front', 1, 0, 0);         // red
+    MaterialManager.createMaterial(scene.gl, 'right', 0, 1, 0);         // green
+    MaterialManager.createMaterial(scene.gl, 'back2',  0, 0, 1);         // blue
+    MaterialManager.createMaterial(scene.gl, 'left',  1, 1, 0);         // yellow
+    MaterialManager.createMaterial(scene.gl, 'top',  1, 1, 1);          // white
+    MaterialManager.createMaterial(scene.gl, 'bottom',  0.5, 0.5, 0.5); // grey
+
+    // CREATE A MODEL (Containing just a single, colored triangle)
+    const cube = new Model();
+    cube.vertices = [
+     { x: -0.5, y: 0.5, z: 0.5 },   // 1 Front, top left
+     { x: -0.5, y: -0.5, z: 0.5 },  // 2 Front, bottom left
+     { x: 0.5, y: -0.5, z: 0.5 },   // 3 Front, bottom right
+     { x: 0.5, y: 0.5, z: 0.5 },    // 4 Front, top right
+
+     { x: -0.5, y: 0.5, z: -0.5 },  // 5 Back, top left
+     { x: -0.5, y: -0.5, z: -0.5 }, // 6 Back, bottom left
+     { x: 0.5, y: -0.5, z: -0.5 },  // 7 Back, bottom right
+     { x: 0.5, y: 0.5, z: -0.5 }    // 8 Back, top right
+    ];
+
+    const front1 = new Polygon('front');
+    front1.addVertex(1, 0, 0);
+    front1.addVertex(2, 0, 0);
+    front1.addVertex(3, 0, 0);
+
+    const front2 = new Polygon('front');
+    front2.addVertex(4, 0, 0);
+    front2.addVertex(1, 0, 0);
+    front2.addVertex(3, 0, 0);
+
+    const leftSide1 = new Polygon('left');
+    leftSide1.addVertex(5, 0, 0);
+    leftSide1.addVertex(6, 0, 0);
+    leftSide1.addVertex(2, 0, 0);
+
+    const leftSide2 = new Polygon('left');
+    leftSide2.addVertex(5, 0, 0);
+    leftSide2.addVertex(2, 0, 0);
+    leftSide2.addVertex(1, 0, 0);
+
+    const rightSide1 = new Polygon('right');
+    rightSide1.addVertex(4, 0, 0);
+    rightSide1.addVertex(3, 0, 0);
+    rightSide1.addVertex(7, 0, 0);
+
+    const rightSide2 = new Polygon('right');
+    rightSide2.addVertex(4, 0, 0);
+    rightSide2.addVertex(7, 0, 0);
+    rightSide2.addVertex(8, 0, 0);
+
+    const back1 = new Polygon('back2');
+    back1.addVertex(5, 0, 0);
+    back1.addVertex(6, 0, 0);
+    back1.addVertex(7, 0, 0);
+
+    const back2 = new Polygon('back2');
+    back2.addVertex(8, 0, 0);
+    back2.addVertex(5, 0, 0);
+    back2.addVertex(7, 0, 0);
+
+    const top1 = new Polygon('top');
+    top1.addVertex(5, 0, 0);
+    top1.addVertex(1, 0, 0);
+    top1.addVertex(4, 0, 0);
+
+    const top2 = new Polygon('top');
+    top2.addVertex(5, 0, 0);
+    top2.addVertex(4, 0, 0);
+    top2.addVertex(8, 0, 0);
+
+    const bottom1 = new Polygon('bottom');
+    bottom1.addVertex(6, 0, 0);
+    bottom1.addVertex(2, 0, 0);
+    bottom1.addVertex(3, 0, 0);
+
+    const bottom2 = new Polygon('bottom');
+    bottom2.addVertex(6, 0, 0);
+    bottom2.addVertex(3, 0, 0);
+    bottom2.addVertex(7, 0, 0);
+
+    cube.polygons = [front1, front2, rightSide1, rightSide2, back1, back2, leftSide1, leftSide2, top1, top2, bottom1, bottom2];
+
+    // Create a static game object (that uses the model)
+    const gameObject = new StaticObject(cube);
+    gameObject.setPosition(0,0,0);
+
+    scene.addObject(gameObject);
+    gameObject.rotate(45, 1, 0, 0);
+
+    _interval = setInterval(() => {
+      gameObject.rotate(1, 0,1,0);
+      scene.render();
+    }, 16);
+  },
+
+  stop: function() {
+    clearInterval(_interval);
+  }
+
+};
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const Scene = __webpack_require__(4);
+const sobj = __webpack_require__(7);
+const ImageManager = __webpack_require__(0);
+const Model = __webpack_require__(2);
+const Polygon = __webpack_require__(3);
+const StaticObject = __webpack_require__(5);
+const MaterialManager = __webpack_require__(1);
+
+
+let _interval;
+
+module.exports = {
+
+  start: function() {
+    const canvas = document.getElementById('mycanvas');
+
+    const scene = new Scene(canvas);
+
+    // Load Materials
+    MaterialManager.createMaterial(scene.gl, 'front', 1, 0, 0);         // red
+    MaterialManager.createMaterial(scene.gl, 'right', 0, 1, 0);         // green
+    MaterialManager.createMaterial(scene.gl, 'back2',  0, 0, 1);         // blue
+    MaterialManager.createMaterial(scene.gl, 'left',  1, 1, 0);         // yellow
+    MaterialManager.createMaterial(scene.gl, 'top',  1, 1, 1);          // white
+    MaterialManager.createMaterial(scene.gl, 'bottom',  0.5, 0.5, 0.5); // grey
+
+    scene.camera.usePerspectiveView();
+
+    // CREATE A MODEL (Containing just a single, colored triangle)
+    const cube = new Model();
+    cube.vertices = [
+     { x: -0.5, y: 0.5, z: 0.5 },   // 1 Front, top left
+     { x: -0.5, y: -0.5, z: 0.5 },  // 2 Front, bottom left
+     { x: 0.5, y: -0.5, z: 0.5 },   // 3 Front, bottom right
+     { x: 0.5, y: 0.5, z: 0.5 },    // 4 Front, top right
+
+     { x: -0.5, y: 0.5, z: -0.5 },  // 5 Back, top left
+     { x: -0.5, y: -0.5, z: -0.5 }, // 6 Back, bottom left
+     { x: 0.5, y: -0.5, z: -0.5 },  // 7 Back, bottom right
+     { x: 0.5, y: 0.5, z: -0.5 }    // 8 Back, top right
+    ];
+
+    const front1 = new Polygon('front');
+    front1.addVertex(1, 0, 0);
+    front1.addVertex(2, 0, 0);
+    front1.addVertex(3, 0, 0);
+
+    const front2 = new Polygon('front');
+    front2.addVertex(4, 0, 0);
+    front2.addVertex(1, 0, 0);
+    front2.addVertex(3, 0, 0);
+
+    const leftSide1 = new Polygon('left');
+    leftSide1.addVertex(5, 0, 0);
+    leftSide1.addVertex(6, 0, 0);
+    leftSide1.addVertex(2, 0, 0);
+
+    const leftSide2 = new Polygon('left');
+    leftSide2.addVertex(5, 0, 0);
+    leftSide2.addVertex(2, 0, 0);
+    leftSide2.addVertex(1, 0, 0);
+
+    const rightSide1 = new Polygon('right');
+    rightSide1.addVertex(4, 0, 0);
+    rightSide1.addVertex(3, 0, 0);
+    rightSide1.addVertex(7, 0, 0);
+
+    const rightSide2 = new Polygon('right');
+    rightSide2.addVertex(4, 0, 0);
+    rightSide2.addVertex(7, 0, 0);
+    rightSide2.addVertex(8, 0, 0);
+
+    const back1 = new Polygon('back2');
+    back1.addVertex(5, 0, 0);
+    back1.addVertex(6, 0, 0);
+    back1.addVertex(7, 0, 0);
+
+    const back2 = new Polygon('back2');
+    back2.addVertex(8, 0, 0);
+    back2.addVertex(5, 0, 0);
+    back2.addVertex(7, 0, 0);
+
+    const top1 = new Polygon('top');
+    top1.addVertex(5, 0, 0);
+    top1.addVertex(1, 0, 0);
+    top1.addVertex(4, 0, 0);
+
+    const top2 = new Polygon('top');
+    top2.addVertex(5, 0, 0);
+    top2.addVertex(4, 0, 0);
+    top2.addVertex(8, 0, 0);
+
+    const bottom1 = new Polygon('bottom');
+    bottom1.addVertex(6, 0, 0);
+    bottom1.addVertex(2, 0, 0);
+    bottom1.addVertex(3, 0, 0);
+
+    const bottom2 = new Polygon('bottom');
+    bottom2.addVertex(6, 0, 0);
+    bottom2.addVertex(3, 0, 0);
+    bottom2.addVertex(7, 0, 0);
+
+    cube.polygons = [front1, front2, rightSide1, rightSide2, back1, back2, leftSide1, leftSide2, top1, top2, bottom1, bottom2];
+
+    // Create a static game object (that uses the model)
+    const gameObject = new StaticObject(cube);
+    gameObject.setPosition(0,0,0);
+
+    scene.addObject(gameObject);
+    gameObject.setPosition(0, -1, -5);
+
+    _interval = setInterval(() => {
+      scene.render();
+    }, 16);
+  },
+
+  stop: function() {
+    clearInterval(_interval);
+  }
+
+};
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const Scene = __webpack_require__(4);
+const ImageManager = __webpack_require__(0);
+const Model = __webpack_require__(2);
+const Polygon = __webpack_require__(3);
+const StaticObject = __webpack_require__(5);
+const MaterialManager = __webpack_require__(1);
+
+
+module.exports = {
+
+  start: function() {
+
+    const onImagesLoaded = () => {
+      const canvas = document.getElementById('mycanvas');
+
+      const scene = new Scene(canvas);
+
+      MaterialManager.createMaterial(scene.gl, 'textured', 0,0,0, ImageManager.getImage('assets/images/brick.png'));
+
+      // CREATE A MODEL (Containing just a single, textured triangle)
+      const m = new Model();
+      m.vertices = [
+       { x: -0.5, y: 0.5, z: 0.0 },   // left, top
+       { x: -0.5, y: -0.5, z: 0.0 },  // left, bottom
+       { x: 0.5, y: -0.5, z: 0.0 },   // right, bottom
+       { x: 0.5, y: 0.5, z: 0.0 }     // right, top
+      ];
+
+      m.addTextureCoords(0,0,0); // U = 0, V = 0  (upper left of texture image)
+      m.addTextureCoords(0,1,0); // U = 0, V = 1  (bottom: v = 1, left: u = 1)
+      m.addTextureCoords(1,1,0);
+      m.addTextureCoords(1,0,0);
+
+      const triangle = new Polygon('textured');
+      triangle.addVertex(1, 1, 0);
+      triangle.addVertex(2, 2, 0);
+      triangle.addVertex(3, 3, 0);
+
+      const triangle2 = new Polygon('textured');
+      triangle2.addVertex(1, 1, 0);
+      triangle2.addVertex(3, 3, 0);
+      triangle2.addVertex(4, 4, 0);
+
+      m.polygons = [triangle, triangle2];
+
+      // Create a static game object (that uses the model)
+      const gameObject = new StaticObject(m);
+
+      scene.addObject(gameObject);
+
+      scene.render();
+    };
+
+    const onImagesLoadFailed = () => {
+      console.log("IMAGE LOADING FAILED");
+    };
+
+    ImageManager.loadImages(['assets/images/brick.png'], onImagesLoaded, onImagesLoadFailed);
+  },
+
+  stop: function() {
+  }
+
+};
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const Scene = __webpack_require__(4);
+const ImageManager = __webpack_require__(0);
+const OBJFile = __webpack_require__(8);
+const Model = __webpack_require__(2);
+const Polygon = __webpack_require__(3);
+const StaticObject = __webpack_require__(5);
+const MaterialManager = __webpack_require__(1);
+const objFileContents = __webpack_require__(20);
+
+let _interval;
+
+module.exports = {
+
+  start: function() {
+
+    const onImagesLoaded = () => {
+      const canvas = document.getElementById('mycanvas');
+
+      // CREATE A SCENE
+      const scene = new Scene(canvas);
+
+      // Load Materials
+      MaterialManager.createMaterial(scene.gl, 'front', 1, 0, 0);         // red
+      MaterialManager.createMaterial(scene.gl, 'right', 0, 1, 0);         // green
+      MaterialManager.createMaterial(scene.gl, 'back',  0, 0, 0, ImageManager.getImage('assets/images/brick.png'));         // blue
+      MaterialManager.createMaterial(scene.gl, 'left',  1, 1, 0);         // yellow
+      MaterialManager.createMaterial(scene.gl, 'top',  1, 1, 1);          // white
+      MaterialManager.createMaterial(scene.gl, 'bottom',  0.5, 0.5, 0.5); // grey
+
+      const objFile = new OBJFile(objFileContents);
+      const { models, materialLibs } = objFile.parse();
+
+      const cube = models[0];
+
+      // Create a static game object (that uses the model)
+      const gameObject = new StaticObject(cube);
+      gameObject.setPosition(0,0,0);
+
+      scene.addObject(gameObject);
+
+      _interval = setInterval(() => {
+        gameObject.rotate(1, 0,1,0);
+        scene.render();
+      }, 16);
+      
+    };
+
+    const onImagesLoadFailed = () => {
+      console.log("IMAGE LOADING FAILED");
+    };
+
+    ImageManager.loadImages(['assets/images/brick.png'], onImagesLoaded, onImagesLoadFailed);
+  },
+
+  stop: function() {
+    clearInterval(_interval);
+  }
+
+};
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const Scene = __webpack_require__(4);
+const ImageManager = __webpack_require__(0);
+const OBJFile = __webpack_require__(8);
+const Model = __webpack_require__(2);
+const Polygon = __webpack_require__(3);
+const StaticObject = __webpack_require__(5);
+const MaterialManager = __webpack_require__(1);
+const groundObj = __webpack_require__(22);
+const boxObj = __webpack_require__(21);
+
+
+let _interval;
+
+module.exports = {
+
+  start: function() {
+
+    const onImagesLoaded = () => {
+      const canvas = document.getElementById('mycanvas');
+
+      const scene = new Scene(canvas);
+      scene.camera.usePerspectiveView();
+
+      MaterialManager.createMaterial(scene.gl, 'ground',  0, 0, 0, ImageManager.getImage('assets/images/grass.png'));
+
+      MaterialManager.createMaterial(scene.gl, 'crate', 0, 0, 0, ImageManager.getImage('assets/images/Crate.png'));
+
+      const groundModel = new OBJFile(groundObj).parse().models[0];
+      const ground = new StaticObject(groundModel);
+      ground.setPosition(0, 0, 0);
+      scene.addObject(ground);
+
+      const boxModel = new OBJFile(boxObj).parse().models[0];
+      const box = new StaticObject(boxModel);
+      box.setPosition(0, 1, 0);
+
+      const miniBox = new StaticObject(boxModel);
+      miniBox.setScale(0.5, 0.5, 0.5);
+      miniBox.setPosition(3, 0, 0);
+      box.addObject(miniBox);
+
+      scene.addObject(box);
+
+      scene.camera.setPosition(0, 2,10);
+      scene.camera.setYaw(-20);
+
+      let pitch = 0;
+      _interval = setInterval(() => {
+        pitch += 1;
+        if (pitch >= 360) pitch = 0;
+
+        box.setPitch(pitch);
+        miniBox.setPitch(pitch);
+
+        scene.render();
+      }, 15);
+    };
+
+    const onImagesLoadFailed = () => {
+      console.log("IMAGE LOADING FAILED");
+    };
+
+    ImageManager.loadImages(['assets/images/grass.png', 'assets/images/Crate.png'], onImagesLoaded, onImagesLoadFailed);
+  },
+
+  stop: function() {
+    clearInterval(_interval);
+  }
+
+};
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const HelloWorld = __webpack_require__(9);
+const RotatingCube = __webpack_require__(10);
+const Perspective = __webpack_require__(11);
+const TexturedSquare = __webpack_require__(12);
+const ObjFiles = __webpack_require__(13);
+const SubObjects = __webpack_require__(14);
 
 const examples = {
 	'HelloWorld': HelloWorld,
@@ -753,550 +1270,6 @@ document.getElementById('examplepicker').innerHTML += html;
 
 
 showExample('HelloWorld');
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const Scene = __webpack_require__(4);
-const sobj = __webpack_require__(7);
-const ImageManager = __webpack_require__(0);
-const Model = __webpack_require__(2);
-const Polygon = __webpack_require__(3);
-const StaticObject = __webpack_require__(5);
-const MaterialManager = __webpack_require__(1);
-
-
-module.exports = {
-
-  start: function() {
-
-    const onImagesLoaded = () => {
-      const canvas = document.getElementById('mycanvas');
-
-      const scene = new Scene(canvas);
-
-      MaterialManager.createMaterial(scene.gl, null, 1, 0, 0);
-
-      // CREATE A MODEL (Containing just a single, colored triangle)
-      const m = new Model();
-      m.vertices = [
-       { x: 0.0, y: 0.5, z: 0.0 },
-       { x: -0.5, y: -0.5, z: 0.0 },
-       { x: 0.5, y: -0.5, z: 0.0 }
-      ];
-
-      const triangle = new Polygon();
-      triangle.addVertex(1, 0, 0);
-      triangle.addVertex(2, 0, 0);
-      triangle.addVertex(3, 0, 0);
-
-      m.polygons = [triangle];
-
-      // Create a static game object (that uses the model)
-      const gameObject = new StaticObject(m);
-
-      scene.addObject(gameObject);
-
-      scene.render();
-    };
-
-    const onImagesLoadFailed = () => {
-      console.log("IMAGE LOADING FAILED");
-    };
-
-    ImageManager.loadImages(['brick.png'], onImagesLoaded, onImagesLoadFailed);
-  },
-
-  stop: function() {
-  }
-
-};
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const Scene = __webpack_require__(4);
-const sobj = __webpack_require__(7);
-const ImageManager = __webpack_require__(0);
-const Model = __webpack_require__(2);
-const Polygon = __webpack_require__(3);
-const StaticObject = __webpack_require__(5);
-const MaterialManager = __webpack_require__(1);
-
-
-let _interval;
-
-module.exports = {
-
-  start: function() {
-
-    const onImagesLoaded = () => {
-      const canvas = document.getElementById('mycanvas');
-
-      const scene = new Scene(canvas);
-
-      // Load Materials
-      MaterialManager.createMaterial(scene.gl, 'front', 1, 0, 0);         // red
-      MaterialManager.createMaterial(scene.gl, 'right', 0, 1, 0);         // green
-      MaterialManager.createMaterial(scene.gl, 'back2',  0, 0, 1);         // blue
-      MaterialManager.createMaterial(scene.gl, 'left',  1, 1, 0);         // yellow
-      MaterialManager.createMaterial(scene.gl, 'top',  1, 1, 1);          // white
-      MaterialManager.createMaterial(scene.gl, 'bottom',  0.5, 0.5, 0.5); // grey
-
-      // CREATE A MODEL (Containing just a single, colored triangle)
-      const cube = new Model();
-      cube.vertices = [
-       { x: -0.5, y: 0.5, z: 0.5 },   // 1 Front, top left
-       { x: -0.5, y: -0.5, z: 0.5 },  // 2 Front, bottom left
-       { x: 0.5, y: -0.5, z: 0.5 },   // 3 Front, bottom right
-       { x: 0.5, y: 0.5, z: 0.5 },    // 4 Front, top right
-
-       { x: -0.5, y: 0.5, z: -0.5 },  // 5 Back, top left
-       { x: -0.5, y: -0.5, z: -0.5 }, // 6 Back, bottom left
-       { x: 0.5, y: -0.5, z: -0.5 },  // 7 Back, bottom right
-       { x: 0.5, y: 0.5, z: -0.5 }    // 8 Back, top right
-      ];
-
-      const front1 = new Polygon('front');
-      front1.addVertex(1, 0, 0);
-      front1.addVertex(2, 0, 0);
-      front1.addVertex(3, 0, 0);
-
-      const front2 = new Polygon('front');
-      front2.addVertex(4, 0, 0);
-      front2.addVertex(1, 0, 0);
-      front2.addVertex(3, 0, 0);
-
-      const leftSide1 = new Polygon('left');
-      leftSide1.addVertex(5, 0, 0);
-      leftSide1.addVertex(6, 0, 0);
-      leftSide1.addVertex(2, 0, 0);
-
-      const leftSide2 = new Polygon('left');
-      leftSide2.addVertex(5, 0, 0);
-      leftSide2.addVertex(2, 0, 0);
-      leftSide2.addVertex(1, 0, 0);
-
-      const rightSide1 = new Polygon('right');
-      rightSide1.addVertex(4, 0, 0);
-      rightSide1.addVertex(3, 0, 0);
-      rightSide1.addVertex(7, 0, 0);
-
-      const rightSide2 = new Polygon('right');
-      rightSide2.addVertex(4, 0, 0);
-      rightSide2.addVertex(7, 0, 0);
-      rightSide2.addVertex(8, 0, 0);
-
-      const back1 = new Polygon('back2');
-      back1.addVertex(5, 0, 0);
-      back1.addVertex(6, 0, 0);
-      back1.addVertex(7, 0, 0);
-
-      const back2 = new Polygon('back2');
-      back2.addVertex(8, 0, 0);
-      back2.addVertex(5, 0, 0);
-      back2.addVertex(7, 0, 0);
-
-      const top1 = new Polygon('top');
-      top1.addVertex(5, 0, 0);
-      top1.addVertex(1, 0, 0);
-      top1.addVertex(4, 0, 0);
-
-      const top2 = new Polygon('top');
-      top2.addVertex(5, 0, 0);
-      top2.addVertex(4, 0, 0);
-      top2.addVertex(8, 0, 0);
-
-      const bottom1 = new Polygon('bottom');
-      bottom1.addVertex(6, 0, 0);
-      bottom1.addVertex(2, 0, 0);
-      bottom1.addVertex(3, 0, 0);
-
-      const bottom2 = new Polygon('bottom');
-      bottom2.addVertex(6, 0, 0);
-      bottom2.addVertex(3, 0, 0);
-      bottom2.addVertex(7, 0, 0);
-
-      cube.polygons = [front1, front2, rightSide1, rightSide2, back1, back2, leftSide1, leftSide2, top1, top2, bottom1, bottom2];
-
-      // Create a static game object (that uses the model)
-      const gameObject = new StaticObject(cube);
-      gameObject.setPosition(0,0,0);
-
-      scene.addObject(gameObject);
-      gameObject.rotate(45, 1, 0, 0);
-
-      _interval = setInterval(() => {
-        gameObject.rotate(1, 0,1,0);
-        scene.render();
-      }, 16);
-    };
-
-    const onImagesLoadFailed = () => {
-      console.log("IMAGE LOADING FAILED");
-    };
-
-    ImageManager.loadImages(['brick.png'], onImagesLoaded, onImagesLoadFailed);
-  },
-
-  stop: function() {
-    clearInterval(_interval);
-  }
-
-};
-
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const Scene = __webpack_require__(4);
-const sobj = __webpack_require__(7);
-const ImageManager = __webpack_require__(0);
-const Model = __webpack_require__(2);
-const Polygon = __webpack_require__(3);
-const StaticObject = __webpack_require__(5);
-const MaterialManager = __webpack_require__(1);
-
-
-let _interval;
-
-module.exports = {
-
-  start: function() {
-
-    const onImagesLoaded = () => {
-      const canvas = document.getElementById('mycanvas');
-
-      const scene = new Scene(canvas);
-
-      // Load Materials
-      MaterialManager.createMaterial(scene.gl, 'front', 1, 0, 0);         // red
-      MaterialManager.createMaterial(scene.gl, 'right', 0, 1, 0);         // green
-      MaterialManager.createMaterial(scene.gl, 'back2',  0, 0, 1);         // blue
-      MaterialManager.createMaterial(scene.gl, 'left',  1, 1, 0);         // yellow
-      MaterialManager.createMaterial(scene.gl, 'top',  1, 1, 1);          // white
-      MaterialManager.createMaterial(scene.gl, 'bottom',  0.5, 0.5, 0.5); // grey
-
-      scene.camera.usePerspectiveView();
-
-      // CREATE A MODEL (Containing just a single, colored triangle)
-      const cube = new Model();
-      cube.vertices = [
-       { x: -0.5, y: 0.5, z: 0.5 },   // 1 Front, top left
-       { x: -0.5, y: -0.5, z: 0.5 },  // 2 Front, bottom left
-       { x: 0.5, y: -0.5, z: 0.5 },   // 3 Front, bottom right
-       { x: 0.5, y: 0.5, z: 0.5 },    // 4 Front, top right
-
-       { x: -0.5, y: 0.5, z: -0.5 },  // 5 Back, top left
-       { x: -0.5, y: -0.5, z: -0.5 }, // 6 Back, bottom left
-       { x: 0.5, y: -0.5, z: -0.5 },  // 7 Back, bottom right
-       { x: 0.5, y: 0.5, z: -0.5 }    // 8 Back, top right
-      ];
-
-      const front1 = new Polygon('front');
-      front1.addVertex(1, 0, 0);
-      front1.addVertex(2, 0, 0);
-      front1.addVertex(3, 0, 0);
-
-      const front2 = new Polygon('front');
-      front2.addVertex(4, 0, 0);
-      front2.addVertex(1, 0, 0);
-      front2.addVertex(3, 0, 0);
-
-      const leftSide1 = new Polygon('left');
-      leftSide1.addVertex(5, 0, 0);
-      leftSide1.addVertex(6, 0, 0);
-      leftSide1.addVertex(2, 0, 0);
-
-      const leftSide2 = new Polygon('left');
-      leftSide2.addVertex(5, 0, 0);
-      leftSide2.addVertex(2, 0, 0);
-      leftSide2.addVertex(1, 0, 0);
-
-      const rightSide1 = new Polygon('right');
-      rightSide1.addVertex(4, 0, 0);
-      rightSide1.addVertex(3, 0, 0);
-      rightSide1.addVertex(7, 0, 0);
-
-      const rightSide2 = new Polygon('right');
-      rightSide2.addVertex(4, 0, 0);
-      rightSide2.addVertex(7, 0, 0);
-      rightSide2.addVertex(8, 0, 0);
-
-      const back1 = new Polygon('back2');
-      back1.addVertex(5, 0, 0);
-      back1.addVertex(6, 0, 0);
-      back1.addVertex(7, 0, 0);
-
-      const back2 = new Polygon('back2');
-      back2.addVertex(8, 0, 0);
-      back2.addVertex(5, 0, 0);
-      back2.addVertex(7, 0, 0);
-
-      const top1 = new Polygon('top');
-      top1.addVertex(5, 0, 0);
-      top1.addVertex(1, 0, 0);
-      top1.addVertex(4, 0, 0);
-
-      const top2 = new Polygon('top');
-      top2.addVertex(5, 0, 0);
-      top2.addVertex(4, 0, 0);
-      top2.addVertex(8, 0, 0);
-
-      const bottom1 = new Polygon('bottom');
-      bottom1.addVertex(6, 0, 0);
-      bottom1.addVertex(2, 0, 0);
-      bottom1.addVertex(3, 0, 0);
-
-      const bottom2 = new Polygon('bottom');
-      bottom2.addVertex(6, 0, 0);
-      bottom2.addVertex(3, 0, 0);
-      bottom2.addVertex(7, 0, 0);
-
-      cube.polygons = [front1, front2, rightSide1, rightSide2, back1, back2, leftSide1, leftSide2, top1, top2, bottom1, bottom2];
-
-      // Create a static game object (that uses the model)
-      const gameObject = new StaticObject(cube);
-      gameObject.setPosition(0,0,0);
-
-      scene.addObject(gameObject);
-      gameObject.setPosition(0, -1, -5);
-
-      _interval = setInterval(() => {
-        scene.render();
-      }, 16);
-    };
-
-    const onImagesLoadFailed = () => {
-      console.log("IMAGE LOADING FAILED");
-    };
-
-    ImageManager.loadImages(['brick.png'], onImagesLoaded, onImagesLoadFailed);
-  },
-
-  stop: function() {
-    clearInterval(_interval);
-  }
-
-};
-
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const Scene = __webpack_require__(4);
-const ImageManager = __webpack_require__(0);
-const Model = __webpack_require__(2);
-const Polygon = __webpack_require__(3);
-const StaticObject = __webpack_require__(5);
-const MaterialManager = __webpack_require__(1);
-
-
-module.exports = {
-
-  start: function() {
-
-    const onImagesLoaded = () => {
-      const canvas = document.getElementById('mycanvas');
-
-      const scene = new Scene(canvas);
-
-      MaterialManager.createMaterial(scene.gl, 'textured', 0,0,0, ImageManager.getImage('brick.png'));
-
-      // CREATE A MODEL (Containing just a single, textured triangle)
-      const m = new Model();
-      m.vertices = [
-       { x: -0.5, y: 0.5, z: 0.0 },   // left, top
-       { x: -0.5, y: -0.5, z: 0.0 },  // left, bottom
-       { x: 0.5, y: -0.5, z: 0.0 },   // right, bottom
-       { x: 0.5, y: 0.5, z: 0.0 }     // right, top
-      ];
-
-      m.addTextureCoords(0,0,0); // U = 0, V = 0  (upper left of texture image)
-      m.addTextureCoords(0,1,0); // U = 0, V = 1  (bottom: v = 1, left: u = 1)
-      m.addTextureCoords(1,1,0);
-      m.addTextureCoords(1,0,0);
-
-      const triangle = new Polygon('textured');
-      triangle.addVertex(1, 1, 0);
-      triangle.addVertex(2, 2, 0);
-      triangle.addVertex(3, 3, 0);
-
-      const triangle2 = new Polygon('textured');
-      triangle2.addVertex(1, 1, 0);
-      triangle2.addVertex(3, 3, 0);
-      triangle2.addVertex(4, 4, 0);
-
-      m.polygons = [triangle, triangle2];
-
-      // Create a static game object (that uses the model)
-      const gameObject = new StaticObject(m);
-
-      scene.addObject(gameObject);
-
-      scene.render();
-    };
-
-    const onImagesLoadFailed = () => {
-      console.log("IMAGE LOADING FAILED");
-    };
-
-    ImageManager.loadImages(['brick.png'], onImagesLoaded, onImagesLoadFailed);
-  },
-
-  stop: function() {
-  }
-
-};
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const Scene = __webpack_require__(4);
-const ImageManager = __webpack_require__(0);
-const OBJFile = __webpack_require__(8);
-const Model = __webpack_require__(2);
-const Polygon = __webpack_require__(3);
-const StaticObject = __webpack_require__(5);
-const MaterialManager = __webpack_require__(1);
-const objFileContents = __webpack_require__(20);
-
-let _interval;
-
-module.exports = {
-
-  start: function() {
-
-    const onImagesLoaded = () => {
-      const canvas = document.getElementById('mycanvas');
-
-      // CREATE A SCENE
-      const scene = new Scene(canvas);
-
-      // Load Materials
-      MaterialManager.createMaterial(scene.gl, 'front', 1, 0, 0);         // red
-      MaterialManager.createMaterial(scene.gl, 'right', 0, 1, 0);         // green
-      MaterialManager.createMaterial(scene.gl, 'back',  0, 0, 0, ImageManager.getImage('brick.png'));         // blue
-      MaterialManager.createMaterial(scene.gl, 'left',  1, 1, 0);         // yellow
-      MaterialManager.createMaterial(scene.gl, 'top',  1, 1, 1);          // white
-      MaterialManager.createMaterial(scene.gl, 'bottom',  0.5, 0.5, 0.5); // grey
-
-      const objFile = new OBJFile(objFileContents);
-      const { models, materialLibs } = objFile.parse();
-
-      const cube = models[0];
-
-      // Create a static game object (that uses the model)
-      const gameObject = new StaticObject(cube);
-      gameObject.setPosition(0,0,0);
-
-      scene.addObject(gameObject);
-
-      _interval = setInterval(() => {
-        gameObject.rotate(1, 0,1,0);
-        scene.render();
-      }, 16);
-      
-    };
-
-    const onImagesLoadFailed = () => {
-      console.log("IMAGE LOADING FAILED");
-    };
-
-    ImageManager.loadImages(['brick.png'], onImagesLoaded, onImagesLoadFailed);
-  },
-
-  stop: function() {
-    clearInterval(_interval);
-  }
-
-};
-
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-const Scene = __webpack_require__(4);
-const ImageManager = __webpack_require__(0);
-const OBJFile = __webpack_require__(8);
-const Model = __webpack_require__(2);
-const Polygon = __webpack_require__(3);
-const StaticObject = __webpack_require__(5);
-const MaterialManager = __webpack_require__(1);
-const groundObj = __webpack_require__(22);
-const boxObj = __webpack_require__(21);
-
-
-let _interval;
-
-module.exports = {
-
-  start: function() {
-
-    const onImagesLoaded = () => {
-      const canvas = document.getElementById('mycanvas');
-
-      const scene = new Scene(canvas);
-      scene.camera.usePerspectiveView();
-
-      MaterialManager.createMaterial(scene.gl, 'ground',  0, 0, 0, ImageManager.getImage('grass.png'));
-
-      MaterialManager.createMaterial(scene.gl, 'crate', 0, 0, 0, ImageManager.getImage('Crate.png'));
-
-      const groundModel = new OBJFile(groundObj).parse().models[0];
-      const ground = new StaticObject(groundModel);
-      ground.setPosition(0, 0, 0);
-      scene.addObject(ground);
-
-      const boxModel = new OBJFile(boxObj).parse().models[0];
-      const box = new StaticObject(boxModel);
-      box.setPosition(0, 1, 0);
-
-      const miniBox = new StaticObject(boxModel);
-      miniBox.setScale(0.5, 0.5, 0.5);
-      miniBox.setPosition(3, 0, 0);
-      box.addObject(miniBox);
-
-      scene.addObject(box);
-
-      scene.camera.setPosition(0, 2,10);
-      scene.camera.setYaw(-20);
-
-      let pitch = 0;
-      _interval = setInterval(() => {
-        pitch += 1;
-        if (pitch >= 360) pitch = 0;
-
-        box.setPitch(pitch);
-        miniBox.setPitch(pitch);
-
-        scene.render();
-      }, 15);
-    };
-
-    const onImagesLoadFailed = () => {
-      console.log("IMAGE LOADING FAILED");
-    };
-
-    ImageManager.loadImages(['grass.png', 'Crate.png'], onImagesLoaded, onImagesLoadFailed);
-  },
-
-  stop: function() {
-    clearInterval(_interval);
-  }
-
-};
 
 
 /***/ }),
@@ -1704,15 +1677,6 @@ module.exports = ShaderProgram;
 /* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
-
-// Load and run the example application:
-const application = __webpack_require__(9);
-
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
-
 "use strict";
 
 
@@ -1760,7 +1724,7 @@ class Material {
 module.exports = Material;
 
 /***/ }),
-/* 29 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

@@ -3,7 +3,8 @@ const path = require('path');
 module.exports = {
 	
   entry: {
-    webgl: './src/main.js'
+    examples: './examples/ExamplePicker.js',
+    main: './src/main.js'
   },
 
   output: {

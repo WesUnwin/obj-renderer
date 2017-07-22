@@ -23,9 +23,9 @@ module.exports = {
       const scene = new Scene(canvas);
       scene.camera.usePerspectiveView();
 
-      MaterialManager.createMaterial(scene.gl, 'ground',  0, 0, 0, ImageManager.getImage('grass.png'));
+      MaterialManager.createMaterial(scene.gl, 'ground',  0, 0, 0, ImageManager.getImage('assets/images/grass.png'));
 
-      MaterialManager.createMaterial(scene.gl, 'crate', 0, 0, 0, ImageManager.getImage('Crate.png'));
+      MaterialManager.createMaterial(scene.gl, 'crate', 0, 0, 0, ImageManager.getImage('assets/images/Crate.png'));
 
       const groundModel = new OBJFile(groundObj).parse().models[0];
       const ground = new StaticObject(groundModel);
@@ -62,7 +62,7 @@ module.exports = {
       console.log("IMAGE LOADING FAILED");
     };
 
-    ImageManager.loadImages(['grass.png', 'Crate.png'], onImagesLoaded, onImagesLoadFailed);
+    ImageManager.loadImages(['assets/images/grass.png', 'assets/images/Crate.png'], onImagesLoaded, onImagesLoadFailed);
   },
 
   stop: function() {

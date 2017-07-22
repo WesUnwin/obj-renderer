@@ -22,7 +22,7 @@ module.exports = {
       // Load Materials
       MaterialManager.createMaterial(scene.gl, 'front', 1, 0, 0);         // red
       MaterialManager.createMaterial(scene.gl, 'right', 0, 1, 0);         // green
-      MaterialManager.createMaterial(scene.gl, 'back',  0, 0, 0, ImageManager.getImage('brick.png'));         // blue
+      MaterialManager.createMaterial(scene.gl, 'back',  0, 0, 0, ImageManager.getImage('assets/images/brick.png'));         // blue
       MaterialManager.createMaterial(scene.gl, 'left',  1, 1, 0);         // yellow
       MaterialManager.createMaterial(scene.gl, 'top',  1, 1, 1);          // white
       MaterialManager.createMaterial(scene.gl, 'bottom',  0.5, 0.5, 0.5); // grey
@@ -49,7 +49,7 @@ module.exports = {
       console.log("IMAGE LOADING FAILED");
     };
 
-    ImageManager.loadImages(['brick.png'], onImagesLoaded, onImagesLoadFailed);
+    ImageManager.loadImages(['assets/images/brick.png'], onImagesLoaded, onImagesLoadFailed);
   },
 
   stop: function() {

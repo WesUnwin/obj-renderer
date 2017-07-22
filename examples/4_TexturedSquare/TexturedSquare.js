@@ -15,7 +15,7 @@ module.exports = {
 
       const scene = new Scene(canvas);
 
-      MaterialManager.createMaterial(scene.gl, 'textured', 0,0,0, ImageManager.getImage('brick.png'));
+      MaterialManager.createMaterial(scene.gl, 'textured', 0,0,0, ImageManager.getImage('assets/images/brick.png'));
 
       // CREATE A MODEL (Containing just a single, textured triangle)
       const m = new Model();
@@ -55,7 +55,7 @@ module.exports = {
       console.log("IMAGE LOADING FAILED");
     };
 
-    ImageManager.loadImages(['brick.png'], onImagesLoaded, onImagesLoadFailed);
+    ImageManager.loadImages(['assets/images/brick.png'], onImagesLoaded, onImagesLoadFailed);
   },
 
   stop: function() {

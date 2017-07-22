@@ -10,42 +10,33 @@ const MaterialManager = require('../../src/materials/MaterialManager.js');
 module.exports = {
 
   start: function() {
+    const canvas = document.getElementById('mycanvas');
 
-    const onImagesLoaded = () => {
-      const canvas = document.getElementById('mycanvas');
+    const scene = new Scene(canvas);
 
-      const scene = new Scene(canvas);
+    MaterialManager.createMaterial(scene.gl, null, 1, 0, 0);
 
-      MaterialManager.createMaterial(scene.gl, null, 1, 0, 0);
+    // CREATE A MODEL (Containing just a single, colored triangle)
+    const m = new Model();
+    m.vertices = [
+     { x: 0.0, y: 0.5, z: 0.0 },
+     { x: -0.5, y: -0.5, z: 0.0 },
+     { x: 0.5, y: -0.5, z: 0.0 }
+    ];
 
-      // CREATE A MODEL (Containing just a single, colored triangle)
-      const m = new Model();
-      m.vertices = [
-       { x: 0.0, y: 0.5, z: 0.0 },
-       { x: -0.5, y: -0.5, z: 0.0 },
-       { x: 0.5, y: -0.5, z: 0.0 }
-      ];
+    const triangle = new Polygon();
+    triangle.addVertex(1, 0, 0);
+    triangle.addVertex(2, 0, 0);
+    triangle.addVertex(3, 0, 0);
 
-      const triangle = new Polygon();
-      triangle.addVertex(1, 0, 0);
-      triangle.addVertex(2, 0, 0);
-      triangle.addVertex(3, 0, 0);
+    m.polygons = [triangle];
 
-      m.polygons = [triangle];
+    // Create a static game object (that uses the model)
+    const gameObject = new StaticObject(m);
 
-      // Create a static game object (that uses the model)
-      const gameObject = new StaticObject(m);
+    scene.addObject(gameObject);
 
-      scene.addObject(gameObject);
-
-      scene.render();
-    };
-
-    const onImagesLoadFailed = () => {
-      console.log("IMAGE LOADING FAILED");
-    };
-
-    ImageManager.loadImages(['brick.png'], onImagesLoaded, onImagesLoadFailed);
+    scene.render();
   },
 
   stop: function() {
