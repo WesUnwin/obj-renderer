@@ -1,5 +1,5 @@
 const Scene = require('../../src/Scene.js');
-const sobj = require('raw-loader!../../data/unitcube.obj');
+const sobj = require('raw-loader!../assets/models/cube.obj');
 const ImageManager = require('../../src/graphics/ImageManager.js');
 const Model = require('../../src/modeling/Model.js');
 const Polygon = require('../../src/modeling/polygon.js');
