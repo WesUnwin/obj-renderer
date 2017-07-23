@@ -2,10 +2,10 @@
 
 const Matrix = require('./Matrix.js');
 const ShaderProgram = require('./graphics/ShaderProgram.js');
-const DefaultVertexShaderSource = require('raw-loader!../data/shaders/vertexshader.shader');
-const DefaultFragmentShaderSource = require('raw-loader!../data/shaders/fragmentshader.shader');
-const TexturedVertexShaderSource = require('raw-loader!../data/shaders/TexturedVertexShader.shader');
-const TexturedFragmentShaderSource = require('raw-loader!../data/shaders/TexturedFragmentShader.shader');
+const DefaultVertexShaderSource = require('raw-loader!../shaders/vshader.shader');
+const DefaultFragmentShaderSource = require('raw-loader!../shaders/fshader.shader');
+const TexturedVertexShaderSource = require('raw-loader!../shaders/TexVShader.shader');
+const TexturedFragmentShaderSource = require('raw-loader!../shaders/TexFShader.shader');
 const Camera = require('./Camera.js');
 
 
