@@ -16,6 +16,13 @@ const examples = {
 
 
 const showExample = (exampleName) => {
+	const radioButtons = document.querySelectorAll('input');
+	radioButtons.forEach(radio => {
+		if (radio.value == exampleName) {
+			radio.checked = true;
+		}
+	});
+
 	if (window.currentExample) window.currentExample.stop();
 	window.currentExample = examples[exampleName];
 	window.currentExample.start();
@@ -48,4 +55,4 @@ html += "</table>";
 document.getElementById('examplepicker').innerHTML += html;
 
 
-showExample('HelloWorld');
+showExample('Sub-Objects');
