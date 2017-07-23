@@ -6,12 +6,12 @@ const ObjFiles = require('./5_ObjFiles/ObjFiles.js');
 const SubObjects = require('./6_SubObjects/SubObjects.js');
 
 const examples = {
-	'HelloWorld': HelloWorld,
-	'TexturedSquare': TexturedSquare,
-	'RotatingCube': RotatingCube,
+	'Hello World': HelloWorld,
+	'Textured Square': TexturedSquare,
+	'Rotating Cube': RotatingCube,
 	'Perspective': Perspective,
-	'ObjFiles': ObjFiles,
-	'SubObjects': SubObjects
+	'Obj Files': ObjFiles,
+	'Sub-Objects': SubObjects
 };
 
 
@@ -34,7 +34,7 @@ window.radioClicked = () => {
 let html = "";
 html += "<table>";
 html += "  <tr>";
-html += "    <td with='200px'>";
+html += "    <td width='160px'>";
 for (let key in examples) {
 	html += "      <label><input type='radio' name='example' value='" + key + "' onClick='radioClicked()'/>" + key + "</label><br />";
 }
