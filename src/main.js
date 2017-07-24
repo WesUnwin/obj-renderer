@@ -1,3 +1,7 @@
+'use strict';
 
-// Load and run the example application:
-const application = require('../examples/ExamplePicker.js');
+const Scene = require('./Scene.js');
+
+module.exports = {
+  Scene: Scene
+};
