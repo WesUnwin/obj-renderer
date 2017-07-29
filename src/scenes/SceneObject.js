@@ -1,6 +1,6 @@
 'use strict';
 
-const Matrix = require('./Matrix.js');
+const Matrix = require('../Matrix.js');
 
 
 class SceneObject {

@@ -1,7 +1,7 @@
 'use strict';
 
 const Renderer = require('./graphics/Renderer.js');
-const Scene = require('./Scene.js');
+const Scene = require('scenes/Scene.js');
 
 
 module.exports = {

@@ -1,9 +1,9 @@
 const Renderer = require('main.js').Renderer;
-const Scene = require('../../src/Scene.js');
+const Scene = require('../../src/scenes/Scene.js');
 const ImageManager = require('../../src/graphics/ImageManager.js');
 const Model = require('../../src/modeling/Model.js');
 const Polygon = require('../../src/modeling/polygon.js');
-const StaticObject = require('../../src/StaticObject.js');
+const StaticObject = require('../../src/scenes/StaticObject.js');
 const MaterialManager = require('../../src/materials/MaterialManager.js');
 
 

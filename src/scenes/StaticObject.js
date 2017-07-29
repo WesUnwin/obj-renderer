@@ -1,7 +1,7 @@
 'use strict';
 
-const ModelStaticVBO = require('../src/graphics/ModelStaticVBO.js');
-const Matrix = require('./Matrix.js');
+const ModelStaticVBO = require('graphics/ModelStaticVBO.js');
+const Matrix = require('../Matrix.js');
 const SceneObject = require('./SceneObject.js');
 
 

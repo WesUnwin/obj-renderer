@@ -1,11 +1,11 @@
 'use strict';
 
-const Scene = require('Scene.js');
+const Scene = require('scenes/Scene.js');
 const ImageManager = require('graphics/ImageManager.js');
 const OBJFile = require('modeling/OBJFile.js');
 const Model = require('modeling/Model.js');
 const Polygon = require('modeling/polygon.js');
-const StaticObject = require('StaticObject.js');
+const StaticObject = require('scenes/StaticObject.js');
 const MaterialManager = require('materials/MaterialManager.js');
 const groundObj = require('raw-loader!./Ground.obj');
 const boxObj = require('raw-loader!./Box.obj');
