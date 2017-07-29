@@ -23,7 +23,11 @@ module.exports = {
 
       const renderer = new Renderer(canvas);
       const scene = new Scene();
-      scene.camera.usePerspectiveView();
+
+      const camera = scene.getCamera();
+      camera.usePerspectiveView();
+      camera.setPosition(0, 2,10);
+      camera.setYaw(-20);
 
       MaterialManager.createMaterial(renderer._gl, 'ground',  0, 0, 0, ImageManager.getImage('assets/images/grass.png'));
 
@@ -44,9 +48,6 @@ module.exports = {
       box.addObject(miniBox);
 
       scene.addObject(box);
-
-      scene.camera.setPosition(0, 2,10);
-      scene.camera.setYaw(-20);
 
       let pitch = 0;
       _interval = setInterval(() => {

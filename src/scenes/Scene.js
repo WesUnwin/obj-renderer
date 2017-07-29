@@ -6,8 +6,8 @@ const Camera = require('./Camera.js');
 class Scene {
 
   constructor(json) {
-    this.camera = new Camera();
-    this.objects = [];
+    this._camera = new Camera();
+    this._objects = [];
     this.init(json);
   }
 
@@ -17,15 +17,22 @@ class Scene {
   }
 
   addObject(object) {
-    this.objects.push(object);
+    this._objects.push(object);
   }
 
   removeObject(object) {
-    this.objects = this.objects.filter(obj => {
+    this._objects = this._objects.filter(obj => {
       return obj != object;
     });
   }
 
+  getObjects() {
+    return this._objects;
+  }
+
+  getCamera() {
+    return this._camera;
+  }
 }
 
 module.exports = Scene;

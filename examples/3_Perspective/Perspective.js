@@ -26,7 +26,7 @@ module.exports = {
     MaterialManager.createMaterial(renderer._gl, 'top',  1, 1, 1);          // white
     MaterialManager.createMaterial(renderer._gl, 'bottom',  0.5, 0.5, 0.5); // grey
 
-    scene.camera.usePerspectiveView();
+    scene.getCamera().usePerspectiveView();
 
     // CREATE A MODEL (Containing just a single, colored triangle)
     const cube = new Model();

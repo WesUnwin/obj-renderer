@@ -79,8 +79,8 @@ const Camera = __webpack_require__(17);
 class Scene {
 
   constructor(json) {
-    this.camera = new Camera();
-    this.objects = [];
+    this._camera = new Camera();
+    this._objects = [];
     this.init(json);
   }
 
@@ -90,15 +90,22 @@ class Scene {
   }
 
   addObject(object) {
-    this.objects.push(object);
+    this._objects.push(object);
   }
 
   removeObject(object) {
-    this.objects = this.objects.filter(obj => {
+    this._objects = this._objects.filter(obj => {
       return obj != object;
     });
   }
 
+  getObjects() {
+    return this._objects;
+  }
+
+  getCamera() {
+    return this._camera;
+  }
 }
 
 module.exports = Scene;
@@ -609,7 +616,7 @@ class Renderer {
     this.enableDepthTest(true);
   }
 
-  setBackDropColor(red, green, blue) {
+  setClearColor(red, green, blue) {
     // Set values to clear framebuffer bits to:
     this._gl.clearColor(red, green, blue, 1.0);  // Clear to black, fully opaque
   }
@@ -640,12 +647,14 @@ class Renderer {
     // Clear the framebuffer bits:  (to the currently set clearColor and clearDepth values)
     this._gl.clear(this._gl.COLOR_BUFFER_BIT | this._gl.DEPTH_BUFFER_BIT);
 
-    const projMatrix = scene.camera.getProjectionMatrix();
-    const modelViewMatrix = scene.camera.getModelViewMatrix();
+    const camera = scene.getCamera();
+    const projMatrix = camera.getProjectionMatrix();
+    const modelViewMatrix = camera.getModelViewMatrix();
 
-    for(let i = 0; i < scene.objects.length; i++) {
-      scene.objects[i].render(this._gl, projMatrix, modelViewMatrix);
-    }
+    const objects = scene.getObjects();
+    objects.forEach(obj => {
+      obj.render(this._gl, projMatrix, modelViewMatrix);
+    });
   }
 }
 

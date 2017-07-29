@@ -65,12 +65,12 @@ class Renderer {
     this._gl.clearDepth(1.0);  // Sets the value to clear the depth buffer to when using gl.clear() 
                                // (does not actual clear the buffer)
 
-    this.setBackDropColor(0, 0, 0);
+    this.setClearColor(0, 0, 0);
     this.enableBackFaceCulling(false);
     this.enableDepthTest(true);
   }
 
-  setBackDropColor(red, green, blue) {
+  setClearColor(red, green, blue) {
     // Set values to clear framebuffer bits to:
     this._gl.clearColor(red, green, blue, 1.0);  // Clear to black, fully opaque
   }
@@ -101,12 +101,14 @@ class Renderer {
     // Clear the framebuffer bits:  (to the currently set clearColor and clearDepth values)
     this._gl.clear(this._gl.COLOR_BUFFER_BIT | this._gl.DEPTH_BUFFER_BIT);
 
-    const projMatrix = scene.camera.getProjectionMatrix();
-    const modelViewMatrix = scene.camera.getModelViewMatrix();
+    const camera = scene.getCamera();
+    const projMatrix = camera.getProjectionMatrix();
+    const modelViewMatrix = camera.getModelViewMatrix();
 
-    for(let i = 0; i < scene.objects.length; i++) {
-      scene.objects[i].render(this._gl, projMatrix, modelViewMatrix);
-    }
+    const objects = scene.getObjects();
+    objects.forEach(obj => {
+      obj.render(this._gl, projMatrix, modelViewMatrix);
+    });
   }
 }
 
