@@ -8,6 +8,10 @@ class Material {
     this.texture = null;
   }
 
+  getName() {
+    return this.name;
+  }
+
   setColor(red, green, blue, alpha = 1.0) {
     this.red = red;
     this.green = green;

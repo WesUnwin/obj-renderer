@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "/assets/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 27);
+/******/ 	return __webpack_require__(__webpack_require__.s = 29);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -73,13 +73,100 @@
 "use strict";
 
 
-const Matrix = __webpack_require__(1);
-const ShaderProgram = __webpack_require__(13);
-const DefaultVertexShaderSource = __webpack_require__(11);
-const DefaultFragmentShaderSource = __webpack_require__(10);
-const TexturedVertexShaderSource = __webpack_require__(9);
-const TexturedFragmentShaderSource = __webpack_require__(8);
-const Camera = __webpack_require__(12);
+class Model {
+
+  constructor(modelName) {
+    this.name = modelName;
+    this.vertices = [];
+    this.textureCoords = [];
+    this.vertexNormals = [];
+    this.polygons = [];
+  }
+
+  getName() {
+    return this.name;
+  }
+
+  addVertex(x, y, z) {
+    this.vertices.push({x: x, y: y, z: z});
+  }
+
+  addTextureCoords(u, v, w) {
+    this.textureCoords.push({u: u, v: v, w: w});
+  }
+
+  addVertexNormal(x, y, z) {
+    this.vertexNormals.push({x: x, y: y, z: z});
+  }
+
+  addPolygon(polygon) {
+    this.polygons.push(polygon);
+  }
+
+  // Returns an array listed all the names of all materials
+  // used by the polygons of this model.
+  getMaterialsUsed() {
+    let materials = [];
+    this.polygons.forEach((p) => {
+      if (materials.indexOf(p.materialName) === -1)
+        materials.push(p.materialName);
+    });
+    return materials;
+  }
+
+  getPolygonsByMaterial(materialName) {
+    return this.polygons.filter((p) => {
+      return p.materialName === materialName;
+    });
+  }
+
+}
+
+module.exports = Model;
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+class Polygon {
+
+  constructor(materialName) {
+    this.materialName = materialName;
+    this.vertices = [];
+  }
+
+  addVertex(vertexIndex, textureCoordsIndex, normalIndex) {
+    this.vertices.push({
+      vertexIndex:        vertexIndex,
+      textureCoordsIndex: textureCoordsIndex,
+      normalIndex:        normalIndex
+    });
+  }
+
+}
+
+module.exports = Polygon;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const Matrix = __webpack_require__(3);
+const ShaderProgram = __webpack_require__(15);
+const DefaultVertexShaderSource = __webpack_require__(12);
+const DefaultFragmentShaderSource = __webpack_require__(11);
+const TexturedVertexShaderSource = __webpack_require__(10);
+const TexturedFragmentShaderSource = __webpack_require__(9);
+const Renderer = __webpack_require__(14);
+const Camera = __webpack_require__(13);
+const OBJFile = __webpack_require__(7);
+const MTLFile = __webpack_require__(16);
 
 
 class Scene {
@@ -87,21 +174,58 @@ class Scene {
   constructor(canvasElement, viewportX, viewportY, viewportWidth, viewportHeight) {
     this.canvas = canvasElement;
 
-    this.gl = this.canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-    if (!this.gl) alert('Unable to obtain WebGL/Experiment WebGL context');
+    const gl = this.canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    if (!gl) alert('Unable to obtain WebGL/Experiment WebGL context');
 
-    this.setViewPort(viewportX, viewportY, viewportWidth, viewportHeight);
+    this._renderer = new Renderer(gl);
+    this._renderer.setViewPort(viewportX || 0, viewportY || 0, viewportWidth || canvas.width, viewportHeight || canvas.height);
+
+    this.gl = gl;
 
     this.camera = new Camera();
+
+    _models = [];
+    _materials = [];
+
     this.objects = [];
-    window.defaultShaderProgram = new ShaderProgram(this.gl, DefaultVertexShaderSource, DefaultFragmentShaderSource);
+    window.defaultShaderProgram = new ShaderProgram(this.gl, DefaultVertexShanjkderSource, DefaultFragmentShaderSource);
     window.texturedShaderProgram = new ShaderProgram(this.gl, TexturedVertexShaderSource, TexturedFragmentShaderSource);
 
     this._setRenderingDefaults();
   }
 
-  setViewPort(x = 0, y = 0, width = this.canvas.width, height = this.canvas.height) {
-    this.gl.viewport(x, y, width, height);
+  setViewPort(x, y, width, height) {
+    this._renderer.setViewPort(x, y, width, height);
+  }
+
+  loadOBJFile(objFileContents) {
+    const objFile = new OBJFile(objFileContents);
+    const { models, materialLibs } = objFile.parse();
+    models.forEach(model => {
+      this.addModel(model);
+    })
+  }
+
+  addModel(model) {
+    if (this._models.some(m => { return m.getName() == model.getName(); })) {
+      throw `Scene models must have unique names - a model already with name: ${model.getName()} already exists`;
+    }
+    this._models.push(model);
+  }
+
+  getModelNames() {
+    return this._models.map(m => m.getName());
+  }
+
+  loadMTLFile(mtlFileContents) {
+    const mtlFile = new MTLFile(mtlFileContents);
+  }
+
+  addMaterial(material) {
+    if (this._materials.some(mat => { return mat.getName() == material.getName(); })) {
+      throw `Scene materials must have unique names - a material already with name: ${material.getName()} already exists`;
+    }
+    this._materials.push(material);
   }
 
   addObject(object) {
@@ -133,7 +257,7 @@ class Scene {
 
   enableDepthTest(useDepthTesting = true) {
     const gl = this.gl;
-    if (useDepthTesting) {
+    if (useDepthTesting) { 
       gl.enable(gl.DEPTH_TEST);  // Enable depth testing
       gl.depthFunc(gl.LESS);     // Draw pixels with a Z value less than the z value of the pixel already drawn at the same location on the frame buffer
       gl.depthMask(true);        // allow writing to Z-buffer
@@ -156,12 +280,6 @@ class Scene {
     }
   }
 
-  play() {
-    setInterval(() => {
-      this.render(this.gl); 
-    }, 1500);
-  }
-
   _setRenderingDefaults() {
     this.gl.clearDepth(1.0);  // Sets the value to clear the depth buffer to when using gl.clear() 
                               // (does not actual clear the buffer)
@@ -176,7 +294,7 @@ class Scene {
 module.exports = Scene;
 
 /***/ }),
-/* 1 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -332,43 +450,210 @@ module.exports = Matrix;
 
 
 /***/ }),
-/* 2 */,
-/* 3 */,
 /* 4 */,
 /* 5 */,
 /* 6 */,
-/* 7 */,
-/* 8 */
-/***/ (function(module, exports) {
-
-module.exports = "precision mediump float;\n\nvarying vec3 vTextureCoords;\n\nuniform sampler2D uSampler;\n\nvoid main(void) {\n  gl_FragColor = texture2D(uSampler, vec2(vTextureCoords.s, vTextureCoords.t));\n}"
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports) {
-
-module.exports = "attribute vec3 aVertexPosition;\nattribute vec4 aVertexColor;\nattribute vec3 aVertexTextureCoords;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec4 vColor;\nvarying vec3 vTextureCoords;\n\nvoid main(void) {\n  vColor = aVertexColor;\n  vTextureCoords = aVertexTextureCoords;\n\n  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n}"
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-module.exports = "precision mediump float;\n\nvarying vec4 vColor;\n\nvoid main(void) {\n  gl_FragColor = vColor;\n}"
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports) {
-
-module.exports = "attribute vec3 aVertexPosition;\nattribute vec4 aVertexColor;\nattribute vec3 aVertexTextureCoords;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec4 vColor;\n\nvoid main(void) {\n  vColor = aVertexColor;\n\n  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n}"
-
-/***/ }),
-/* 12 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const Matrix = __webpack_require__(1);
+const Model = __webpack_require__(0);
+const Polygon = __webpack_require__(1);
+
+
+class OBJFile {
+
+  constructor(fileContents) {
+    this._reset();
+    this.fileContents = fileContents;
+  }
+
+  _reset() {
+    this.models = [];
+    this.currentMaterial = '';
+    this.materialLibs = [];
+  }
+
+  parse() {
+    this._reset();
+
+    const lines = this.fileContents.split("\n");
+    for(let i = 0; i < lines.length; i++) {
+      const line = this._stripComments(lines[i]);
+
+      const lineItems = line.replace(/\s\s+/g, ' ').trim().split(' ');
+      
+      switch(lineItems[0].toLowerCase())
+      {
+        case 'o':  // Start A New Model
+          this._parseObject(lineItems);
+          break;
+        case 'g': // Start a new polygon group
+          throw "NOT IMPLEMENTED";
+          break;
+        case 'v':  // Define a vertex for the current model
+          this._parseVertexCoords(lineItems);
+          break;
+        case 'vt': // Texture Coords
+          this._parseTextureCoords(lineItems);
+          break;
+        case 'vn': // Define a vertex normal for the current model
+          this._parseVertexNormal(lineItems);
+          break;
+        case 's':  // Smooth shading statement
+          this._parseSmoothShadingStatement(lineItems);
+          break;
+        case 'f': // Define a Face/Polygon
+          this._parsePolygon(lineItems);
+          break;
+        case 'mtllib': // Reference to a material library file (.mtl)
+          this._parseMtlLib(lineItems);
+          break;
+        case 'usemtl': // Sets the current material to be applied to polygons defined from this point forward
+          this._parseUseMtl(lineItems);
+          break;
+      }
+
+    }
+
+    return {
+      models: this.models,
+      materialLibs: this.materialLibs
+    };
+  }
+
+  _currentModel() {
+    if(this.models.length == 0)
+      this.models.push(new Model("Untitled"));
+
+    return this.models[this.models.length - 1];
+  }
+
+  _stripComments(lineString) {
+    let commentIndex = lineString.indexOf('#');
+    if(commentIndex > -1)
+      return lineString.substring(0, commentIndex);
+    else
+      return lineString;
+  }
+
+  _parseObject(lineItems) {
+    let modelName = lineItems.length >= 2 ? lineItems[1] : "Untitled";
+    this.models.push(new Model(modelName)); // Attach to list of models to be returned
+  }
+
+  _parseVertexCoords(lineItems) {
+    let x = lineItems.length >= 2 ? parseFloat(lineItems[1]) : 0.0;
+    let y = lineItems.length >= 3 ? parseFloat(lineItems[2]) : 0.0;
+    let z = lineItems.length >= 4 ? parseFloat(lineItems[3]) : 0.0;
+    
+    this._currentModel().addVertex(x, y, z);
+  }
+
+  _parseTextureCoords(lineItems) {
+    let u = lineItems.length >= 2 ? parseFloat(lineItems[1]) : 0.0;
+    let v = lineItems.length >= 3 ? parseFloat(lineItems[2]) : 0.0;
+    let w = lineItems.length >= 4 ? parseFloat(lineItems[3]) : 0.0;
+    
+    this._currentModel().addTextureCoords(u, v, w);
+  }
+
+  _parseVertexNormal(lineItems) {
+    let x = lineItems.length >= 2 ? parseFloat(lineItems[1]) : 0.0;
+    let y = lineItems.length >= 3 ? parseFloat(lineItems[2]) : 0.0;
+    let z = lineItems.length >= 4 ? parseFloat(lineItems[3]) : 0.0;
+    
+    this._currentModel().addVertexNormal(x, y, z);
+  }
+
+  _parsePolygon(lineItems) {
+    let totalVertices = (lineItems.length - 1);
+    if(totalVertices < 3)
+      throw ("Face statement has less than 3 vertices" + this.filePath + this.lineNumber);
+    
+    let polygon = new Polygon(this.currentMaterial);
+    for(let i = 0; i<totalVertices; i++)
+    {
+      let vertexString = lineItems[i + 1];
+      let vertexValues = vertexString.split("/");
+      
+      if(vertexValues.length < 1 || vertexValues.length > 3)
+        throw ("Two many values (separated by /) for a single vertex" + this.filePath + this.lineNumber);
+      
+      let vertexIndex = 0;
+      let textureCoordsIndex = 0;
+      let vertexNormalIndex = 0;
+      vertexIndex = parseInt(vertexValues[0]);
+      if(vertexValues.length > 1 && (!vertexValues[1] == ""))
+        textureCoordsIndex = parseInt(vertexValues[1]);
+      if(vertexValues.length > 2)
+        vertexNormalIndex = parseInt(vertexValues[2]);
+      
+      if (vertexIndex == 0)
+        throw "Faces uses invalid vertex index of 0";
+
+      // Negative vertex indices refer to the nth last defined vertex
+      // convert these to postive indices for simplicity
+      if (vertexIndex < 0)
+        vertexIndex = this._currentModel().vertices.length + 1 + vertexIndex;
+
+      polygon.addVertex(vertexIndex, textureCoordsIndex, vertexNormalIndex);
+    }
+    this._currentModel().addPolygon(polygon);
+  }
+
+  _parseMtlLib(lineItems) {
+    if(lineItems.length >= 2)
+      this.materialLibs.push(lineItems[1]);
+  }
+
+  _parseUseMtl(lineItems) {
+    if(lineItems.length >= 2)
+      this.currentMaterial = lineItems[1];
+  }
+
+  _parseSmoothShadingStatement(lineItems) {
+    throw "NOT IMPLEMENTED";
+  }
+}
+
+module.exports = OBJFile;
+
+/***/ }),
+/* 8 */,
+/* 9 */
+/***/ (function(module, exports) {
+
+module.exports = "precision mediump float;\n\nvarying vec3 vTextureCoords;\n\nuniform sampler2D uSampler;\n\nvoid main(void) {\n  gl_FragColor = texture2D(uSampler, vec2(vTextureCoords.s, vTextureCoords.t));\n}"
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+module.exports = "attribute vec3 aVertexPosition;\nattribute vec4 aVertexColor;\nattribute vec3 aVertexTextureCoords;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec4 vColor;\nvarying vec3 vTextureCoords;\n\nvoid main(void) {\n  vColor = aVertexColor;\n  vTextureCoords = aVertexTextureCoords;\n\n  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n}"
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports) {
+
+module.exports = "precision mediump float;\n\nvarying vec4 vColor;\n\nvoid main(void) {\n  gl_FragColor = vColor;\n}"
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports) {
+
+module.exports = "attribute vec3 aVertexPosition;\nattribute vec4 aVertexColor;\nattribute vec3 aVertexTextureCoords;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec4 vColor;\n\nvoid main(void) {\n  vColor = aVertexColor;\n\n  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n}"
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const Matrix = __webpack_require__(3);
 
 
 class Camera {
@@ -433,7 +718,28 @@ class Camera {
 module.exports = Camera;
 
 /***/ }),
-/* 13 */
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+class Renderer {
+
+	constructor(gl) {
+		this._gl = gl;
+	}
+
+  setViewPort(x, y, width, height) {
+    this._gl.viewport(x, y, width, height);
+  }
+
+}
+
+module.exports = Renderer;
+
+/***/ }),
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -497,9 +803,106 @@ class ShaderProgram {
 module.exports = ShaderProgram;
 
 /***/ }),
-/* 14 */,
-/* 15 */,
-/* 16 */,
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+class MTLFile {
+
+  constructor(fileContents) {
+    this._reset();
+    this.fileContents = fileContents;
+  }
+
+  _reset() {
+    this.materials = [];
+  }
+
+  parse() {
+    this._reset();
+
+    const lines = this.fileContents.split("\n");
+    for(let i = 0; i < lines.length; i++) {
+      const line = this._stripComments(lines[i]);
+
+      const lineItems = line.replace(/\s\s+/g, ' ').trim().split(' ');
+      
+      switch(lineItems[0].toLowerCase())
+      {
+        case 'newmtl':  // Starts a new material, assigns a name to it
+
+          break;
+        case 'ka': // (Ka) - Ambient color of material
+
+          break;
+        case 'kd': // (Kd) - Difffuse reflectance
+
+          break;
+        case 'ks': // (Ks) - Specular reflectance
+          // TODO
+          break;
+        case 'tf': // Transmission filter
+          // TODO
+          break;
+        case 'ns': //
+        case 'd': //
+        case 'map_ka': //
+
+          break;
+        case 'map_kd': //
+
+          break;
+        case 'map_ks':
+          // TODO
+          break;
+        case 'map_ns':
+          // TODO
+          break;
+        case 'disp':
+          // TODO
+          break;
+        case 'decal':
+          // TODO
+          break;
+        case 'bump':
+          // TODO
+          break;
+        case 'illum': // Specifies which Illumination model is to be used when rendering the current material. (eg. illum 2)
+
+          // Abbreviations:
+          //  N    Unit surface normal
+          //  Ia   Itensity of the ambient light
+          //  ls   # of lights
+          //  Lj   Light direction (vector) of light j
+          //  Ij   Light intensity (scalar) of light j
+
+          // Illumination ModeLs:
+          //  0:  Constant color   (color = Kd)
+
+          //  1:  Diffuse illumination model (using Lambertian shading).
+          //        color = KaIa + Kd { SUM j=1..ls, (N * Lj)Ij }
+
+          //  2:  Diffuse and specular illumination model using Lambertian shading,
+          //      and Blinn's interpretation of Phong's specular illumination model.
+
+          //        color = KaIa 
+          //          + Kd { SUM j=1..ls, (N*Lj)Ij }
+          //          + Ks { SUM j=1..ls, ((H*Hj)^Ns)Ij }
+          break;
+      }
+
+    }
+
+    return this.materials;
+  }
+
+}
+
+module.exports = MTLFile;
+
+/***/ }),
 /* 17 */,
 /* 18 */,
 /* 19 */,
@@ -510,13 +913,15 @@ module.exports = ShaderProgram;
 /* 24 */,
 /* 25 */,
 /* 26 */,
-/* 27 */
+/* 27 */,
+/* 28 */,
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const Scene = __webpack_require__(0);
+const Scene = __webpack_require__(2);
 
 module.exports = {
   Scene: Scene

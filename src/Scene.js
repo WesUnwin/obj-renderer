@@ -6,21 +6,28 @@ const DefaultVertexShaderSource = require('raw-loader!../shaders/vshader.shader'
 const DefaultFragmentShaderSource = require('raw-loader!../shaders/fshader.shader');
 const TexturedVertexShaderSource = require('raw-loader!../shaders/TexVShader.shader');
 const TexturedFragmentShaderSource = require('raw-loader!../shaders/TexFShader.shader');
+const Renderer = require('./graphics/Renderer.js');
 const Camera = require('./Camera.js');
+const OBJFile = require('./modeling/OBJFile.js');
+const MTLFile = require('./materials/MTLFile.js');
 
 
 class Scene {
-  _models = [];
 
   constructor(canvasElement, viewportX, viewportY, viewportWidth, viewportHeight) {
-    this.canvas = canvasElement;
+    const gl = canvasElement.getContext('webgl') || canvasElement.getContext('experimental-webgl');
+    if (!gl) alert('Unable to obtain WebGL/Experiment WebGL context');
 
-    this.gl = this.canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-    if (!this.gl) alert('Unable to obtain WebGL/Experiment WebGL context');
+    this._renderer = new Renderer(gl);
+    this._renderer.setViewPort(viewportX || 0, viewportY || 0, viewportWidth || canvasElement.width, viewportHeight || canvasElement.height);
 
-    this.setViewPort(viewportX, viewportY, viewportWidth, viewportHeight);
+    this.gl = gl;
 
     this.camera = new Camera();
+
+    this._models = [];
+    this._materials = [];
+
     this.objects = [];
     window.defaultShaderProgram = new ShaderProgram(this.gl, DefaultVertexShaderSource, DefaultFragmentShaderSource);
     window.texturedShaderProgram = new ShaderProgram(this.gl, TexturedVertexShaderSource, TexturedFragmentShaderSource);
@@ -28,8 +35,8 @@ class Scene {
     this._setRenderingDefaults();
   }
 
-  setViewPort(x = 0, y = 0, width = this.canvas.width, height = this.canvas.height) {
-    this.gl.viewport(x, y, width, height);
+  setViewPort(x, y, width, height) {
+    this._renderer.setViewPort(x, y, width, height);
   }
 
   loadOBJFile(objFileContents) {
@@ -52,7 +59,14 @@ class Scene {
   }
 
   loadMTLFile(mtlFileContents) {
+    const mtlFile = new MTLFile(mtlFileContents);
+  }
 
+  addMaterial(material) {
+    if (this._materials.some(mat => { return mat.getName() == material.getName(); })) {
+      throw `Scene materials must have unique names - a material already with name: ${material.getName()} already exists`;
+    }
+    this._materials.push(material);
   }
 
   addObject(object) {
