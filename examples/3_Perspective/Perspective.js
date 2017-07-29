@@ -1,3 +1,4 @@
+const Renderer = require('main.js').Renderer;
 const Scene = require('../../src/Scene.js');
 const sobj = require('raw-loader!../assets/models/cube.obj');
 const ImageManager = require('../../src/graphics/ImageManager.js');
@@ -14,15 +15,16 @@ module.exports = {
   start: function() {
     const canvas = document.getElementById('mycanvas');
 
-    const scene = new Scene(canvas);
+    const renderer = new Renderer(canvas);
+    const scene = new Scene();
 
     // Load Materials
-    MaterialManager.createMaterial(scene.gl, 'front', 1, 0, 0);         // red
-    MaterialManager.createMaterial(scene.gl, 'right', 0, 1, 0);         // green
-    MaterialManager.createMaterial(scene.gl, 'back2',  0, 0, 1);         // blue
-    MaterialManager.createMaterial(scene.gl, 'left',  1, 1, 0);         // yellow
-    MaterialManager.createMaterial(scene.gl, 'top',  1, 1, 1);          // white
-    MaterialManager.createMaterial(scene.gl, 'bottom',  0.5, 0.5, 0.5); // grey
+    MaterialManager.createMaterial(renderer._gl, 'front', 1, 0, 0);         // red
+    MaterialManager.createMaterial(renderer._gl, 'right', 0, 1, 0);         // green
+    MaterialManager.createMaterial(renderer._gl, 'back2',  0, 0, 1);         // blue
+    MaterialManager.createMaterial(renderer._gl, 'left',  1, 1, 0);         // yellow
+    MaterialManager.createMaterial(renderer._gl, 'top',  1, 1, 1);          // white
+    MaterialManager.createMaterial(renderer._gl, 'bottom',  0.5, 0.5, 0.5); // grey
 
     scene.camera.usePerspectiveView();
 
@@ -110,7 +112,7 @@ module.exports = {
     gameObject.setPosition(0, -1, -5);
 
     _interval = setInterval(() => {
-      scene.render();
+      renderer.renderScene(scene);
     }, 16);
   },
 

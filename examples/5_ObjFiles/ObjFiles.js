@@ -1,3 +1,4 @@
+const Renderer = require('main.js').Renderer;
 const Scene = require('Scene.js');
 const ImageManager = require('graphics/ImageManager.js');
 const OBJFile = require('modeling/OBJFile.js');
@@ -16,16 +17,16 @@ module.exports = {
     const onImagesLoaded = () => {
       const canvas = document.getElementById('mycanvas');
 
-      // CREATE A SCENE
-      const scene = new Scene(canvas);
+      const renderer = new Renderer(canvas);
+      const scene = new Scene();
 
       // Load Materials
-      MaterialManager.createMaterial(scene.gl, 'front', 1, 0, 0);         // red
-      MaterialManager.createMaterial(scene.gl, 'right', 0, 1, 0);         // green
-      MaterialManager.createMaterial(scene.gl, 'back',  0, 0, 0, ImageManager.getImage('assets/images/brick.png'));         // blue
-      MaterialManager.createMaterial(scene.gl, 'left',  1, 1, 0);         // yellow
-      MaterialManager.createMaterial(scene.gl, 'top',  1, 1, 1);          // white
-      MaterialManager.createMaterial(scene.gl, 'bottom',  0.5, 0.5, 0.5); // grey
+      MaterialManager.createMaterial(renderer._gl, 'front', 1, 0, 0);         // red
+      MaterialManager.createMaterial(renderer._gl, 'right', 0, 1, 0);         // green
+      MaterialManager.createMaterial(renderer._gl, 'back',  0, 0, 0, ImageManager.getImage('assets/images/brick.png'));         // blue
+      MaterialManager.createMaterial(renderer._gl, 'left',  1, 1, 0);         // yellow
+      MaterialManager.createMaterial(renderer._gl, 'top',  1, 1, 1);          // white
+      MaterialManager.createMaterial(renderer._gl, 'bottom',  0.5, 0.5, 0.5); // grey
 
       const objFile = new OBJFile(objFileContents);
       const { models, materialLibs } = objFile.parse();
@@ -40,7 +41,7 @@ module.exports = {
 
       _interval = setInterval(() => {
         gameObject.rotate(1, 0,1,0);
-        scene.render();
+        renderer.renderScene(scene);
       }, 16);
       
     };

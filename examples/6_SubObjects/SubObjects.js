@@ -9,6 +9,7 @@ const StaticObject = require('StaticObject.js');
 const MaterialManager = require('materials/MaterialManager.js');
 const groundObj = require('raw-loader!./Ground.obj');
 const boxObj = require('raw-loader!./Box.obj');
+const Renderer = require('main.js').Renderer;
 
 
 let _interval;
@@ -20,12 +21,13 @@ module.exports = {
     const onImagesLoaded = () => {
       const canvas = document.getElementById('mycanvas');
 
-      const scene = new Scene(canvas);
+      const renderer = new Renderer(canvas);
+      const scene = new Scene();
       scene.camera.usePerspectiveView();
 
-      MaterialManager.createMaterial(scene.gl, 'ground',  0, 0, 0, ImageManager.getImage('assets/images/grass.png'));
+      MaterialManager.createMaterial(renderer._gl, 'ground',  0, 0, 0, ImageManager.getImage('assets/images/grass.png'));
 
-      MaterialManager.createMaterial(scene.gl, 'crate', 0, 0, 0, ImageManager.getImage('assets/images/Crate.png'));
+      MaterialManager.createMaterial(renderer._gl, 'crate', 0, 0, 0, ImageManager.getImage('assets/images/Crate.png'));
 
       const groundModel = new OBJFile(groundObj).parse().models[0];
       const ground = new StaticObject(groundModel);
@@ -54,7 +56,7 @@ module.exports = {
         box.setPitch(pitch);
         miniBox.setPitch(pitch);
 
-        scene.render();
+        renderer.renderScene(scene);
       }, 15);
     };
 

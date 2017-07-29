@@ -1,3 +1,4 @@
+const Renderer = require('main.js').Renderer;
 const Scene = require('../../src/Scene.js');
 const ImageManager = require('../../src/graphics/ImageManager.js');
 const Model = require('../../src/modeling/Model.js');
@@ -13,9 +14,10 @@ module.exports = {
     const onImagesLoaded = () => {
       const canvas = document.getElementById('mycanvas');
 
-      const scene = new Scene(canvas);
+      const renderer = new Renderer(canvas);
+      const scene = new Scene();
 
-      MaterialManager.createMaterial(scene.gl, 'textured', 0,0,0, ImageManager.getImage('assets/images/brick.png'));
+      MaterialManager.createMaterial(renderer._gl, 'textured', 0,0,0, ImageManager.getImage('assets/images/brick.png'));
 
       // CREATE A MODEL (Containing just a single, textured triangle)
       const m = new Model();
@@ -48,7 +50,7 @@ module.exports = {
 
       scene.addObject(gameObject);
 
-      scene.render();
+      renderer.renderScene(scene);
     };
 
     const onImagesLoadFailed = () => {

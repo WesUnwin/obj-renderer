@@ -1,3 +1,4 @@
+const Renderer = require('main.js').Renderer;
 const Scene = require('../../src/Scene.js');
 const sobj = require('raw-loader!../assets/models/cube.obj');
 const ImageManager = require('../../src/graphics/ImageManager.js');
@@ -12,10 +13,10 @@ module.exports = {
   start: function() {
     const canvas = document.getElementById('mycanvas');
 
-    const scene = new Scene(canvas);
-    scene.setBackDropColor(0,0,1);
+    const renderer = new Renderer(canvas);
+    const scene = new Scene();
 
-    MaterialManager.createMaterial(scene.gl, null, 1, 0, 0);
+    MaterialManager.createMaterial(renderer._gl, null, 1, 0, 0);
 
     // CREATE A MODEL (Containing just a single, colored triangle)
     const m = new Model();
@@ -37,8 +38,7 @@ module.exports = {
 
     scene.addObject(gameObject);
 
-
-    scene.render();
+    renderer.renderScene(scene);
   },
 
   stop: function() {
