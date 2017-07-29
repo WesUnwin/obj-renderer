@@ -10,6 +10,10 @@ class Model {
     this.polygons = [];
   }
 
+  getName() {
+    return this.name;
+  }
+
   addVertex(x, y, z) {
     this.vertices.push({x: x, y: y, z: z});
   }

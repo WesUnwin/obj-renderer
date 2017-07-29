@@ -10,6 +10,7 @@ const Camera = require('./Camera.js');
 
 
 class Scene {
+  _models = [];
 
   constructor(canvasElement, viewportX, viewportY, viewportWidth, viewportHeight) {
     this.canvas = canvasElement;
@@ -29,6 +30,29 @@ class Scene {
 
   setViewPort(x = 0, y = 0, width = this.canvas.width, height = this.canvas.height) {
     this.gl.viewport(x, y, width, height);
+  }
+
+  loadOBJFile(objFileContents) {
+    const objFile = new OBJFile(objFileContents);
+    const { models, materialLibs } = objFile.parse();
+    models.forEach(model => {
+      this.addModel(model);
+    })
+  }
+
+  addModel(model) {
+    if (this._models.some(m => { return m.getName() == model.getName(); })) {
+      throw `Scene models must have unique names - a model already with name: ${model.getName()} already exists`;
+    }
+    this._models.push(model);
+  }
+
+  getModelNames() {
+    return this._models.map(m => m.getName());
+  }
+
+  loadMTLFile(mtlFileContents) {
+
   }
 
   addObject(object) {
@@ -60,7 +84,7 @@ class Scene {
 
   enableDepthTest(useDepthTesting = true) {
     const gl = this.gl;
-    if (useDepthTesting) {
+    if (useDepthTesting) { 
       gl.enable(gl.DEPTH_TEST);  // Enable depth testing
       gl.depthFunc(gl.LESS);     // Draw pixels with a Z value less than the z value of the pixel already drawn at the same location on the frame buffer
       gl.depthMask(true);        // allow writing to Z-buffer
@@ -81,12 +105,6 @@ class Scene {
     for(var i = 0; i < this.objects.length; i++) {
       this.objects[i].render(gl, projMatrix, modelViewMatrix);
     }
-  }
-
-  play() {
-    setInterval(() => {
-      this.render(this.gl); 
-    }, 1500);
   }
 
   _setRenderingDefaults() {

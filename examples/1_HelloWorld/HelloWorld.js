@@ -13,6 +13,7 @@ module.exports = {
     const canvas = document.getElementById('mycanvas');
 
     const scene = new Scene(canvas);
+    scene.setBackDropColor(0,0,1);
 
     MaterialManager.createMaterial(scene.gl, null, 1, 0, 0);
 
@@ -35,6 +36,7 @@ module.exports = {
     const gameObject = new StaticObject(m);
 
     scene.addObject(gameObject);
+
 
     scene.render();
   },
