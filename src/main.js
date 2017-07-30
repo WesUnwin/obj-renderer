@@ -2,9 +2,11 @@
 
 const Renderer = require('./graphics/Renderer.js');
 const Scene = require('scenes/Scene.js');
+const StaticObject = require('scenes/StaticObject.js');
 
 
 module.exports = {
 	Renderer: Renderer,
-  Scene: Scene
+  Scene: Scene,
+  SceneObject: StaticObject
 };
