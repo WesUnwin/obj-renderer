@@ -97,6 +97,10 @@ class MTLFile {
           this._parseBump(lineItems);
           break;
 
+        case 'refl': // Reflection Map Statement
+          this._parseRefl(lineItems);
+          break;
+
         default:
           this._fileError(`Unrecognized statement: ${lineItems[0]}`);
       }
@@ -186,6 +190,10 @@ class MTLFile {
   }
 
   _parseBump(lineItems) {
+    this._notImplemented('bump');
+  }
+
+  _parseRefl(lineItems) {
     this._notImplemented('bump');
   }
 
