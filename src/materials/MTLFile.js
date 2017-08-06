@@ -18,11 +18,17 @@ class MTLFile {
     this._reset();
 
     const lines = this.fileContents.split("\n");
-    for(let i = 0; i < lines.length; i++) {
-      const line = this._stripComments(lines[i]);
 
-      const lineItems = line.replace(/\s\s+/g, ' ').trim().split(' ');
-      
+    lines.forEach((line, index) => {
+
+      this.lineNumber = (index + 1);
+
+      const lineItems = this._stripComments(line).replace(/\s\s+/g, ' ').trim().split(' ');
+
+      if (lineItems.length == 0) {
+        return; // Skip blank lines
+      }
+
       switch(lineItems[0].toLowerCase())
       {
         case 'newmtl':  // Starts a new material, assigns a name to it
@@ -104,7 +110,7 @@ class MTLFile {
         default:
           this._fileError(`Unrecognized statement: ${lineItems[0]}`);
       }
-    }
+    });
 
     return this.materials;
   }
@@ -205,7 +211,8 @@ class MTLFile {
     const file = this.filename ? `File: ${this.filename}` : '';
     const material = `Material: ${this.currentMaterial.getName()}`;
     const line = `Line: ${this.lineNumber}`;
-    throw `MTL file format error (${file}  ${material}  ${line}): ${message}`;
+    const errorMessage = `MTL file format error (${file}  ${material}  ${line}): ${message}`;
+    throw ;
   }
 
 }
