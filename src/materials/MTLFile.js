@@ -54,6 +54,7 @@ class MTLFile {
           //        color = KaIa 
           //          + Kd { SUM j=1..ls, (N*Lj)Ij }
           //          + Ks { SUM j=1..ls, ((H*Hj)^Ns)Ij }
+
         case 'ka': // (Ka) - Ambient color of material
           this._parseKa(lineItems);
           break;
