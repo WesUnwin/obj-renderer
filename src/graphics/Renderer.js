@@ -3,10 +3,10 @@
 const OBJFile = require('modeling/OBJFile.js');
 const MTLFile = require('materials/MTLFile.js');
 const ShaderProgram = require('./ShaderProgram.js');
-const DefaultVertexShaderSource = require('raw-loader!../../shaders/vshader.shader');
-const DefaultFragmentShaderSource = require('raw-loader!../../shaders/fshader.shader');
-const TexturedVertexShaderSource = require('raw-loader!../../shaders/TexVShader.shader');
-const TexturedFragmentShaderSource = require('raw-loader!../../shaders/TexFShader.shader');
+const DefaultVertexShaderSource = require('raw-loader!../shaders/vshader.shader');
+const DefaultFragmentShaderSource = require('raw-loader!../shaders/fshader.shader');
+const TexturedVertexShaderSource = require('raw-loader!../shaders/TexVShader.shader');
+const TexturedFragmentShaderSource = require('raw-loader!../shaders/TexFShader.shader');
 
 
 class Renderer {
