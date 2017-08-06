@@ -34,6 +34,7 @@ class MTLFile {
         case 'newmtl':  // Starts a new material, assigns a name to it
           this._parseNewMTL(lineItems);
           break;
+
         case 'illum': // Specifies which Illumination model is to be used when rendering the current material. (eg. illum 2)
           // Abbreviations:
           //  N    Unit surface normal
