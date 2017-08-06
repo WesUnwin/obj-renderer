@@ -6,6 +6,11 @@ class Material {
     this.name = name || '';
     this.setColor(1,0,0);
     this.texture = null;
+    this.illum = 0;
+
+    this.Ka = { red: 0, green: 0, blue: 0 };
+    this.Kd = { red: 0, green: 0, blue: 0 };
+    this.Ks = { red: 0, green: 0, blue: 0 };
   }
 
   getName() {
