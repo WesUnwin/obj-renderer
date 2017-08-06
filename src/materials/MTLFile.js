@@ -214,7 +214,7 @@ class MTLFile {
     const material = `Material: ${this.currentMaterial.getName()}`;
     const line = `Line: ${this.lineNumber}`;
     const errorMessage = `MTL file format error (${file}  ${material}  ${line}): ${message}`;
-    throw ;
+    throw errorMessage;
   }
 
 }

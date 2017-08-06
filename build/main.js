@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "/assets/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -73,7 +73,7 @@
 "use strict";
 
 
-const Camera = __webpack_require__(17);
+const Camera = __webpack_require__(20);
 
 
 class Scene {
@@ -112,6 +112,118 @@ module.exports = Scene;
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const ModelStaticVBO = __webpack_require__(15);
+const Matrix = __webpack_require__(7);
+const SceneObject = __webpack_require__(21);
+
+
+class StaticObject extends SceneObject {
+
+  constructor(model) {
+    super();
+		this.modelStaticVBO = new ModelStaticVBO(model);
+  }
+
+  render(gl, projectionMatrix, modelViewMatrix) {
+    const mvMatrix = this.transform.clone();
+    mvMatrix.multiply(modelViewMatrix);
+    this.modelStaticVBO.render(gl, projectionMatrix, mvMatrix);
+    this.subObjects.forEach(subObject => {
+      subObject.render(gl, projectionMatrix, mvMatrix);
+    });
+  }
+
+}
+
+module.exports = StaticObject;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+class ImageManager {
+
+  static loadImages(imagePaths, onLoadComplete, onFailure) {
+    this.images = [];
+
+    const promises = imagePaths.map(imagePath => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onerror = () => reject(img);
+        img.onload = () => resolve(img);
+        img.src = imagePath;
+      });
+    });
+
+    const onImagesSuccessfullyLoaded = (images) => {
+      this.images = images;
+      onLoadComplete();
+    };
+
+    Promise.all(promises).then(onImagesSuccessfullyLoaded, onFailure);
+  }
+
+  static getImage(filePath) {
+    // TODO fix this sketchy look up logic
+    return this.images.find(image => {
+      return image.src.includes(filePath);
+    });
+  }
+}
+
+module.exports = ImageManager;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const Material = __webpack_require__(18);
+const Texture = __webpack_require__(19);
+const ImageManager = __webpack_require__(2);
+
+
+let _materials = [];
+
+module.exports = {
+
+  createMaterial: function(gl, name, red, green, blue, textureImage) {
+    if (_materials.indexOf(name) != -1) {
+      throw new Error('Material with name ' + name + ' already exists');
+    }
+    const mat = new Material(name);
+    mat.setColor(red, green, blue);
+    if (textureImage) {
+      mat.setTexture(new Texture(gl, textureImage));
+    }
+    _materials.push(mat);
+  },
+
+  getDefaultMaterial: function() {
+  	return this.getMaterial();
+  },
+
+  getMaterial: function(materialName) {
+  	const matName = materialName || '';
+  	return _materials.find(mat => {
+  		return mat.name == matName;
+  	});
+  }
+
+};
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -169,7 +281,7 @@ class Model {
 module.exports = Model;
 
 /***/ }),
-/* 2 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -195,7 +307,7 @@ class Polygon {
 module.exports = Polygon;
 
 /***/ }),
-/* 3 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -203,18 +315,17 @@ module.exports = Polygon;
 
 const Renderer = __webpack_require__(9);
 const Scene = __webpack_require__(0);
+const StaticObject = __webpack_require__(1);
 
 
 module.exports = {
 	Renderer: Renderer,
-  Scene: Scene
+  Scene: Scene,
+  SceneObject: StaticObject
 };
 
 
 /***/ }),
-/* 4 */,
-/* 5 */,
-/* 6 */,
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -377,8 +488,8 @@ module.exports = Matrix;
 "use strict";
 
 
-const Model = __webpack_require__(1);
-const Polygon = __webpack_require__(2);
+const Model = __webpack_require__(4);
+const Polygon = __webpack_require__(5);
 
 
 class OBJFile {
@@ -547,8 +658,8 @@ module.exports = OBJFile;
 
 
 const OBJFile = __webpack_require__(8);
-const MTLFile = __webpack_require__(16);
-const ShaderProgram = __webpack_require__(15);
+const MTLFile = __webpack_require__(17);
+const ShaderProgram = __webpack_require__(16);
 const DefaultVertexShaderSource = __webpack_require__(14);
 const DefaultFragmentShaderSource = __webpack_require__(13);
 const TexturedVertexShaderSource = __webpack_require__(12);
@@ -611,7 +722,7 @@ class Renderer {
     this._gl.clearDepth(1.0);  // Sets the value to clear the depth buffer to when using gl.clear() 
                                // (does not actual clear the buffer)
 
-    this.setBackDropColor(0, 0, 0);
+    this.setClearColor(0, 0, 0);
     this.enableBackFaceCulling(false);
     this.enableDepthTest(true);
   }
@@ -692,6 +803,152 @@ module.exports = "attribute vec3 aVertexPosition;\nattribute vec4 aVertexColor;\
 "use strict";
 
 
+const MaterialManager = __webpack_require__(3);
+
+
+/**
+ * Represents that has non-changing
+ * vertex/textureCoord/normal data that comes from a single model.
+ */
+class ModelStaticVBO {
+
+  constructor(model) {
+    this.model = model;
+  }
+
+  render(gl, projectionMatrix, modelViewMatrix) {
+    if (!this.buffered)
+      this._buffer(gl);
+
+    this.materialMeshes.forEach((mesh) => {
+      // Draw one material (a mesh) of the model at a time
+      let currentMaterial = MaterialManager.getMaterial(mesh.materialName);
+      currentMaterial.use(gl, projectionMatrix, modelViewMatrix);
+
+
+
+      // TELL THE SHADER PROGRAM THE VALUES FOR EACH VERTEX ATTRIBUTE
+      const shaderProgram = currentMaterial.getShaderProgram();
+
+      // Position data
+      var vertexPositionAttribute = gl.getAttribLocation(shaderProgram.getWebGLProgram(), 'aVertexPosition');
+      gl.enableVertexAttribArray(vertexPositionAttribute);
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+      gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+
+      // Color data
+      var colorAttribute = gl.getAttribLocation(shaderProgram.getWebGLProgram(), 'aVertexColor');
+      gl.enableVertexAttribArray(colorAttribute);
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexColorBuffer);
+      gl.vertexAttribPointer(colorAttribute, 4, gl.FLOAT, false, 0, 0);
+
+      // Texture Coord. data
+      var textureCoordsAttribute = gl.getAttribLocation(shaderProgram.getWebGLProgram(), 'aVertexTextureCoords');
+      if (textureCoordsAttribute != -1) {
+        gl.enableVertexAttribArray(textureCoordsAttribute);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
+        gl.vertexAttribPointer(textureCoordsAttribute, 2, gl.FLOAT, false, 0, 0);
+      }
+
+
+
+      // DRAW THE MESH
+      let totalMeshVertices = mesh.endIndex - mesh.startIndex + 1;
+      gl.drawArrays(gl.TRIANGLES, mesh.startIndex, totalMeshVertices);
+    });
+  }
+
+  _buffer(gl) {
+    let vertexPositions = [];
+    let vertexTextureCoords = [];
+    let vertexNormals = [];
+    const vertexColors = [];
+
+    let meshes = []; // Array of objects, 1 for each material { startIndex, endIndex }
+
+    // Group polygons by material
+    let modelMaterials = this.model.getMaterialsUsed();
+
+    let index = 0;
+    modelMaterials.forEach((materialName) => {
+      const mesh = { materialName: materialName, startIndex: index};
+
+      let currentMaterial = MaterialManager.getMaterial(materialName);
+      const polygons = this.model.getPolygonsByMaterial(materialName);
+
+      polygons.forEach((polygon) => {
+        polygon.vertices.forEach((vertex) => {
+          const vertexCoords = this.model.vertices[vertex.vertexIndex - 1];
+          vertexPositions.push(vertexCoords.x);
+          vertexPositions.push(vertexCoords.y);
+          vertexPositions.push(vertexCoords.z);
+
+          vertexColors.push(currentMaterial.red);
+          vertexColors.push(currentMaterial.green);
+          vertexColors.push(currentMaterial.blue);
+          vertexColors.push(currentMaterial.alpha);
+
+          if (!vertex.textureCoordsIndex) {
+            vertexTextureCoords.push(0);
+            vertexTextureCoords.push(0);
+          } else {
+            let vertexTextureCoord = this.model.textureCoords[vertex.textureCoordsIndex - 1];
+            vertexTextureCoords.push(vertexTextureCoord.u);
+            vertexTextureCoords.push(vertexTextureCoord.v);
+          }
+
+          if (!vertex.normalIndex) {
+            vertexNormals.push(0);
+            vertexNormals.push(0);
+          } else {
+            let vertexNormal = this.model.vertexNormals[vertex.normalIndex - 1];
+            vertexNormals.push(vertexNormal.x);
+            vertexNormals.push(vertexNormal.y);
+          }
+
+          index += 1;
+        });
+      });
+
+      mesh.endIndex = index - 1;
+      meshes.push(mesh);
+    });
+
+    this.materialMeshes = meshes;
+
+    // Load Vertex Position data into a Buffer Object
+    this.vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexPositions), gl.STATIC_DRAW);
+
+
+    this.vertexColorBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexColorBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexColors), gl.STATIC_DRAW);
+
+
+    // load Texture Coords into a Buffer Object
+    this.textureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoordBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexTextureCoords), gl.STATIC_DRAW);
+
+    this.buffered = true;
+
+
+  }
+}
+
+module.exports = ModelStaticVBO;
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 class ShaderProgram {
 
 	constructor(gl, vertexShaderSource, fragmentShaderSource) {
@@ -750,7 +1007,7 @@ class ShaderProgram {
 module.exports = ShaderProgram;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -765,59 +1022,33 @@ class MTLFile {
 
   _reset() {
     this.materials = [];
+    this.currentMaterial = null;
+    this.lineNumber = 1;
+    this.filename = '';
   }
 
   parse() {
     this._reset();
 
     const lines = this.fileContents.split("\n");
-    for(let i = 0; i < lines.length; i++) {
-      const line = this._stripComments(lines[i]);
 
-      const lineItems = line.replace(/\s\s+/g, ' ').trim().split(' ');
-      
+    lines.forEach((line, index) => {
+
+      this.lineNumber = (index + 1);
+
+      const lineItems = this._stripComments(line).replace(/\s\s+/g, ' ').trim().split(' ');
+
+      if (lineItems.length == 0) {
+        return; // Skip blank lines
+      }
+
       switch(lineItems[0].toLowerCase())
       {
         case 'newmtl':  // Starts a new material, assigns a name to it
+          this._parseNewMTL(lineItems);
+          break;
 
-          break;
-        case 'ka': // (Ka) - Ambient color of material
-
-          break;
-        case 'kd': // (Kd) - Difffuse reflectance
-
-          break;
-        case 'ks': // (Ks) - Specular reflectance
-          // TODO
-          break;
-        case 'tf': // Transmission filter
-          // TODO
-          break;
-        case 'ns': //
-        case 'd': //
-        case 'map_ka': //
-
-          break;
-        case 'map_kd': //
-
-          break;
-        case 'map_ks':
-          // TODO
-          break;
-        case 'map_ns':
-          // TODO
-          break;
-        case 'disp':
-          // TODO
-          break;
-        case 'decal':
-          // TODO
-          break;
-        case 'bump':
-          // TODO
-          break;
         case 'illum': // Specifies which Illumination model is to be used when rendering the current material. (eg. illum 2)
-
           // Abbreviations:
           //  N    Unit surface normal
           //  Ia   Itensity of the ambient light
@@ -837,12 +1068,166 @@ class MTLFile {
           //        color = KaIa 
           //          + Kd { SUM j=1..ls, (N*Lj)Ij }
           //          + Ks { SUM j=1..ls, ((H*Hj)^Ns)Ij }
-          break;
-      }
 
-    }
+        case 'ka': // (Ka) - Ambient color of material
+          this._parseKa(lineItems);
+          break;
+        case 'kd': // (Kd) - Difffuse reflectance
+          this._parseKd(lineItems);
+          break;
+        case 'ks': // (Ks) - Specular reflectance
+          this._parseKs(lineItems);
+          break;
+
+        case 'tf': // Transmission filter
+          this._parseTF(lineItems);
+          break;
+        case 'ns': // (Ns) - Specular Exponent
+          this._parseNs(lineItems);
+          break;
+        case 'ni': // (Ni) - 
+          this._parseNi(lineItems);
+          break;
+        case 'd': // Controls how the current material dissolves (becomes transparent)
+          this._parseD(lineItems);
+          break;
+        case 'sharpness':
+          this._parseSharpness(lineItems);
+          break;
+
+        case 'map_ka': //
+          this._parseMapKa(lineItems);
+          break;
+        case 'map_kd': //
+          this._parseMapKd(lineItems);
+          break;
+        case 'map_ks':
+          this._parseMapKs(lineItems);
+          break;
+        case 'map_ns':
+          this._parseMapNs(lineItems);
+          break;
+
+        case 'disp':
+          this._parseDisp(lineItems);
+          break;
+        case 'decal':
+          this._parseDecal(lineItems);
+          break;
+        case 'bump':
+          this._parseBump(lineItems);
+          break;
+
+        case 'refl': // Reflection Map Statement
+          this._parseRefl(lineItems);
+          break;
+
+        default:
+          this._fileError(`Unrecognized statement: ${lineItems[0]}`);
+      }
+    });
 
     return this.materials;
+  }
+
+  // newmtl material_name
+  _parseNewMTL(lineItems) {
+    if (lineItems.length < 2) {
+      throw 'newmtl statement must specify a name for the maerial (eg, newmtl brickwall)';
+    }
+    const newMat = new Material(lineItems[1]);
+    this.materials.push(newMat);
+    this.currentMaterial = newMat;
+  }
+
+  // Ka r g b         <- currently only this syntax is supported
+  // Ka spectral file.rfl factor
+  // Ka xyz x y z
+  _parseKa(lineItems) {
+    this._notImplemented('Kd');
+  }
+
+  // Kd r g b         <- currently only this syntax is supported
+  // Kd spectral file.rfl factor
+  // Kd xyz x y z
+  _parseKd(lineItems) {
+    this._notImplemented('Kd');
+  }
+
+  // Ks r g b
+  // Ks spectral file.rfl factor
+  // Ks xyz x y z
+  _parseKs(lineItems) {
+    this._notImplemented('Ks');
+  }
+
+  _parseTF(lineItems) {
+    this._notImplemented('tf');
+  }
+
+  // ns 500
+  // Defines how focused the specular highlight is,
+  // typically in the range of 0 to 1000.
+  _parseNS(lineItems) {
+    this._notImplemented('Ns');
+  }
+
+  _parseNi(lineItems) {
+    this._notImplemented('Ni');
+  }
+
+  // d factor
+  // d -halo factor
+  // Controls how much the material dissolves (becomes transparent).
+  _parseD(lineItems) {
+    this._notImplemented('d');
+  }
+
+  _parseSharpness(lineItems) {
+    this._notImplemented('sharpness');
+  }
+
+  // map_Ka [options] textureFile
+  // map_Ka -s 1 1 1 -o 0 0 0 -mm 0 1 file.mpc
+  _parseMapKa(lineItems) {
+    this._notImplemented('map_Ka');
+  }
+
+  // map_Kd [options] textureFile
+  _parseMapKd(lineItems) {
+    this._notImplemented('map_Kd');
+  }
+
+  _parseMapNs(lineItems) {
+    this._notImplemented('map_Ns');
+  }
+
+  _parseDisp(lineItems) {
+    this._notImplemented('disp');
+  }
+
+  _parseDecal(lineItems) {
+    this._notImplemented('decal');
+  }
+
+  _parseBump(lineItems) {
+    this._notImplemented('bump');
+  }
+
+  _parseRefl(lineItems) {
+    this._notImplemented('bump');
+  }
+
+  _notImplemented(message) {
+    console.warn(`MTL file statement not implemented: ${message}`);
+  }
+
+  _fileError(message) {
+    const file = this.filename ? `File: ${this.filename}` : '';
+    const material = `Material: ${this.currentMaterial.getName()}`;
+    const line = `Line: ${this.lineNumber}`;
+    const errorMessage = `MTL file format error (${file}  ${material}  ${line}): ${message}`;
+    throw errorMessage;
   }
 
 }
@@ -850,7 +1235,98 @@ class MTLFile {
 module.exports = MTLFile;
 
 /***/ }),
-/* 17 */
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+class Material {
+
+  constructor(name) {
+    this.name = name || '';
+    this.setColor(1,0,0);
+    this.texture = null;
+    this.illum = 0;
+
+    this.Ka = { red: 0, green: 0, blue: 0 };
+    this.Kd = { red: 0, green: 0, blue: 0 };
+    this.Ks = { red: 0, green: 0, blue: 0 };
+  }
+
+  getName() {
+    return this.name;
+  }
+
+  setColor(red, green, blue, alpha = 1.0) {
+    this.red = red;
+    this.green = green;
+    this.blue = blue;
+    this.alpha = alpha; 
+  }
+
+  setTexture(texture) {
+  	this.texture = texture;
+  }
+
+  use(gl, projectionMatrix, modelViewMatrix) {
+    if (this.texture) {
+      this.texture.use(gl);
+    }
+
+    const shaderProgram = this.getShaderProgram();
+    shaderProgram.use(gl);
+    shaderProgram.setProjectionMatrix(gl, projectionMatrix);
+    shaderProgram.setModelViewMatrix(gl, modelViewMatrix);
+
+    shaderProgram.setUniformValue(gl, "uSampler", 0);
+  }
+
+  getShaderProgram() {
+    if (this.texture)
+      return window.texturedShaderProgram;
+    else
+      return window.defaultShaderProgram;
+  }
+
+}
+
+module.exports = Material;
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+class Texture {
+
+  /**
+   * image should be a new Image() kind of object.
+   * Image width/height should be a power of two!
+   */
+  constructor(gl, image) {
+    this.glTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+  }
+
+  use(gl) {
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
+  }
+
+}
+
+module.exports = Texture;
+
+/***/ }),
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -919,6 +1395,84 @@ class Camera {
 }
 
 module.exports = Camera;
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const Matrix = __webpack_require__(7);
+
+
+class SceneObject {
+
+  constructor(x, y, z) {
+    this.x = x || 0;
+    this.y = y || 0;
+    this.z = z || 0;
+    this.sx = 1;
+    this.sy = 1;
+    this.sz = 1;
+    this.pitch = 0; // in degrees
+    this.yaw = 0;
+
+	  this.transform = new Matrix(); // needs to be kept up to date with above values
+    this.subObjects = [];
+  }
+
+  resetTransform() {
+    this.transform.loadIdentity();
+  }
+
+  setPosition(x,y,z) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this._updateTransform();
+  }
+
+  setScale(sx, sy, sz) {
+    this.sx = sx;
+    this.sy = sy;
+    this.sz = sz;
+    this._updateTransform();
+  }
+
+  setPitch(degrees) {
+    this.pitch = degrees;
+    this._updateTransform();
+  }
+
+  setYaw(degrees) {
+    this.yaw = degrees;
+    this._updateTransform();
+  }
+
+  _updateTransform() {
+    this.transform.loadIdentity();
+    this.transform.rotate(this.yaw, 1,0,0);
+    this.transform.rotate(this.pitch, 0,1,0);
+    this.transform.scale(this.sx, this.sy, this.sz);
+    this.transform.setTranslation(this.x, this.y, this.z);
+  }
+
+  rotate(degrees, x, y, z) {
+    this.transform.rotate(degrees, x, y, z);
+  }
+
+  scale(sx, sy, sz) {
+    this.transform.scale(sx, sy, sz);
+  }
+
+  addObject(object) {
+    this.subObjects.push(object);
+  }
+
+}
+
+module.exports = SceneObject;
 
 /***/ })
 /******/ ]);
