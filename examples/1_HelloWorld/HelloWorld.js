@@ -5,7 +5,7 @@ const ImageManager = require('../../src/graphics/ImageManager.js');
 const Model = require('../../src/modeling/Model.js');
 const Polygon = require('../../src/modeling/polygon.js');
 const StaticObject = require('../../src/scenes/StaticObject.js');
-const MaterialManager = require('../../src/materials/MaterialManager.js');
+const Material = require('../../src/materials/Material.js');
 
 
 module.exports = {
@@ -16,7 +16,7 @@ module.exports = {
     const renderer = new Renderer(canvas);
     const scene = new Scene();
 
-    MaterialManager.createMaterial(renderer._gl, null, 1, 0, 0);
+    renderer.addMaterial(new Material('mat', 1, 0, 0));
 
     // CREATE A MODEL (Containing just a single, colored triangle)
     const m = new Model();
@@ -26,7 +26,7 @@ module.exports = {
      { x: 0.5, y: -0.5, z: 0.0 }
     ];
 
-    const triangle = new Polygon();
+    const triangle = new Polygon('mat');
     triangle.addVertex(1, 0, 0);
     triangle.addVertex(2, 0, 0);
     triangle.addVertex(3, 0, 0);

@@ -4,7 +4,7 @@ const ImageManager = require('../../src/graphics/ImageManager.js');
 const Model = require('../../src/modeling/Model.js');
 const Polygon = require('../../src/modeling/polygon.js');
 const StaticObject = require('../../src/scenes/StaticObject.js');
-const MaterialManager = require('../../src/materials/MaterialManager.js');
+const Material = require('../../src/materials/Material.js');
 
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
       const renderer = new Renderer(canvas);
       const scene = new Scene();
 
-      MaterialManager.createMaterial(renderer._gl, 'textured', 0,0,0, ImageManager.getImage('assets/images/brick.png'));
+      renderer.addMaterial(new Material('textured', 0,0,0, 'assets/images/brick.png'));
 
       // CREATE A MODEL (Containing just a single, textured triangle)
       const m = new Model();

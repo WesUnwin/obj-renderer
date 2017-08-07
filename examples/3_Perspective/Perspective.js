@@ -5,7 +5,7 @@ const ImageManager = require('../../src/graphics/ImageManager.js');
 const Model = require('../../src/modeling/Model.js');
 const Polygon = require('../../src/modeling/polygon.js');
 const StaticObject = require('../../src/scenes/StaticObject.js');
-const MaterialManager = require('../../src/materials/MaterialManager.js');
+const Material = require('../../src/materials/Material.js');
 
 
 let _interval;
@@ -18,13 +18,13 @@ module.exports = {
     const renderer = new Renderer(canvas);
     const scene = new Scene();
 
-    // Load Materials
-    MaterialManager.createMaterial(renderer._gl, 'front', 1, 0, 0);         // red
-    MaterialManager.createMaterial(renderer._gl, 'right', 0, 1, 0);         // green
-    MaterialManager.createMaterial(renderer._gl, 'back2',  0, 0, 1);         // blue
-    MaterialManager.createMaterial(renderer._gl, 'left',  1, 1, 0);         // yellow
-    MaterialManager.createMaterial(renderer._gl, 'top',  1, 1, 1);          // white
-    MaterialManager.createMaterial(renderer._gl, 'bottom',  0.5, 0.5, 0.5); // grey
+      // Load Materials
+      renderer.addMaterial(new Material('front', 1,0,0));
+      renderer.addMaterial(new Material('right', 0,1,0));
+      renderer.addMaterial(new Material('back2', 0,0,1));
+      renderer.addMaterial(new Material('left', 1,1,0));
+      renderer.addMaterial(new Material('top', 1,1,1));
+      renderer.addMaterial(new Material('bottom', 0.5, 0.5, 0.5));
 
     scene.getCamera().usePerspectiveView();
 

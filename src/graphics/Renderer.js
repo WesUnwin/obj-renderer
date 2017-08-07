@@ -107,7 +107,7 @@ class Renderer {
 
     const objects = scene.getObjects();
     objects.forEach(obj => {
-      obj.render(this._gl, projMatrix, modelViewMatrix);
+      obj.render(this._gl, projMatrix, modelViewMatrix, this._materials);
     });
   }
 }

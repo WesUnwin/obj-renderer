@@ -6,7 +6,7 @@ const OBJFile = require('modeling/OBJFile.js');
 const Model = require('modeling/Model.js');
 const Polygon = require('modeling/polygon.js');
 const StaticObject = require('scenes/StaticObject.js');
-const MaterialManager = require('materials/MaterialManager.js');
+const Material = require('materials/Material.js');
 const groundObj = require('raw-loader!./Ground.obj');
 const boxObj = require('raw-loader!./Box.obj');
 const Renderer = require('main.js').Renderer;
@@ -29,9 +29,8 @@ module.exports = {
       camera.setPosition(0, 2,10);
       camera.setYaw(-20);
 
-      MaterialManager.createMaterial(renderer._gl, 'ground',  0, 0, 0, ImageManager.getImage('assets/images/grass.png'));
-
-      MaterialManager.createMaterial(renderer._gl, 'crate', 0, 0, 0, ImageManager.getImage('assets/images/Crate.png'));
+      renderer.addMaterial(new Material('ground', 0,0,0, 'assets/images/grass.png'));
+      renderer.addMaterial(new Material('crate', 0,0,0, 'assets/images/Crate.png'));
 
       const groundModel = new OBJFile(groundObj).parse().models[0];
       const ground = new StaticObject(groundModel);

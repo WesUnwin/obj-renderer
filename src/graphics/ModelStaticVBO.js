@@ -1,7 +1,5 @@
 'use strict';
 
-const MaterialManager = require('../materials/MaterialManager.js');
-
 
 /**
  * Represents that has non-changing
@@ -13,16 +11,14 @@ class ModelStaticVBO {
     this.model = model;
   }
 
-  render(gl, projectionMatrix, modelViewMatrix) {
+  render(gl, projectionMatrix, modelViewMatrix, materials) {
     if (!this.buffered)
-      this._buffer(gl);
+      this._buffer(gl, materials);
 
     this.materialMeshes.forEach((mesh) => {
       // Draw one material (a mesh) of the model at a time
-      let currentMaterial = MaterialManager.getMaterial(mesh.materialName);
+      let currentMaterial = materials.find(mat => { return mat.getName() == mesh.materialName; });
       currentMaterial.use(gl, projectionMatrix, modelViewMatrix);
-
-
 
       // TELL THE SHADER PROGRAM THE VALUES FOR EACH VERTEX ATTRIBUTE
       const shaderProgram = currentMaterial.getShaderProgram();
@@ -57,7 +53,7 @@ class ModelStaticVBO {
     });
   }
 
-  _buffer(gl) {
+  _buffer(gl, materials) {
     let vertexPositions = [];
     let vertexTextureCoords = [];
     let vertexNormals = [];
@@ -72,7 +68,7 @@ class ModelStaticVBO {
     modelMaterials.forEach((materialName) => {
       const mesh = { materialName: materialName, startIndex: index};
 
-      let currentMaterial = MaterialManager.getMaterial(materialName);
+      let currentMaterial = materials.find(mat => { return mat.getName() == materialName; });
       const polygons = this.model.getPolygonsByMaterial(materialName);
 
       polygons.forEach((polygon) => {

@@ -12,12 +12,12 @@ class StaticObject extends SceneObject {
 		this.modelStaticVBO = new ModelStaticVBO(model);
   }
 
-  render(gl, projectionMatrix, modelViewMatrix) {
+  render(gl, projectionMatrix, modelViewMatrix, materials) {
     const mvMatrix = this.transform.clone();
     mvMatrix.multiply(modelViewMatrix);
-    this.modelStaticVBO.render(gl, projectionMatrix, mvMatrix);
+    this.modelStaticVBO.render(gl, projectionMatrix, mvMatrix, materials);
     this.subObjects.forEach(subObject => {
-      subObject.render(gl, projectionMatrix, mvMatrix);
+      subObject.render(gl, projectionMatrix, mvMatrix, materials);
     });
   }
 

@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "/assets/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 28);
+/******/ 	return __webpack_require__(__webpack_require__.s = 26);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -73,7 +73,7 @@
 "use strict";
 
 
-const Camera = __webpack_require__(20);
+const Camera = __webpack_require__(18);
 
 
 class Scene {
@@ -118,8 +118,8 @@ module.exports = Scene;
 
 
 const ModelStaticVBO = __webpack_require__(15);
-const Matrix = __webpack_require__(7);
-const SceneObject = __webpack_require__(21);
+const Matrix = __webpack_require__(5);
+const SceneObject = __webpack_require__(19);
 
 
 class StaticObject extends SceneObject {
@@ -129,12 +129,12 @@ class StaticObject extends SceneObject {
 		this.modelStaticVBO = new ModelStaticVBO(model);
   }
 
-  render(gl, projectionMatrix, modelViewMatrix) {
+  render(gl, projectionMatrix, modelViewMatrix, materials) {
     const mvMatrix = this.transform.clone();
     mvMatrix.multiply(modelViewMatrix);
-    this.modelStaticVBO.render(gl, projectionMatrix, mvMatrix);
+    this.modelStaticVBO.render(gl, projectionMatrix, mvMatrix, materials);
     this.subObjects.forEach(subObject => {
-      subObject.render(gl, projectionMatrix, mvMatrix);
+      subObject.render(gl, projectionMatrix, mvMatrix, materials);
     });
   }
 
@@ -144,86 +144,6 @@ module.exports = StaticObject;
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-class ImageManager {
-
-  static loadImages(imagePaths, onLoadComplete, onFailure) {
-    this.images = [];
-
-    const promises = imagePaths.map(imagePath => {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onerror = () => reject(img);
-        img.onload = () => resolve(img);
-        img.src = imagePath;
-      });
-    });
-
-    const onImagesSuccessfullyLoaded = (images) => {
-      this.images = images;
-      onLoadComplete();
-    };
-
-    Promise.all(promises).then(onImagesSuccessfullyLoaded, onFailure);
-  }
-
-  static getImage(filePath) {
-    // TODO fix this sketchy look up logic
-    return this.images.find(image => {
-      return image.src.includes(filePath);
-    });
-  }
-}
-
-module.exports = ImageManager;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-const Material = __webpack_require__(18);
-const Texture = __webpack_require__(19);
-const ImageManager = __webpack_require__(2);
-
-
-let _materials = [];
-
-module.exports = {
-
-  createMaterial: function(gl, name, red, green, blue, textureImage) {
-    if (_materials.indexOf(name) != -1) {
-      throw new Error('Material with name ' + name + ' already exists');
-    }
-    const mat = new Material(name);
-    mat.setColor(red, green, blue);
-    if (textureImage) {
-      mat.setTexture(new Texture(gl, textureImage));
-    }
-    _materials.push(mat);
-  },
-
-  getDefaultMaterial: function() {
-  	return this.getMaterial();
-  },
-
-  getMaterial: function(materialName) {
-  	const matName = materialName || '';
-  	return _materials.find(mat => {
-  		return mat.name == matName;
-  	});
-  }
-
-};
-
-/***/ }),
-/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -281,7 +201,7 @@ class Model {
 module.exports = Model;
 
 /***/ }),
-/* 5 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -307,7 +227,7 @@ class Polygon {
 module.exports = Polygon;
 
 /***/ }),
-/* 6 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -326,7 +246,7 @@ module.exports = {
 
 
 /***/ }),
-/* 7 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -482,14 +402,133 @@ module.exports = Matrix;
 
 
 /***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+class ImageManager {
+
+  static loadImages(imagePaths, onLoadComplete, onFailure) {
+    this.images = [];
+
+    const promises = imagePaths.map(imagePath => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onerror = () => reject(img);
+        img.onload = () => resolve(img);
+        img.src = imagePath;
+      });
+    });
+
+    const onImagesSuccessfullyLoaded = (images) => {
+      this.images = images;
+      onLoadComplete();
+    };
+
+    Promise.all(promises).then(onImagesSuccessfullyLoaded, onFailure);
+  }
+
+  static getImage(filePath) {
+    // TODO fix this sketchy look up logic
+    return this.images.find(image => {
+      return image.src.includes(filePath);
+    });
+  }
+}
+
+module.exports = ImageManager;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const ImageManager = __webpack_require__(6);
+const Texture = __webpack_require__(30);
+
+
+class Material {
+
+  constructor(name, red = 1, green = 1, blue = 1, textureImageURL) {
+    this.name = name || '';
+    this.setColor(red, green, blue);
+    this.texture = null;
+    this.illum = 0;
+
+    this.textureImageURL = textureImageURL;
+
+    this.Ka = { red: 0, green: 0, blue: 0 };
+    this.Kd = { red: 0, green: 0, blue: 0 };
+    this.Ks = { red: 0, green: 0, blue: 0 };
+  }
+
+  load(gl) {
+    if (this.textureImageURL) {
+      this.texture = new Texture(gl, ImageManager.getImage(this.textureImageURL));
+    }
+    this.loaded = true;
+  }
+
+  getName() {
+    return this.name;
+  }
+
+  setColor(red, green, blue, alpha = 1.0) {
+    this.red = red;
+    this.green = green;
+    this.blue = blue;
+    this.alpha = alpha; 
+  }
+
+  setAmbientTextureImageURL(texture) {
+  	this.texture = texture;
+  }
+
+  setDiffuseTextureImageURL(texture) {
+    this.texture = texture;
+  }
+
+  use(gl, projectionMatrix, modelViewMatrix) {
+    if (!this.loaded) {
+      this.load(gl);
+    }
+
+    if (this.texture) {
+      this.texture.use(gl);
+    }
+
+    const shaderProgram = this.getShaderProgram();
+    shaderProgram.use(gl);
+    shaderProgram.setProjectionMatrix(gl, projectionMatrix);
+    shaderProgram.setModelViewMatrix(gl, modelViewMatrix);
+
+    shaderProgram.setUniformValue(gl, "uSampler", 0);
+  }
+
+  getShaderProgram() {
+    if (this.texture)
+      return window.texturedShaderProgram;
+    else
+      return window.defaultShaderProgram;
+  }
+
+}
+
+module.exports = Material;
+
+/***/ }),
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const Model = __webpack_require__(4);
-const Polygon = __webpack_require__(5);
+const Model = __webpack_require__(2);
+const Polygon = __webpack_require__(3);
 
 
 class OBJFile {
@@ -764,7 +803,7 @@ class Renderer {
 
     const objects = scene.getObjects();
     objects.forEach(obj => {
-      obj.render(this._gl, projMatrix, modelViewMatrix);
+      obj.render(this._gl, projMatrix, modelViewMatrix, this._materials);
     });
   }
 }
@@ -808,8 +847,6 @@ module.exports = "attribute vec3 aVertexPosition;\nattribute vec4 aVertexColor;\
 "use strict";
 
 
-const MaterialManager = __webpack_require__(3);
-
 
 /**
  * Represents that has non-changing
@@ -821,16 +858,14 @@ class ModelStaticVBO {
     this.model = model;
   }
 
-  render(gl, projectionMatrix, modelViewMatrix) {
+  render(gl, projectionMatrix, modelViewMatrix, materials) {
     if (!this.buffered)
-      this._buffer(gl);
+      this._buffer(gl, materials);
 
     this.materialMeshes.forEach((mesh) => {
       // Draw one material (a mesh) of the model at a time
-      let currentMaterial = MaterialManager.getMaterial(mesh.materialName);
+      let currentMaterial = materials.find(mat => { return mat.getName() == mesh.materialName; });
       currentMaterial.use(gl, projectionMatrix, modelViewMatrix);
-
-
 
       // TELL THE SHADER PROGRAM THE VALUES FOR EACH VERTEX ATTRIBUTE
       const shaderProgram = currentMaterial.getShaderProgram();
@@ -865,7 +900,7 @@ class ModelStaticVBO {
     });
   }
 
-  _buffer(gl) {
+  _buffer(gl, materials) {
     let vertexPositions = [];
     let vertexTextureCoords = [];
     let vertexNormals = [];
@@ -880,7 +915,7 @@ class ModelStaticVBO {
     modelMaterials.forEach((materialName) => {
       const mesh = { materialName: materialName, startIndex: index};
 
-      let currentMaterial = MaterialManager.getMaterial(materialName);
+      let currentMaterial = materials.find(mat => { return mat.getName() == materialName; });
       const polygons = this.model.getPolygonsByMaterial(materialName);
 
       polygons.forEach((polygon) => {
@@ -1246,98 +1281,7 @@ module.exports = MTLFile;
 "use strict";
 
 
-class Material {
-
-  constructor(name) {
-    this.name = name || '';
-    this.setColor(1,0,0);
-    this.texture = null;
-    this.illum = 0;
-
-    this.Ka = { red: 0, green: 0, blue: 0 };
-    this.Kd = { red: 0, green: 0, blue: 0 };
-    this.Ks = { red: 0, green: 0, blue: 0 };
-  }
-
-  getName() {
-    return this.name;
-  }
-
-  setColor(red, green, blue, alpha = 1.0) {
-    this.red = red;
-    this.green = green;
-    this.blue = blue;
-    this.alpha = alpha; 
-  }
-
-  setTexture(texture) {
-  	this.texture = texture;
-  }
-
-  use(gl, projectionMatrix, modelViewMatrix) {
-    if (this.texture) {
-      this.texture.use(gl);
-    }
-
-    const shaderProgram = this.getShaderProgram();
-    shaderProgram.use(gl);
-    shaderProgram.setProjectionMatrix(gl, projectionMatrix);
-    shaderProgram.setModelViewMatrix(gl, modelViewMatrix);
-
-    shaderProgram.setUniformValue(gl, "uSampler", 0);
-  }
-
-  getShaderProgram() {
-    if (this.texture)
-      return window.texturedShaderProgram;
-    else
-      return window.defaultShaderProgram;
-  }
-
-}
-
-module.exports = Material;
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-class Texture {
-
-  /**
-   * image should be a new Image() kind of object.
-   * Image width/height should be a power of two!
-   */
-  constructor(gl, image) {
-    this.glTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-    gl.generateMipmap(gl.TEXTURE_2D);
-    gl.bindTexture(gl.TEXTURE_2D, null);
-  }
-
-  use(gl) {
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
-  }
-
-}
-
-module.exports = Texture;
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-const Matrix = __webpack_require__(7);
+const Matrix = __webpack_require__(5);
 
 
 class Camera {
@@ -1402,13 +1346,13 @@ class Camera {
 module.exports = Camera;
 
 /***/ }),
-/* 21 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const Matrix = __webpack_require__(7);
+const Matrix = __webpack_require__(5);
 
 
 class SceneObject {
@@ -1480,17 +1424,17 @@ class SceneObject {
 module.exports = SceneObject;
 
 /***/ }),
-/* 22 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const Renderer = __webpack_require__(6).Renderer;
+const Renderer = __webpack_require__(4).Renderer;
 const Scene = __webpack_require__(0);
 const sobj = __webpack_require__(10);
-const ImageManager = __webpack_require__(2);
-const Model = __webpack_require__(4);
-const Polygon = __webpack_require__(5);
+const ImageManager = __webpack_require__(6);
+const Model = __webpack_require__(2);
+const Polygon = __webpack_require__(3);
 const StaticObject = __webpack_require__(1);
-const MaterialManager = __webpack_require__(3);
+const Material = __webpack_require__(7);
 
 
 module.exports = {
@@ -1501,7 +1445,7 @@ module.exports = {
     const renderer = new Renderer(canvas);
     const scene = new Scene();
 
-    MaterialManager.createMaterial(renderer._gl, null, 1, 0, 0);
+    renderer.addMaterial(new Material('mat', 1, 0, 0));
 
     // CREATE A MODEL (Containing just a single, colored triangle)
     const m = new Model();
@@ -1511,7 +1455,7 @@ module.exports = {
      { x: 0.5, y: -0.5, z: 0.0 }
     ];
 
-    const triangle = new Polygon();
+    const triangle = new Polygon('mat');
     triangle.addVertex(1, 0, 0);
     triangle.addVertex(2, 0, 0);
     triangle.addVertex(3, 0, 0);
@@ -1532,17 +1476,17 @@ module.exports = {
 };
 
 /***/ }),
-/* 23 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const Renderer = __webpack_require__(6).Renderer;
+const Renderer = __webpack_require__(4).Renderer;
 const Scene = __webpack_require__(0);
 const sobj = __webpack_require__(10);
-const ImageManager = __webpack_require__(2);
-const Model = __webpack_require__(4);
-const Polygon = __webpack_require__(5);
+const ImageManager = __webpack_require__(6);
+const Model = __webpack_require__(2);
+const Polygon = __webpack_require__(3);
 const StaticObject = __webpack_require__(1);
-const MaterialManager = __webpack_require__(3);
+const Material = __webpack_require__(7);
 
 
 let _interval;
@@ -1556,12 +1500,12 @@ module.exports = {
     const scene = new Scene();
 
     // Load Materials
-    MaterialManager.createMaterial(renderer._gl, 'front', 1, 0, 0);         // red
-    MaterialManager.createMaterial(renderer._gl, 'right', 0, 1, 0);         // green
-    MaterialManager.createMaterial(renderer._gl, 'back2',  0, 0, 1);         // blue
-    MaterialManager.createMaterial(renderer._gl, 'left',  1, 1, 0);         // yellow
-    MaterialManager.createMaterial(renderer._gl, 'top',  1, 1, 1);          // white
-    MaterialManager.createMaterial(renderer._gl, 'bottom',  0.5, 0.5, 0.5); // grey
+    renderer.addMaterial(new Material('front', 1,0,0));
+    renderer.addMaterial(new Material('right', 0,1,0));
+    renderer.addMaterial(new Material('back2', 0,0,1));
+    renderer.addMaterial(new Material('left', 1,1,0));
+    renderer.addMaterial(new Material('top', 1,1,1));
+    renderer.addMaterial(new Material('bottom', 0.5, 0.5, 0.5));
 
     // CREATE A MODEL (Containing just a single, colored triangle)
     const cube = new Model();
@@ -1660,17 +1604,17 @@ module.exports = {
 
 
 /***/ }),
-/* 24 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const Renderer = __webpack_require__(6).Renderer;
+const Renderer = __webpack_require__(4).Renderer;
 const Scene = __webpack_require__(0);
 const sobj = __webpack_require__(10);
-const ImageManager = __webpack_require__(2);
-const Model = __webpack_require__(4);
-const Polygon = __webpack_require__(5);
+const ImageManager = __webpack_require__(6);
+const Model = __webpack_require__(2);
+const Polygon = __webpack_require__(3);
 const StaticObject = __webpack_require__(1);
-const MaterialManager = __webpack_require__(3);
+const Material = __webpack_require__(7);
 
 
 let _interval;
@@ -1683,13 +1627,13 @@ module.exports = {
     const renderer = new Renderer(canvas);
     const scene = new Scene();
 
-    // Load Materials
-    MaterialManager.createMaterial(renderer._gl, 'front', 1, 0, 0);         // red
-    MaterialManager.createMaterial(renderer._gl, 'right', 0, 1, 0);         // green
-    MaterialManager.createMaterial(renderer._gl, 'back2',  0, 0, 1);         // blue
-    MaterialManager.createMaterial(renderer._gl, 'left',  1, 1, 0);         // yellow
-    MaterialManager.createMaterial(renderer._gl, 'top',  1, 1, 1);          // white
-    MaterialManager.createMaterial(renderer._gl, 'bottom',  0.5, 0.5, 0.5); // grey
+      // Load Materials
+      renderer.addMaterial(new Material('front', 1,0,0));
+      renderer.addMaterial(new Material('right', 0,1,0));
+      renderer.addMaterial(new Material('back2', 0,0,1));
+      renderer.addMaterial(new Material('left', 1,1,0));
+      renderer.addMaterial(new Material('top', 1,1,1));
+      renderer.addMaterial(new Material('bottom', 0.5, 0.5, 0.5));
 
     scene.getCamera().usePerspectiveView();
 
@@ -1789,16 +1733,16 @@ module.exports = {
 
 
 /***/ }),
-/* 25 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const Renderer = __webpack_require__(6).Renderer;
+const Renderer = __webpack_require__(4).Renderer;
 const Scene = __webpack_require__(0);
-const ImageManager = __webpack_require__(2);
-const Model = __webpack_require__(4);
-const Polygon = __webpack_require__(5);
+const ImageManager = __webpack_require__(6);
+const Model = __webpack_require__(2);
+const Polygon = __webpack_require__(3);
 const StaticObject = __webpack_require__(1);
-const MaterialManager = __webpack_require__(3);
+const Material = __webpack_require__(7);
 
 
 module.exports = {
@@ -1811,7 +1755,7 @@ module.exports = {
       const renderer = new Renderer(canvas);
       const scene = new Scene();
 
-      MaterialManager.createMaterial(renderer._gl, 'textured', 0,0,0, ImageManager.getImage('assets/images/brick.png'));
+      renderer.addMaterial(new Material('textured', 0,0,0, 'assets/images/brick.png'));
 
       // CREATE A MODEL (Containing just a single, textured triangle)
       const m = new Model();
@@ -1861,18 +1805,18 @@ module.exports = {
 
 
 /***/ }),
-/* 26 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const Renderer = __webpack_require__(6).Renderer;
+const Renderer = __webpack_require__(4).Renderer;
 const Scene = __webpack_require__(0);
-const ImageManager = __webpack_require__(2);
+const ImageManager = __webpack_require__(6);
 const OBJFile = __webpack_require__(8);
-const Model = __webpack_require__(4);
-const Polygon = __webpack_require__(5);
+const Model = __webpack_require__(2);
+const Polygon = __webpack_require__(3);
 const StaticObject = __webpack_require__(1);
-const MaterialManager = __webpack_require__(3);
-const objFileContents = __webpack_require__(29);
+const Material = __webpack_require__(7);
+const objFileContents = __webpack_require__(27);
 
 let _interval;
 
@@ -1887,12 +1831,12 @@ module.exports = {
       const scene = new Scene();
 
       // Load Materials
-      MaterialManager.createMaterial(renderer._gl, 'front', 1, 0, 0);         // red
-      MaterialManager.createMaterial(renderer._gl, 'right', 0, 1, 0);         // green
-      MaterialManager.createMaterial(renderer._gl, 'back',  0, 0, 0, ImageManager.getImage('assets/images/brick.png'));         // blue
-      MaterialManager.createMaterial(renderer._gl, 'left',  1, 1, 0);         // yellow
-      MaterialManager.createMaterial(renderer._gl, 'top',  1, 1, 1);          // white
-      MaterialManager.createMaterial(renderer._gl, 'bottom',  0.5, 0.5, 0.5); // grey
+      renderer.addMaterial(new Material('front', 1,0,0));
+      renderer.addMaterial(new Material('right', 0,1,0));
+      renderer.addMaterial(new Material('back', 0,0,0, 'assets/images/brick.png'));
+      renderer.addMaterial(new Material('left', 1,1,0));
+      renderer.addMaterial(new Material('top', 1,1,1));
+      renderer.addMaterial(new Material('bottom', 0.5, 0.5, 0.5));
 
       const objFile = new OBJFile(objFileContents);
       const { models, materialLibs } = objFile.parse();
@@ -1927,22 +1871,22 @@ module.exports = {
 
 
 /***/ }),
-/* 27 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 const Scene = __webpack_require__(0);
-const ImageManager = __webpack_require__(2);
+const ImageManager = __webpack_require__(6);
 const OBJFile = __webpack_require__(8);
-const Model = __webpack_require__(4);
-const Polygon = __webpack_require__(5);
+const Model = __webpack_require__(2);
+const Polygon = __webpack_require__(3);
 const StaticObject = __webpack_require__(1);
-const MaterialManager = __webpack_require__(3);
-const groundObj = __webpack_require__(31);
-const boxObj = __webpack_require__(30);
-const Renderer = __webpack_require__(6).Renderer;
+const Material = __webpack_require__(7);
+const groundObj = __webpack_require__(29);
+const boxObj = __webpack_require__(28);
+const Renderer = __webpack_require__(4).Renderer;
 
 
 let _interval;
@@ -1962,9 +1906,8 @@ module.exports = {
       camera.setPosition(0, 2,10);
       camera.setYaw(-20);
 
-      MaterialManager.createMaterial(renderer._gl, 'ground',  0, 0, 0, ImageManager.getImage('assets/images/grass.png'));
-
-      MaterialManager.createMaterial(renderer._gl, 'crate', 0, 0, 0, ImageManager.getImage('assets/images/Crate.png'));
+      renderer.addMaterial(new Material('ground', 0,0,0, 'assets/images/grass.png'));
+      renderer.addMaterial(new Material('crate', 0,0,0, 'assets/images/Crate.png'));
 
       const groundModel = new OBJFile(groundObj).parse().models[0];
       const ground = new StaticObject(groundModel);
@@ -2009,15 +1952,15 @@ module.exports = {
 
 
 /***/ }),
-/* 28 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const HelloWorld = __webpack_require__(22);
-const RotatingCube = __webpack_require__(23);
-const Perspective = __webpack_require__(24);
-const TexturedSquare = __webpack_require__(25);
-const ObjFiles = __webpack_require__(26);
-const SubObjects = __webpack_require__(27);
+const HelloWorld = __webpack_require__(20);
+const RotatingCube = __webpack_require__(21);
+const Perspective = __webpack_require__(22);
+const TexturedSquare = __webpack_require__(23);
+const ObjFiles = __webpack_require__(24);
+const SubObjects = __webpack_require__(25);
 
 const examples = {
 	'Hello World': HelloWorld,
@@ -2073,22 +2016,54 @@ showExample('Sub-Objects');
 
 
 /***/ }),
-/* 29 */
+/* 27 */
 /***/ (function(module, exports) {
 
 module.exports = "v  -0.5  0.5  0.5     # 1  Front, top left\nv  -0.5 -0.5  0.5     # 2  Front, bottom left\nv   0.5 -0.5  0.5     # 3  Front, bottom right\nv   0.5  0.5  0.5     # 4  Front, top right\n\nv  -0.5  0.5 -0.5     # 5  Back, top left\nv  -0.5 -0.5 -0.5     # 6  Back, bottom left\nv   0.5 -0.5 -0.5     # 7  Back, bottom right\nv   0.5  0.5 -0.5     # 8  Back, top right\n\n\nvt  0, 0  # top left\nvt  0, 1  # bottom left\nvt  1, 1  # bottom right\nvt  1, 0  # top right\n\n\nusemtl front\nf  1 2 3   # Front\nf  4 1 3\n\nusemtl left\nf  5 6 2   # Left side\nf  5 2 1\n\nusemtl right\nf  4 3 7   # Right side\nf  4 7 8\n\nusemtl back\nf  5/1 6/2 7/3   # Back side\nf  8/4 5/1 7/3\n\nusemtl top\nf  5 1 4   # Top side\nf  5 4 8\n\nusemtl bottom\nf  6 2 3   # Bottom side\nf  6 3 7\n"
 
 /***/ }),
-/* 30 */
+/* 28 */
 /***/ (function(module, exports) {
 
 module.exports = "v  -1  1  1     # 1  Front, top left\nv  -1 -1  1     # 2  Front, bottom left\nv   1 -1  1     # 3  Front, bottom right\nv   1  1  1     # 4  Front, top right\n\nv  -1  1 -1     # 5  Back, top left\nv  -1 -1 -1     # 6  Back, bottom left\nv   1 -1 -1     # 7  Back, bottom right\nv   1  1 -1     # 8  Back, top right\n\n\nvt  0, 0  # top left\nvt  0, 1  # bottom left\nvt  1, 1  # bottom right\nvt  1, 0  # top right\n\n\nusemtl crate\n\nf  1/1 2/2 3/3   # Front\nf  4/4 1/1 3/3\n\nf  5/1 6/2 2/3   # Left side\nf  5/1 2/3 1/4\n\n\nf  4/3 3/2 7/1   # Right side\nf  4/1 7/3 8/2\n\n\nf  5/1 6/2 7/3   # Back side\nf  8/4 5/1 7/3\n\nf  5/1 1/2 4/3   # Top side\nf  5/1 4/3 8/4\n\nf  6/1 2/2 3/3   # Bottom side\nf  6/1 3/3 7/4\n"
 
 /***/ }),
-/* 31 */
+/* 29 */
 /***/ (function(module, exports) {
 
 module.exports = "o ground\n\nv -5, 0, -5\nv -5, 0,  5\nv  5, 0,  5\nv  5, 0, -5\n\nvt 0 0\nvt 0 1\nvt 1 1\nvt 1 0\n\nusemtl ground\n\nf 1/1 2/2 3/3\nf 3/3 4/4 1/1\n"
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+class Texture {
+
+  /**
+   * image should be a new Image() kind of object.
+   * Image width/height should be a power of two!
+   */
+  constructor(gl, image) {
+    this.glTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+  }
+
+  use(gl) {
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
+  }
+
+}
+
+module.exports = Texture;
 
 /***/ })
 /******/ ]);

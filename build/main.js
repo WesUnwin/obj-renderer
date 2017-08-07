@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "/assets/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -73,7 +73,7 @@
 "use strict";
 
 
-const Camera = __webpack_require__(20);
+const Camera = __webpack_require__(18);
 
 
 class Scene {
@@ -118,8 +118,8 @@ module.exports = Scene;
 
 
 const ModelStaticVBO = __webpack_require__(15);
-const Matrix = __webpack_require__(7);
-const SceneObject = __webpack_require__(21);
+const Matrix = __webpack_require__(5);
+const SceneObject = __webpack_require__(19);
 
 
 class StaticObject extends SceneObject {
@@ -129,12 +129,12 @@ class StaticObject extends SceneObject {
 		this.modelStaticVBO = new ModelStaticVBO(model);
   }
 
-  render(gl, projectionMatrix, modelViewMatrix) {
+  render(gl, projectionMatrix, modelViewMatrix, materials) {
     const mvMatrix = this.transform.clone();
     mvMatrix.multiply(modelViewMatrix);
-    this.modelStaticVBO.render(gl, projectionMatrix, mvMatrix);
+    this.modelStaticVBO.render(gl, projectionMatrix, mvMatrix, materials);
     this.subObjects.forEach(subObject => {
-      subObject.render(gl, projectionMatrix, mvMatrix);
+      subObject.render(gl, projectionMatrix, mvMatrix, materials);
     });
   }
 
@@ -144,86 +144,6 @@ module.exports = StaticObject;
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-class ImageManager {
-
-  static loadImages(imagePaths, onLoadComplete, onFailure) {
-    this.images = [];
-
-    const promises = imagePaths.map(imagePath => {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onerror = () => reject(img);
-        img.onload = () => resolve(img);
-        img.src = imagePath;
-      });
-    });
-
-    const onImagesSuccessfullyLoaded = (images) => {
-      this.images = images;
-      onLoadComplete();
-    };
-
-    Promise.all(promises).then(onImagesSuccessfullyLoaded, onFailure);
-  }
-
-  static getImage(filePath) {
-    // TODO fix this sketchy look up logic
-    return this.images.find(image => {
-      return image.src.includes(filePath);
-    });
-  }
-}
-
-module.exports = ImageManager;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-const Material = __webpack_require__(18);
-const Texture = __webpack_require__(19);
-const ImageManager = __webpack_require__(2);
-
-
-let _materials = [];
-
-module.exports = {
-
-  createMaterial: function(gl, name, red, green, blue, textureImage) {
-    if (_materials.indexOf(name) != -1) {
-      throw new Error('Material with name ' + name + ' already exists');
-    }
-    const mat = new Material(name);
-    mat.setColor(red, green, blue);
-    if (textureImage) {
-      mat.setTexture(new Texture(gl, textureImage));
-    }
-    _materials.push(mat);
-  },
-
-  getDefaultMaterial: function() {
-  	return this.getMaterial();
-  },
-
-  getMaterial: function(materialName) {
-  	const matName = materialName || '';
-  	return _materials.find(mat => {
-  		return mat.name == matName;
-  	});
-  }
-
-};
-
-/***/ }),
-/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -281,7 +201,7 @@ class Model {
 module.exports = Model;
 
 /***/ }),
-/* 5 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -307,7 +227,7 @@ class Polygon {
 module.exports = Polygon;
 
 /***/ }),
-/* 6 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -326,7 +246,7 @@ module.exports = {
 
 
 /***/ }),
-/* 7 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -482,14 +402,16 @@ module.exports = Matrix;
 
 
 /***/ }),
+/* 6 */,
+/* 7 */,
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const Model = __webpack_require__(4);
-const Polygon = __webpack_require__(5);
+const Model = __webpack_require__(2);
+const Polygon = __webpack_require__(3);
 
 
 class OBJFile {
@@ -764,7 +686,7 @@ class Renderer {
 
     const objects = scene.getObjects();
     objects.forEach(obj => {
-      obj.render(this._gl, projMatrix, modelViewMatrix);
+      obj.render(this._gl, projMatrix, modelViewMatrix, this._materials);
     });
   }
 }
@@ -803,8 +725,6 @@ module.exports = "attribute vec3 aVertexPosition;\nattribute vec4 aVertexColor;\
 "use strict";
 
 
-const MaterialManager = __webpack_require__(3);
-
 
 /**
  * Represents that has non-changing
@@ -816,16 +736,14 @@ class ModelStaticVBO {
     this.model = model;
   }
 
-  render(gl, projectionMatrix, modelViewMatrix) {
+  render(gl, projectionMatrix, modelViewMatrix, materials) {
     if (!this.buffered)
-      this._buffer(gl);
+      this._buffer(gl, materials);
 
     this.materialMeshes.forEach((mesh) => {
       // Draw one material (a mesh) of the model at a time
-      let currentMaterial = MaterialManager.getMaterial(mesh.materialName);
+      let currentMaterial = materials.find(mat => { return mat.getName() == mesh.materialName; });
       currentMaterial.use(gl, projectionMatrix, modelViewMatrix);
-
-
 
       // TELL THE SHADER PROGRAM THE VALUES FOR EACH VERTEX ATTRIBUTE
       const shaderProgram = currentMaterial.getShaderProgram();
@@ -860,7 +778,7 @@ class ModelStaticVBO {
     });
   }
 
-  _buffer(gl) {
+  _buffer(gl, materials) {
     let vertexPositions = [];
     let vertexTextureCoords = [];
     let vertexNormals = [];
@@ -875,7 +793,7 @@ class ModelStaticVBO {
     modelMaterials.forEach((materialName) => {
       const mesh = { materialName: materialName, startIndex: index};
 
-      let currentMaterial = MaterialManager.getMaterial(materialName);
+      let currentMaterial = materials.find(mat => { return mat.getName() == materialName; });
       const polygons = this.model.getPolygonsByMaterial(materialName);
 
       polygons.forEach((polygon) => {
@@ -1241,98 +1159,7 @@ module.exports = MTLFile;
 "use strict";
 
 
-class Material {
-
-  constructor(name) {
-    this.name = name || '';
-    this.setColor(1,0,0);
-    this.texture = null;
-    this.illum = 0;
-
-    this.Ka = { red: 0, green: 0, blue: 0 };
-    this.Kd = { red: 0, green: 0, blue: 0 };
-    this.Ks = { red: 0, green: 0, blue: 0 };
-  }
-
-  getName() {
-    return this.name;
-  }
-
-  setColor(red, green, blue, alpha = 1.0) {
-    this.red = red;
-    this.green = green;
-    this.blue = blue;
-    this.alpha = alpha; 
-  }
-
-  setTexture(texture) {
-  	this.texture = texture;
-  }
-
-  use(gl, projectionMatrix, modelViewMatrix) {
-    if (this.texture) {
-      this.texture.use(gl);
-    }
-
-    const shaderProgram = this.getShaderProgram();
-    shaderProgram.use(gl);
-    shaderProgram.setProjectionMatrix(gl, projectionMatrix);
-    shaderProgram.setModelViewMatrix(gl, modelViewMatrix);
-
-    shaderProgram.setUniformValue(gl, "uSampler", 0);
-  }
-
-  getShaderProgram() {
-    if (this.texture)
-      return window.texturedShaderProgram;
-    else
-      return window.defaultShaderProgram;
-  }
-
-}
-
-module.exports = Material;
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-class Texture {
-
-  /**
-   * image should be a new Image() kind of object.
-   * Image width/height should be a power of two!
-   */
-  constructor(gl, image) {
-    this.glTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-    gl.generateMipmap(gl.TEXTURE_2D);
-    gl.bindTexture(gl.TEXTURE_2D, null);
-  }
-
-  use(gl) {
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
-  }
-
-}
-
-module.exports = Texture;
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-const Matrix = __webpack_require__(7);
+const Matrix = __webpack_require__(5);
 
 
 class Camera {
@@ -1397,13 +1224,13 @@ class Camera {
 module.exports = Camera;
 
 /***/ }),
-/* 21 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const Matrix = __webpack_require__(7);
+const Matrix = __webpack_require__(5);
 
 
 class SceneObject {
