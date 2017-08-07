@@ -29,7 +29,7 @@ module.exports = {
     scene.getCamera().usePerspectiveView();
 
     // CREATE A MODEL (Containing just a single, colored triangle)
-    const cube = new Model();
+    const cube = new Model('cube');
     cube.vertices = [
      { x: -0.5, y: 0.5, z: 0.5 },   // 1 Front, top left
      { x: -0.5, y: -0.5, z: 0.5 },  // 2 Front, bottom left
@@ -41,6 +41,7 @@ module.exports = {
      { x: 0.5, y: -0.5, z: -0.5 },  // 7 Back, bottom right
      { x: 0.5, y: 0.5, z: -0.5 }    // 8 Back, top right
     ];
+    renderer.addModel(cube);
 
     const front1 = new Polygon('front');
     front1.addVertex(1, 0, 0);
@@ -105,7 +106,7 @@ module.exports = {
     cube.polygons = [front1, front2, rightSide1, rightSide2, back1, back2, leftSide1, leftSide2, top1, top2, bottom1, bottom2];
 
     // Create a static game object (that uses the model)
-    const gameObject = new StaticObject(cube);
+    const gameObject = new StaticObject('cube');
     gameObject.setPosition(0,0,0);
 
     scene.addObject(gameObject);

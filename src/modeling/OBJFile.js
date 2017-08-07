@@ -65,9 +65,13 @@ class OBJFile {
     };
   }
 
+  _getDefaultModelName() {
+    return 'default';
+  }
+
   _currentModel() {
     if(this.models.length == 0)
-      this.models.push(new Model("Untitled"));
+      this.models.push(new Model(this._getDefaultModelName()));
 
     return this.models[this.models.length - 1];
   }
@@ -81,7 +85,7 @@ class OBJFile {
   }
 
   _parseObject(lineItems) {
-    let modelName = lineItems.length >= 2 ? lineItems[1] : "Untitled";
+    let modelName = lineItems.length >= 2 ? lineItems[1] : this._getDefaultModelName();
     this.models.push(new Model(modelName)); // Attach to list of models to be returned
   }
 

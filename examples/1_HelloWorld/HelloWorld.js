@@ -19,12 +19,13 @@ module.exports = {
     renderer.addMaterial(new Material('mat', 1, 0, 0));
 
     // CREATE A MODEL (Containing just a single, colored triangle)
-    const m = new Model();
+    const m = new Model('modelName');
     m.vertices = [
      { x: 0.0, y: 0.5, z: 0.0 },
      { x: -0.5, y: -0.5, z: 0.0 },
      { x: 0.5, y: -0.5, z: 0.0 }
     ];
+    renderer.addModel(m);
 
     const triangle = new Polygon('mat');
     triangle.addVertex(1, 0, 0);
@@ -34,7 +35,7 @@ module.exports = {
     m.polygons = [triangle];
 
     // Create a static game object (that uses the model)
-    const gameObject = new StaticObject(m);
+    const gameObject = new StaticObject('modelName');
 
     scene.addObject(gameObject);
 

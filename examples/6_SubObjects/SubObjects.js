@@ -2,9 +2,6 @@
 
 const Scene = require('scenes/Scene.js');
 const ImageManager = require('graphics/ImageManager.js');
-const OBJFile = require('modeling/OBJFile.js');
-const Model = require('modeling/Model.js');
-const Polygon = require('modeling/polygon.js');
 const StaticObject = require('scenes/StaticObject.js');
 const Material = require('materials/Material.js');
 const groundObj = require('raw-loader!./Ground.obj');
@@ -12,7 +9,7 @@ const boxObj = require('raw-loader!./Box.obj');
 const Renderer = require('main.js').Renderer;
 
 
-let _interval;
+let _interval; 
 
 module.exports = {
 
@@ -32,21 +29,21 @@ module.exports = {
       renderer.addMaterial(new Material('ground', 0,0,0, 'assets/images/grass.png'));
       renderer.addMaterial(new Material('crate', 0,0,0, 'assets/images/Crate.png'));
 
-      const groundModel = new OBJFile(groundObj).parse().models[0];
-      const ground = new StaticObject(groundModel);
+      renderer.loadOBJFile(groundObj);
+      renderer.loadOBJFile(boxObj);
+
+      const ground = new StaticObject('ground');
       ground.setPosition(0, 0, 0);
       scene.addObject(ground);
 
-      const boxModel = new OBJFile(boxObj).parse().models[0];
-      const box = new StaticObject(boxModel);
+      const box = new StaticObject('default');
       box.setPosition(0, 1, 0);
+      scene.addObject(box);
 
-      const miniBox = new StaticObject(boxModel);
+      const miniBox = new StaticObject('default');
       miniBox.setScale(0.5, 0.5, 0.5);
       miniBox.setPosition(3, 0, 0);
       box.addObject(miniBox);
-
-      scene.addObject(box);
 
       let pitch = 0;
       _interval = setInterval(() => {

@@ -28,13 +28,10 @@ module.exports = {
       renderer.addMaterial(new Material('top', 1,1,1));
       renderer.addMaterial(new Material('bottom', 0.5, 0.5, 0.5));
 
-      const objFile = new OBJFile(objFileContents);
-      const { models, materialLibs } = objFile.parse();
-
-      const cube = models[0];
+      renderer.loadOBJFile(objFileContents);
 
       // Create a static game object (that uses the model)
-      const gameObject = new StaticObject(cube);
+      const gameObject = new StaticObject('default');
       gameObject.setPosition(0,0,0);
 
       scene.addObject(gameObject);

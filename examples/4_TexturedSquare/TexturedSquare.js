@@ -20,13 +20,14 @@ module.exports = {
       renderer.addMaterial(new Material('textured', 0,0,0, 'assets/images/brick.png'));
 
       // CREATE A MODEL (Containing just a single, textured triangle)
-      const m = new Model();
+      const m = new Model('square');
       m.vertices = [
        { x: -0.5, y: 0.5, z: 0.0 },   // left, top
        { x: -0.5, y: -0.5, z: 0.0 },  // left, bottom
        { x: 0.5, y: -0.5, z: 0.0 },   // right, bottom
        { x: 0.5, y: 0.5, z: 0.0 }     // right, top
       ];
+      renderer.addModel(m);
 
       m.addTextureCoords(0,0,0); // U = 0, V = 0  (upper left of texture image)
       m.addTextureCoords(0,1,0); // U = 0, V = 1  (bottom: v = 1, left: u = 1)
@@ -46,7 +47,7 @@ module.exports = {
       m.polygons = [triangle, triangle2];
 
       // Create a static game object (that uses the model)
-      const gameObject = new StaticObject(m);
+      const gameObject = new StaticObject('square');
 
       scene.addObject(gameObject);
 

@@ -36,7 +36,7 @@ class Renderer {
     const { models, materialLibs } = objFile.parse();
     models.forEach(model => {
       this.addModel(model);
-    })
+    });
   }
 
   addModel(model) {
@@ -48,6 +48,12 @@ class Renderer {
 
   getModelNames() {
     return this._models.map(m => m.getName());
+  }
+
+  findModelByName(name) {
+    return this._models.find(m => {
+      return m.getName() == name;
+    });
   }
 
   loadMTLFile(mtlFileContents) {
@@ -107,7 +113,7 @@ class Renderer {
 
     const objects = scene.getObjects();
     objects.forEach(obj => {
-      obj.render(this._gl, projMatrix, modelViewMatrix, this._materials);
+      obj.render(this._gl, projMatrix, modelViewMatrix, this._materials, this._models);
     });
   }
 }
