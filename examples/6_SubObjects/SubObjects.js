@@ -26,8 +26,13 @@ module.exports = {
       camera.setPosition(0, 2,10);
       camera.setYaw(-20);
 
-      renderer.addMaterial(new Material('ground', 0,0,0, 'assets/images/grass.png'));
-      renderer.addMaterial(new Material('crate', 0,0,0, 'assets/images/Crate.png'));
+      const groundMaterial = new Material('ground');
+      groundMaterial.setAmbientTextureImageURL('assets/images/grass.png');
+      renderer.addMaterial(groundMaterial);
+
+      const crate = new Material('crate', 0,0,0, 'assets/images/Crate.png');
+      crate.setAmbientTextureImageURL('assets/images/Crate.png');
+      renderer.addMaterial(crate);
 
       renderer.loadOBJFile(groundObj);
       renderer.loadOBJFile(boxObj);

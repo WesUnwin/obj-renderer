@@ -6,13 +6,13 @@ const Texture = require('materials/Texture.js');
 
 class Material {
 
-  constructor(name, red = 1, green = 1, blue = 1, textureImageURL) {
+  constructor(name) {
     this.name = name || '';
-    this.setColor(red, green, blue);
-    this.texture = null;
+
     this.illum = 0;
 
-    this.textureImageURL = textureImageURL;
+    this.textureImageURL = null;
+    this.texture = null;
 
     this.Ka = { red: 0, green: 0, blue: 0 };
     this.Kd = { red: 0, green: 0, blue: 0 };
@@ -30,19 +30,32 @@ class Material {
     return this.name;
   }
 
-  setColor(red, green, blue, alpha = 1.0) {
-    this.red = red;
-    this.green = green;
-    this.blue = blue;
-    this.alpha = alpha; 
+  setIllum(illumModelNumber) {
+    this.illum = illumModelNumber;
   }
 
-  setAmbientTextureImageURL(texture) {
-  	this.texture = texture;
+  setAmbientColor(color) {
+    this.Ka = color;
+  }
+
+  getAmbientColor() {
+    return this.Ka;
+  }
+
+  setDiffuseColor(color) {
+    this.Kd = color;
+  }
+
+  getDiffuseColor() {
+    return this.Kd;
+  }
+
+  setAmbientTextureImageURL(textureImageURL) {
+  	this.textureImageURL = textureImageURL;
   }
 
   setDiffuseTextureImageURL(texture) {
-    this.texture = texture;
+    this.textureImageURL = textureImageURL;
   }
 
   use(gl, projectionMatrix, modelViewMatrix) {

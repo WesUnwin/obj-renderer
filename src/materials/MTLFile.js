@@ -55,7 +55,8 @@ class MTLFile {
           //        color = KaIa 
           //          + Kd { SUM j=1..ls, (N*Lj)Ij }
           //          + Ks { SUM j=1..ls, ((H*Hj)^Ns)Ij }
-
+          this._parseIllum(lineItems);
+          break;
         case 'ka': // (Ka) - Ambient color of material
           this._parseKa(lineItems);
           break;
@@ -117,6 +118,13 @@ class MTLFile {
     return this.materials;
   }
 
+  _getCurrentMaterial() {
+    if (!this.currentMaterial) {
+      this.currentMaterial = new Material('default');
+    }
+    return this.currentMaterial;
+  }
+
   // newmtl material_name
   _parseNewMTL(lineItems) {
     if (lineItems.length < 2) {
@@ -127,11 +135,19 @@ class MTLFile {
     this.currentMaterial = newMat;
   }
 
+  _parseIllum(lineItems) {
+    if (lineItems.length < 2) {
+      this._fileError('to few arguments, expected: illum <number>');
+    }
+    this._getCurrentMaterial().setIllum(parseInt(lineItems[1]));
+  }
+
   // Ka r g b         <- currently only this syntax is supported
   // Ka spectral file.rfl factor
   // Ka xyz x y z
   _parseKa(lineItems) {
-    this._notImplemented('Kd');
+    const color = this._parseKStatementRGB(lineItems);
+    this._getCurrentMaterial().setAmbientColor(color);
   }
 
   // Kd r g b         <- currently only this syntax is supported
@@ -146,6 +162,24 @@ class MTLFile {
   // Ks xyz x y z
   _parseKs(lineItems) {
     this._notImplemented('Ks');
+  }
+
+  // extracts the rgb values from a "Ka/Kd/Ks r g b" statement
+  _parseKStatementRGB(lineItems) {
+    if (lineItems.length < 4) {
+      this._fileError('to few arguments, expected: Ka/Kd/Ks keyword followed by: r g b values');
+    }
+    if (lineItems[1].toLowerCase() == 'spectral') {
+      this._notImplemented('Ka spectral <filename> <factor>');
+    } else if (lineItems[1].toLowerCase() == 'xyz') {
+      this._notImplemented('Ka xyz <x> <y> <z>');
+    }
+
+    return {
+      red: parseFloat(lineItems[2]),
+      green: parseFloat(lineItems[3]),
+      blue: parseFloat(lineItems[4])
+    };
   }
 
   _parseTF(lineItems) {
@@ -177,7 +211,12 @@ class MTLFile {
   // map_Ka [options] textureFile
   // map_Ka -s 1 1 1 -o 0 0 0 -mm 0 1 file.mpc
   _parseMapKa(lineItems) {
-    this._notImplemented('map_Ka');
+    if (lineItems.length < 2) {
+      this._fileError('to few arguments, expected: map_ka <textureImageFile>');
+    }
+    // TODO parse options (lineItems[1] to lineItems[lineItems.length - 2])
+    const lastLineItem = lineItems[lineItems.length - 1];
+    this._getCurrentMaterial().setAmbientTextureImageURL(lastLineItem);
   }
 
   // map_Kd [options] textureFile

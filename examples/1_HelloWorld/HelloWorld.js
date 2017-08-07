@@ -16,7 +16,9 @@ module.exports = {
     const renderer = new Renderer(canvas);
     const scene = new Scene();
 
-    renderer.addMaterial(new Material('mat', 1, 0, 0));
+    const mat = new Material('mat');
+    mat.setAmbientColor({ red: 1, green: 0, blue: 0 });
+    renderer.addMaterial(mat);
 
     // CREATE A MODEL (Containing just a single, colored triangle)
     const m = new Model('modelName');

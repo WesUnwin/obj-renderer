@@ -78,10 +78,11 @@ class ModelStaticVBO {
           vertexPositions.push(vertexCoords.y);
           vertexPositions.push(vertexCoords.z);
 
-          vertexColors.push(currentMaterial.red);
-          vertexColors.push(currentMaterial.green);
-          vertexColors.push(currentMaterial.blue);
-          vertexColors.push(currentMaterial.alpha);
+          const { red, green, blue, alpha } = currentMaterial.getAmbientColor()
+          vertexColors.push(red);
+          vertexColors.push(green);
+          vertexColors.push(blue);
+          vertexColors.push(alpha);
 
           if (!vertex.textureCoordsIndex) {
             vertexTextureCoords.push(0);
