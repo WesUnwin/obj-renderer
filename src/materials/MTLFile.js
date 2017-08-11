@@ -14,8 +14,10 @@ class MTLFile {
     this.filename = '';
   }
 
-  parse() {
+  parse(defaultMaterialName = 'default') {
     this._reset();
+
+    this.defaultMaterialName = defaultMaterialName;
 
     const lines = this.fileContents.split("\n");
 
@@ -120,7 +122,7 @@ class MTLFile {
 
   _getCurrentMaterial() {
     if (!this.currentMaterial) {
-      this.currentMaterial = new Material('default');
+      this.currentMaterial = new Material(this.defaultMaterialName);
     }
     return this.currentMaterial;
   }

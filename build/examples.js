@@ -124,17 +124,30 @@ const SceneObject = __webpack_require__(19);
 
 class StaticObject extends SceneObject {
 
-  constructor(model) {
+  constructor(modelName) {
     super();
-		this.modelStaticVBO = new ModelStaticVBO(model);
+    this.modelName = modelName;
   }
 
-  render(gl, projectionMatrix, modelViewMatrix, materials) {
+  _init(models) {
+    const model = models.find(m => { return m.getName() == this.modelName; });
+    if (!model) {
+      throw 'StaticObject: could not find object by name: ' + this.modelName;
+    }
+    this.modelStaticVBO = new ModelStaticVBO(model);
+    this.init = true;
+  }
+
+  render(gl, projectionMatrix, modelViewMatrix, materials, models) {
+    if (!this.init) {
+      this._init(models);
+    }
+
     const mvMatrix = this.transform.clone();
     mvMatrix.multiply(modelViewMatrix);
     this.modelStaticVBO.render(gl, projectionMatrix, mvMatrix, materials);
     this.subObjects.forEach(subObject => {
-      subObject.render(gl, projectionMatrix, mvMatrix, materials);
+      subObject.render(gl, projectionMatrix, mvMatrix, materials, models);
     });
   }
 
@@ -144,6 +157,25 @@ module.exports = StaticObject;
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const Renderer = __webpack_require__(9);
+const Scene = __webpack_require__(0);
+const StaticObject = __webpack_require__(1);
+
+
+module.exports = {
+	Renderer: Renderer,
+  Scene: Scene,
+  SceneObject: StaticObject
+};
+
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -201,7 +233,7 @@ class Model {
 module.exports = Model;
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -225,25 +257,6 @@ class Polygon {
 }
 
 module.exports = Polygon;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-const Renderer = __webpack_require__(9);
-const Scene = __webpack_require__(0);
-const StaticObject = __webpack_require__(1);
-
-
-module.exports = {
-	Renderer: Renderer,
-  Scene: Scene,
-  SceneObject: StaticObject
-};
-
 
 /***/ }),
 /* 5 */
@@ -453,13 +466,13 @@ const Texture = __webpack_require__(30);
 
 class Material {
 
-  constructor(name, red = 1, green = 1, blue = 1, textureImageURL) {
+  constructor(name) {
     this.name = name || '';
-    this.setColor(red, green, blue);
-    this.texture = null;
+
     this.illum = 0;
 
-    this.textureImageURL = textureImageURL;
+    this.textureImageURL = null;
+    this.texture = null;
 
     this.Ka = { red: 0, green: 0, blue: 0 };
     this.Kd = { red: 0, green: 0, blue: 0 };
@@ -477,19 +490,32 @@ class Material {
     return this.name;
   }
 
-  setColor(red, green, blue, alpha = 1.0) {
-    this.red = red;
-    this.green = green;
-    this.blue = blue;
-    this.alpha = alpha; 
+  setIllum(illumModelNumber) {
+    this.illum = illumModelNumber;
   }
 
-  setAmbientTextureImageURL(texture) {
-  	this.texture = texture;
+  setAmbientColor(color) {
+    this.Ka = color;
+  }
+
+  getAmbientColor() {
+    return this.Ka;
+  }
+
+  setDiffuseColor(color) {
+    this.Kd = color;
+  }
+
+  getDiffuseColor() {
+    return this.Kd;
+  }
+
+  setAmbientTextureImageURL(textureImageURL) {
+  	this.textureImageURL = textureImageURL;
   }
 
   setDiffuseTextureImageURL(texture) {
-    this.texture = texture;
+    this.textureImageURL = textureImageURL;
   }
 
   use(gl, projectionMatrix, modelViewMatrix) {
@@ -527,8 +553,8 @@ module.exports = Material;
 "use strict";
 
 
-const Model = __webpack_require__(2);
-const Polygon = __webpack_require__(3);
+const Model = __webpack_require__(3);
+const Polygon = __webpack_require__(4);
 
 
 class OBJFile {
@@ -592,9 +618,13 @@ class OBJFile {
     };
   }
 
+  _getDefaultModelName() {
+    return 'default';
+  }
+
   _currentModel() {
     if(this.models.length == 0)
-      this.models.push(new Model("Untitled"));
+      this.models.push(new Model(this._getDefaultModelName()));
 
     return this.models[this.models.length - 1];
   }
@@ -608,7 +638,7 @@ class OBJFile {
   }
 
   _parseObject(lineItems) {
-    let modelName = lineItems.length >= 2 ? lineItems[1] : "Untitled";
+    let modelName = lineItems.length >= 2 ? lineItems[1] : this._getDefaultModelName();
     this.models.push(new Model(modelName)); // Attach to list of models to be returned
   }
 
@@ -732,7 +762,7 @@ class Renderer {
     const { models, materialLibs } = objFile.parse();
     models.forEach(model => {
       this.addModel(model);
-    })
+    });
   }
 
   addModel(model) {
@@ -744,6 +774,12 @@ class Renderer {
 
   getModelNames() {
     return this._models.map(m => m.getName());
+  }
+
+  findModelByName(name) {
+    return this._models.find(m => {
+      return m.getName() == name;
+    });
   }
 
   loadMTLFile(mtlFileContents) {
@@ -803,7 +839,7 @@ class Renderer {
 
     const objects = scene.getObjects();
     objects.forEach(obj => {
-      obj.render(this._gl, projMatrix, modelViewMatrix, this._materials);
+      obj.render(this._gl, projMatrix, modelViewMatrix, this._materials, this._models);
     });
   }
 }
@@ -925,10 +961,11 @@ class ModelStaticVBO {
           vertexPositions.push(vertexCoords.y);
           vertexPositions.push(vertexCoords.z);
 
-          vertexColors.push(currentMaterial.red);
-          vertexColors.push(currentMaterial.green);
-          vertexColors.push(currentMaterial.blue);
-          vertexColors.push(currentMaterial.alpha);
+          const { red, green, blue, alpha } = currentMaterial.getAmbientColor()
+          vertexColors.push(red);
+          vertexColors.push(green);
+          vertexColors.push(blue);
+          vertexColors.push(alpha);
 
           if (!vertex.textureCoordsIndex) {
             vertexTextureCoords.push(0);
@@ -1108,7 +1145,8 @@ class MTLFile {
           //        color = KaIa 
           //          + Kd { SUM j=1..ls, (N*Lj)Ij }
           //          + Ks { SUM j=1..ls, ((H*Hj)^Ns)Ij }
-
+          this._parseIllum(lineItems);
+          break;
         case 'ka': // (Ka) - Ambient color of material
           this._parseKa(lineItems);
           break;
@@ -1170,6 +1208,13 @@ class MTLFile {
     return this.materials;
   }
 
+  _getCurrentMaterial() {
+    if (!this.currentMaterial) {
+      this.currentMaterial = new Material('default');
+    }
+    return this.currentMaterial;
+  }
+
   // newmtl material_name
   _parseNewMTL(lineItems) {
     if (lineItems.length < 2) {
@@ -1180,11 +1225,19 @@ class MTLFile {
     this.currentMaterial = newMat;
   }
 
+  _parseIllum(lineItems) {
+    if (lineItems.length < 2) {
+      this._fileError('to few arguments, expected: illum <number>');
+    }
+    this._getCurrentMaterial().setIllum(parseInt(lineItems[1]));
+  }
+
   // Ka r g b         <- currently only this syntax is supported
   // Ka spectral file.rfl factor
   // Ka xyz x y z
   _parseKa(lineItems) {
-    this._notImplemented('Kd');
+    const color = this._parseKStatementRGB(lineItems);
+    this._getCurrentMaterial().setAmbientColor(color);
   }
 
   // Kd r g b         <- currently only this syntax is supported
@@ -1199,6 +1252,24 @@ class MTLFile {
   // Ks xyz x y z
   _parseKs(lineItems) {
     this._notImplemented('Ks');
+  }
+
+  // extracts the rgb values from a "Ka/Kd/Ks r g b" statement
+  _parseKStatementRGB(lineItems) {
+    if (lineItems.length < 4) {
+      this._fileError('to few arguments, expected: Ka/Kd/Ks keyword followed by: r g b values');
+    }
+    if (lineItems[1].toLowerCase() == 'spectral') {
+      this._notImplemented('Ka spectral <filename> <factor>');
+    } else if (lineItems[1].toLowerCase() == 'xyz') {
+      this._notImplemented('Ka xyz <x> <y> <z>');
+    }
+
+    return {
+      red: parseFloat(lineItems[2]),
+      green: parseFloat(lineItems[3]),
+      blue: parseFloat(lineItems[4])
+    };
   }
 
   _parseTF(lineItems) {
@@ -1230,7 +1301,12 @@ class MTLFile {
   // map_Ka [options] textureFile
   // map_Ka -s 1 1 1 -o 0 0 0 -mm 0 1 file.mpc
   _parseMapKa(lineItems) {
-    this._notImplemented('map_Ka');
+    if (lineItems.length < 2) {
+      this._fileError('to few arguments, expected: map_ka <textureImageFile>');
+    }
+    // TODO parse options (lineItems[1] to lineItems[lineItems.length - 2])
+    const lastLineItem = lineItems[lineItems.length - 1];
+    this._getCurrentMaterial().setAmbientTextureImageURL(lastLineItem);
   }
 
   // map_Kd [options] textureFile
@@ -1427,12 +1503,12 @@ module.exports = SceneObject;
 /* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const Renderer = __webpack_require__(4).Renderer;
+const Renderer = __webpack_require__(2).Renderer;
 const Scene = __webpack_require__(0);
 const sobj = __webpack_require__(10);
 const ImageManager = __webpack_require__(6);
-const Model = __webpack_require__(2);
-const Polygon = __webpack_require__(3);
+const Model = __webpack_require__(3);
+const Polygon = __webpack_require__(4);
 const StaticObject = __webpack_require__(1);
 const Material = __webpack_require__(7);
 
@@ -1445,15 +1521,18 @@ module.exports = {
     const renderer = new Renderer(canvas);
     const scene = new Scene();
 
-    renderer.addMaterial(new Material('mat', 1, 0, 0));
+    const mat = new Material('mat');
+    mat.setAmbientColor({ red: 1, green: 0, blue: 0 });
+    renderer.addMaterial(mat);
 
     // CREATE A MODEL (Containing just a single, colored triangle)
-    const m = new Model();
+    const m = new Model('modelName');
     m.vertices = [
      { x: 0.0, y: 0.5, z: 0.0 },
      { x: -0.5, y: -0.5, z: 0.0 },
      { x: 0.5, y: -0.5, z: 0.0 }
     ];
+    renderer.addModel(m);
 
     const triangle = new Polygon('mat');
     triangle.addVertex(1, 0, 0);
@@ -1463,7 +1542,7 @@ module.exports = {
     m.polygons = [triangle];
 
     // Create a static game object (that uses the model)
-    const gameObject = new StaticObject(m);
+    const gameObject = new StaticObject('modelName');
 
     scene.addObject(gameObject);
 
@@ -1479,12 +1558,12 @@ module.exports = {
 /* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const Renderer = __webpack_require__(4).Renderer;
+const Renderer = __webpack_require__(2).Renderer;
 const Scene = __webpack_require__(0);
 const sobj = __webpack_require__(10);
 const ImageManager = __webpack_require__(6);
-const Model = __webpack_require__(2);
-const Polygon = __webpack_require__(3);
+const Model = __webpack_require__(3);
+const Polygon = __webpack_require__(4);
 const StaticObject = __webpack_require__(1);
 const Material = __webpack_require__(7);
 
@@ -1508,7 +1587,7 @@ module.exports = {
     renderer.addMaterial(new Material('bottom', 0.5, 0.5, 0.5));
 
     // CREATE A MODEL (Containing just a single, colored triangle)
-    const cube = new Model();
+    const cube = new Model('cube');
     cube.vertices = [
      { x: -0.5, y: 0.5, z: 0.5 },   // 1 Front, top left
      { x: -0.5, y: -0.5, z: 0.5 },  // 2 Front, bottom left
@@ -1520,6 +1599,7 @@ module.exports = {
      { x: 0.5, y: -0.5, z: -0.5 },  // 7 Back, bottom right
      { x: 0.5, y: 0.5, z: -0.5 }    // 8 Back, top right
     ];
+    renderer.addModel(cube);
 
     const front1 = new Polygon('front');
     front1.addVertex(1, 0, 0);
@@ -1584,7 +1664,7 @@ module.exports = {
     cube.polygons = [front1, front2, rightSide1, rightSide2, back1, back2, leftSide1, leftSide2, top1, top2, bottom1, bottom2];
 
     // Create a static game object (that uses the model)
-    const gameObject = new StaticObject(cube);
+    const gameObject = new StaticObject('cube');
     gameObject.setPosition(0,0,0);
 
     scene.addObject(gameObject);
@@ -1607,12 +1687,12 @@ module.exports = {
 /* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const Renderer = __webpack_require__(4).Renderer;
+const Renderer = __webpack_require__(2).Renderer;
 const Scene = __webpack_require__(0);
 const sobj = __webpack_require__(10);
 const ImageManager = __webpack_require__(6);
-const Model = __webpack_require__(2);
-const Polygon = __webpack_require__(3);
+const Model = __webpack_require__(3);
+const Polygon = __webpack_require__(4);
 const StaticObject = __webpack_require__(1);
 const Material = __webpack_require__(7);
 
@@ -1638,7 +1718,7 @@ module.exports = {
     scene.getCamera().usePerspectiveView();
 
     // CREATE A MODEL (Containing just a single, colored triangle)
-    const cube = new Model();
+    const cube = new Model('cube');
     cube.vertices = [
      { x: -0.5, y: 0.5, z: 0.5 },   // 1 Front, top left
      { x: -0.5, y: -0.5, z: 0.5 },  // 2 Front, bottom left
@@ -1650,6 +1730,7 @@ module.exports = {
      { x: 0.5, y: -0.5, z: -0.5 },  // 7 Back, bottom right
      { x: 0.5, y: 0.5, z: -0.5 }    // 8 Back, top right
     ];
+    renderer.addModel(cube);
 
     const front1 = new Polygon('front');
     front1.addVertex(1, 0, 0);
@@ -1714,7 +1795,7 @@ module.exports = {
     cube.polygons = [front1, front2, rightSide1, rightSide2, back1, back2, leftSide1, leftSide2, top1, top2, bottom1, bottom2];
 
     // Create a static game object (that uses the model)
-    const gameObject = new StaticObject(cube);
+    const gameObject = new StaticObject('cube');
     gameObject.setPosition(0,0,0);
 
     scene.addObject(gameObject);
@@ -1736,11 +1817,11 @@ module.exports = {
 /* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const Renderer = __webpack_require__(4).Renderer;
+const Renderer = __webpack_require__(2).Renderer;
 const Scene = __webpack_require__(0);
 const ImageManager = __webpack_require__(6);
-const Model = __webpack_require__(2);
-const Polygon = __webpack_require__(3);
+const Model = __webpack_require__(3);
+const Polygon = __webpack_require__(4);
 const StaticObject = __webpack_require__(1);
 const Material = __webpack_require__(7);
 
@@ -1758,13 +1839,14 @@ module.exports = {
       renderer.addMaterial(new Material('textured', 0,0,0, 'assets/images/brick.png'));
 
       // CREATE A MODEL (Containing just a single, textured triangle)
-      const m = new Model();
+      const m = new Model('square');
       m.vertices = [
        { x: -0.5, y: 0.5, z: 0.0 },   // left, top
        { x: -0.5, y: -0.5, z: 0.0 },  // left, bottom
        { x: 0.5, y: -0.5, z: 0.0 },   // right, bottom
        { x: 0.5, y: 0.5, z: 0.0 }     // right, top
       ];
+      renderer.addModel(m);
 
       m.addTextureCoords(0,0,0); // U = 0, V = 0  (upper left of texture image)
       m.addTextureCoords(0,1,0); // U = 0, V = 1  (bottom: v = 1, left: u = 1)
@@ -1784,7 +1866,7 @@ module.exports = {
       m.polygons = [triangle, triangle2];
 
       // Create a static game object (that uses the model)
-      const gameObject = new StaticObject(m);
+      const gameObject = new StaticObject('square');
 
       scene.addObject(gameObject);
 
@@ -1808,12 +1890,12 @@ module.exports = {
 /* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const Renderer = __webpack_require__(4).Renderer;
+const Renderer = __webpack_require__(2).Renderer;
 const Scene = __webpack_require__(0);
 const ImageManager = __webpack_require__(6);
 const OBJFile = __webpack_require__(8);
-const Model = __webpack_require__(2);
-const Polygon = __webpack_require__(3);
+const Model = __webpack_require__(3);
+const Polygon = __webpack_require__(4);
 const StaticObject = __webpack_require__(1);
 const Material = __webpack_require__(7);
 const objFileContents = __webpack_require__(27);
@@ -1838,13 +1920,10 @@ module.exports = {
       renderer.addMaterial(new Material('top', 1,1,1));
       renderer.addMaterial(new Material('bottom', 0.5, 0.5, 0.5));
 
-      const objFile = new OBJFile(objFileContents);
-      const { models, materialLibs } = objFile.parse();
-
-      const cube = models[0];
+      renderer.loadOBJFile(objFileContents);
 
       // Create a static game object (that uses the model)
-      const gameObject = new StaticObject(cube);
+      const gameObject = new StaticObject('default');
       gameObject.setPosition(0,0,0);
 
       scene.addObject(gameObject);
@@ -1879,17 +1958,14 @@ module.exports = {
 
 const Scene = __webpack_require__(0);
 const ImageManager = __webpack_require__(6);
-const OBJFile = __webpack_require__(8);
-const Model = __webpack_require__(2);
-const Polygon = __webpack_require__(3);
 const StaticObject = __webpack_require__(1);
 const Material = __webpack_require__(7);
 const groundObj = __webpack_require__(29);
 const boxObj = __webpack_require__(28);
-const Renderer = __webpack_require__(4).Renderer;
+const Renderer = __webpack_require__(2).Renderer;
 
 
-let _interval;
+let _interval; 
 
 module.exports = {
 
@@ -1906,24 +1982,29 @@ module.exports = {
       camera.setPosition(0, 2,10);
       camera.setYaw(-20);
 
-      renderer.addMaterial(new Material('ground', 0,0,0, 'assets/images/grass.png'));
-      renderer.addMaterial(new Material('crate', 0,0,0, 'assets/images/Crate.png'));
+      const groundMaterial = new Material('ground');
+      groundMaterial.setAmbientTextureImageURL('assets/images/grass.png');
+      renderer.addMaterial(groundMaterial);
 
-      const groundModel = new OBJFile(groundObj).parse().models[0];
-      const ground = new StaticObject(groundModel);
+      const crate = new Material('crate', 0,0,0, 'assets/images/Crate.png');
+      crate.setAmbientTextureImageURL('assets/images/Crate.png');
+      renderer.addMaterial(crate);
+
+      renderer.loadOBJFile(groundObj);
+      renderer.loadOBJFile(boxObj);
+
+      const ground = new StaticObject('ground');
       ground.setPosition(0, 0, 0);
       scene.addObject(ground);
 
-      const boxModel = new OBJFile(boxObj).parse().models[0];
-      const box = new StaticObject(boxModel);
+      const box = new StaticObject('default');
       box.setPosition(0, 1, 0);
+      scene.addObject(box);
 
-      const miniBox = new StaticObject(boxModel);
+      const miniBox = new StaticObject('default');
       miniBox.setScale(0.5, 0.5, 0.5);
       miniBox.setPosition(3, 0, 0);
       box.addObject(miniBox);
-
-      scene.addObject(box);
 
       let pitch = 0;
       _interval = setInterval(() => {

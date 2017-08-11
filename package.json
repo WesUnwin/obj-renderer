@@ -1,5 +1,5 @@
 {
-  "name": "webgl",
+  "name": "obj-renderer",
   "version": "0.0.0",
   "description": "A simple WebGL based graphical rendering engine, that works with .OBJ 3D files.",
   "main": "src/main.js",

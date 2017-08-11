@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "/assets/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -124,17 +124,30 @@ const SceneObject = __webpack_require__(19);
 
 class StaticObject extends SceneObject {
 
-  constructor(model) {
+  constructor(modelName) {
     super();
-		this.modelStaticVBO = new ModelStaticVBO(model);
+    this.modelName = modelName;
   }
 
-  render(gl, projectionMatrix, modelViewMatrix, materials) {
+  _init(models) {
+    const model = models.find(m => { return m.getName() == this.modelName; });
+    if (!model) {
+      throw 'StaticObject: could not find object by name: ' + this.modelName;
+    }
+    this.modelStaticVBO = new ModelStaticVBO(model);
+    this.init = true;
+  }
+
+  render(gl, projectionMatrix, modelViewMatrix, materials, models) {
+    if (!this.init) {
+      this._init(models);
+    }
+
     const mvMatrix = this.transform.clone();
     mvMatrix.multiply(modelViewMatrix);
     this.modelStaticVBO.render(gl, projectionMatrix, mvMatrix, materials);
     this.subObjects.forEach(subObject => {
-      subObject.render(gl, projectionMatrix, mvMatrix, materials);
+      subObject.render(gl, projectionMatrix, mvMatrix, materials, models);
     });
   }
 
@@ -144,6 +157,25 @@ module.exports = StaticObject;
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const Renderer = __webpack_require__(9);
+const Scene = __webpack_require__(0);
+const StaticObject = __webpack_require__(1);
+
+
+module.exports = {
+	Renderer: Renderer,
+  Scene: Scene,
+  SceneObject: StaticObject
+};
+
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -201,7 +233,7 @@ class Model {
 module.exports = Model;
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -225,25 +257,6 @@ class Polygon {
 }
 
 module.exports = Polygon;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-const Renderer = __webpack_require__(9);
-const Scene = __webpack_require__(0);
-const StaticObject = __webpack_require__(1);
-
-
-module.exports = {
-	Renderer: Renderer,
-  Scene: Scene,
-  SceneObject: StaticObject
-};
-
 
 /***/ }),
 /* 5 */
@@ -410,8 +423,8 @@ module.exports = Matrix;
 "use strict";
 
 
-const Model = __webpack_require__(2);
-const Polygon = __webpack_require__(3);
+const Model = __webpack_require__(3);
+const Polygon = __webpack_require__(4);
 
 
 class OBJFile {
@@ -475,9 +488,13 @@ class OBJFile {
     };
   }
 
+  _getDefaultModelName() {
+    return 'default';
+  }
+
   _currentModel() {
     if(this.models.length == 0)
-      this.models.push(new Model("Untitled"));
+      this.models.push(new Model(this._getDefaultModelName()));
 
     return this.models[this.models.length - 1];
   }
@@ -491,7 +508,7 @@ class OBJFile {
   }
 
   _parseObject(lineItems) {
-    let modelName = lineItems.length >= 2 ? lineItems[1] : "Untitled";
+    let modelName = lineItems.length >= 2 ? lineItems[1] : this._getDefaultModelName();
     this.models.push(new Model(modelName)); // Attach to list of models to be returned
   }
 
@@ -615,7 +632,7 @@ class Renderer {
     const { models, materialLibs } = objFile.parse();
     models.forEach(model => {
       this.addModel(model);
-    })
+    });
   }
 
   addModel(model) {
@@ -627,6 +644,12 @@ class Renderer {
 
   getModelNames() {
     return this._models.map(m => m.getName());
+  }
+
+  findModelByName(name) {
+    return this._models.find(m => {
+      return m.getName() == name;
+    });
   }
 
   loadMTLFile(mtlFileContents) {
@@ -686,7 +709,7 @@ class Renderer {
 
     const objects = scene.getObjects();
     objects.forEach(obj => {
-      obj.render(this._gl, projMatrix, modelViewMatrix, this._materials);
+      obj.render(this._gl, projMatrix, modelViewMatrix, this._materials, this._models);
     });
   }
 }
@@ -803,10 +826,11 @@ class ModelStaticVBO {
           vertexPositions.push(vertexCoords.y);
           vertexPositions.push(vertexCoords.z);
 
-          vertexColors.push(currentMaterial.red);
-          vertexColors.push(currentMaterial.green);
-          vertexColors.push(currentMaterial.blue);
-          vertexColors.push(currentMaterial.alpha);
+          const { red, green, blue, alpha } = currentMaterial.getAmbientColor()
+          vertexColors.push(red);
+          vertexColors.push(green);
+          vertexColors.push(blue);
+          vertexColors.push(alpha);
 
           if (!vertex.textureCoordsIndex) {
             vertexTextureCoords.push(0);
@@ -986,7 +1010,8 @@ class MTLFile {
           //        color = KaIa 
           //          + Kd { SUM j=1..ls, (N*Lj)Ij }
           //          + Ks { SUM j=1..ls, ((H*Hj)^Ns)Ij }
-
+          this._parseIllum(lineItems);
+          break;
         case 'ka': // (Ka) - Ambient color of material
           this._parseKa(lineItems);
           break;
@@ -1048,6 +1073,13 @@ class MTLFile {
     return this.materials;
   }
 
+  _getCurrentMaterial() {
+    if (!this.currentMaterial) {
+      this.currentMaterial = new Material('default');
+    }
+    return this.currentMaterial;
+  }
+
   // newmtl material_name
   _parseNewMTL(lineItems) {
     if (lineItems.length < 2) {
@@ -1058,11 +1090,19 @@ class MTLFile {
     this.currentMaterial = newMat;
   }
 
+  _parseIllum(lineItems) {
+    if (lineItems.length < 2) {
+      this._fileError('to few arguments, expected: illum <number>');
+    }
+    this._getCurrentMaterial().setIllum(parseInt(lineItems[1]));
+  }
+
   // Ka r g b         <- currently only this syntax is supported
   // Ka spectral file.rfl factor
   // Ka xyz x y z
   _parseKa(lineItems) {
-    this._notImplemented('Kd');
+    const color = this._parseKStatementRGB(lineItems);
+    this._getCurrentMaterial().setAmbientColor(color);
   }
 
   // Kd r g b         <- currently only this syntax is supported
@@ -1077,6 +1117,24 @@ class MTLFile {
   // Ks xyz x y z
   _parseKs(lineItems) {
     this._notImplemented('Ks');
+  }
+
+  // extracts the rgb values from a "Ka/Kd/Ks r g b" statement
+  _parseKStatementRGB(lineItems) {
+    if (lineItems.length < 4) {
+      this._fileError('to few arguments, expected: Ka/Kd/Ks keyword followed by: r g b values');
+    }
+    if (lineItems[1].toLowerCase() == 'spectral') {
+      this._notImplemented('Ka spectral <filename> <factor>');
+    } else if (lineItems[1].toLowerCase() == 'xyz') {
+      this._notImplemented('Ka xyz <x> <y> <z>');
+    }
+
+    return {
+      red: parseFloat(lineItems[2]),
+      green: parseFloat(lineItems[3]),
+      blue: parseFloat(lineItems[4])
+    };
   }
 
   _parseTF(lineItems) {
@@ -1108,7 +1166,12 @@ class MTLFile {
   // map_Ka [options] textureFile
   // map_Ka -s 1 1 1 -o 0 0 0 -mm 0 1 file.mpc
   _parseMapKa(lineItems) {
-    this._notImplemented('map_Ka');
+    if (lineItems.length < 2) {
+      this._fileError('to few arguments, expected: map_ka <textureImageFile>');
+    }
+    // TODO parse options (lineItems[1] to lineItems[lineItems.length - 2])
+    const lastLineItem = lineItems[lineItems.length - 1];
+    this._getCurrentMaterial().setAmbientTextureImageURL(lastLineItem);
   }
 
   // map_Kd [options] textureFile
