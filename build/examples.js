@@ -1115,6 +1115,7 @@ class MTLFile {
 
       const lineItems = this._stripComments(line).replace(/\s\s+/g, ' ').trim().split(' ');
 
+     console.log(lineItems[0].toLowerCase());
       if (lineItems.length == 0) {
         return; // Skip blank lines
       }
@@ -1236,6 +1237,7 @@ class MTLFile {
   // Ka spectral file.rfl factor
   // Ka xyz x y z
   _parseKa(lineItems) {
+    console.log('_parseKa');
     const color = this._parseKStatementRGB(lineItems);
     this._getCurrentMaterial().setAmbientColor(color);
   }

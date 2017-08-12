@@ -34,6 +34,10 @@ class Material {
     this.illum = illumModelNumber;
   }
 
+  getIllum() {
+    return this.illum;
+  }
+
   setAmbientColor(color) {
     this.Ka = color;
   }
@@ -52,6 +56,10 @@ class Material {
 
   setAmbientTextureImageURL(textureImageURL) {
   	this.textureImageURL = textureImageURL;
+  }
+
+  getAmbientTextureImageURL() {
+    return this.textureImageURL;
   }
 
   setDiffuseTextureImageURL(texture) {

@@ -1,5 +1,8 @@
 'use strict';
 
+const Material = require('./Material');
+
+
 class MTLFile {
 
   constructor(fileContents) {
@@ -27,7 +30,7 @@ class MTLFile {
 
       const lineItems = this._stripComments(line).replace(/\s\s+/g, ' ').trim().split(' ');
 
-      if (lineItems.length == 0) {
+      if (lineItems.length == 0 || !lineItems[0]) {
         return; // Skip blank lines
       }
 
@@ -120,9 +123,18 @@ class MTLFile {
     return this.materials;
   }
 
+  _stripComments(lineString) {
+    let commentIndex = lineString.indexOf('#');
+    if(commentIndex > -1)
+      return lineString.substring(0, commentIndex);
+    else
+      return lineString;
+  }
+
   _getCurrentMaterial() {
     if (!this.currentMaterial) {
       this.currentMaterial = new Material(this.defaultMaterialName);
+      this.materials.push(this.currentMaterial);
     }
     return this.currentMaterial;
   }
@@ -178,9 +190,9 @@ class MTLFile {
     }
 
     return {
-      red: parseFloat(lineItems[2]),
-      green: parseFloat(lineItems[3]),
-      blue: parseFloat(lineItems[4])
+      red: parseFloat(lineItems[1]),
+      green: parseFloat(lineItems[2]),
+      blue: parseFloat(lineItems[3])
     };
   }
 

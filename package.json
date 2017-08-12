@@ -25,6 +25,10 @@
     "webpack-dev-server": "^2.2.0"
   },
   "jest": {
-    "verbose": true
+    "verbose": true,
+    "moduleDirectories": [
+      "src",
+      "node_modules"
+    ]
   }
 }
