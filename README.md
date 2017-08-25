@@ -5,8 +5,13 @@ and Material Template Library (.MTL) files.
 
 # Installation
 
+```javascript
+npm install obj-renderer
+```
 
-# Quick Start
+# Under Construction
+This library is actively being developed and will soon reach
+a usable state. Stay tuned for updates!
 
 
 
