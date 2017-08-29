@@ -34,18 +34,18 @@ module.exports = {
       crate.setAmbientTextureImageURL('assets/images/Crate.png');
       renderer.addMaterial(crate);
 
-      renderer.loadOBJFile(groundObj);
-      renderer.loadOBJFile(boxObj);
+      renderer.loadOBJFile(groundObj, 'ground');
+      renderer.loadOBJFile(boxObj, 'box');
 
       const ground = new StaticObject('ground');
       ground.setPosition(0, 0, 0);
       scene.addObject(ground);
 
-      const box = new StaticObject('default');
+      const box = new StaticObject('box');
       box.setPosition(0, 1, 0);
       scene.addObject(box);
 
-      const miniBox = new StaticObject('default');
+      const miniBox = new StaticObject('box');
       miniBox.setScale(0.5, 0.5, 0.5);
       miniBox.setPosition(3, 0, 0);
       box.addObject(miniBox);

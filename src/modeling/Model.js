@@ -1,13 +1,23 @@
 'use strict';
 
+const Polygon = require('./polygon');
+
 class Model {
 
-  constructor(modelName) {
-    this.name = modelName;
-    this.vertices = [];
-    this.textureCoords = [];
-    this.vertexNormals = [];
+  constructor(modelJSON) {
+    // This constructor takes a single model returned
+    // from obj-filep-parser.
+
+    this.name = modelJSON.name;
+    this.vertices = modelJSON.vertices;
+    this.textureCoords = modelJSON.textureCoords;
+    this.vertexNormals = modelJSON.vertexNormals;
     this.polygons = [];
+
+    modelJSON.faces.forEach(face => {
+      const polygon = new Polygon(face);
+      this.polygons.push(polygon);
+    });
   }
 
   getName() {

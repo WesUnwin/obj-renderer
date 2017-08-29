@@ -1,13 +1,13 @@
 'use strict';
 
-const OBJFile = require('modeling/OBJFile.js');
+const OBJFile = require('obj-file-parser');
 const MTLFile = require('materials/MTLFile.js');
 const ShaderProgram = require('./ShaderProgram.js');
 const DefaultVertexShaderSource = require('raw-loader!../shaders/vshader.shader');
 const DefaultFragmentShaderSource = require('raw-loader!../shaders/fshader.shader');
 const TexturedVertexShaderSource = require('raw-loader!../shaders/TexVShader.shader');
 const TexturedFragmentShaderSource = require('raw-loader!../shaders/TexFShader.shader');
-
+const Model = require('modeling/Model.js');
 
 class Renderer {
 
@@ -31,10 +31,11 @@ class Renderer {
     this._gl.viewport(x, y, width, height);
   }
 
-  loadOBJFile(objFileContents) {
-    const objFile = new OBJFile(objFileContents);
+  loadOBJFile(objFileContents, defaultModelName) {
+    const objFile = new OBJFile(objFileContents, defaultModelName);
     const { models, materialLibs } = objFile.parse();
-    models.forEach(model => {
+    models.forEach(modelJSON => {
+      const model = new Model(modelJSON);
       this.addModel(model);
     });
   }

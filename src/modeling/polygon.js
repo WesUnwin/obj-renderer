@@ -2,9 +2,16 @@
 
 class Polygon {
 
-  constructor(materialName) {
-    this.materialName = materialName;
+  constructor(faceJSON) {
+    this.materialName = faceJSON.material;
     this.vertices = [];
+    faceJSON.vertices.forEach(vertex => {
+      this.vertices.push({
+        vertexIndex:        vertex.vertexIndex,
+        textureCoordsIndex: vertex.textureCoordsIndex,
+        normalIndex:        vertex.vertexNormalIndex
+      });
+    });
   }
 
   addVertex(vertexIndex, textureCoordsIndex, normalIndex) {

@@ -63,203 +63,11 @@
 /******/ 	__webpack_require__.p = "/assets/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 26);
+/******/ 	return __webpack_require__(__webpack_require__.s = 19);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-const Camera = __webpack_require__(18);
-
-
-class Scene {
-
-  constructor(json) {
-    this._camera = new Camera();
-    this._objects = [];
-    this.init(json);
-  }
-
-  init(json) {
-    // TODO initialize camera and hierarchy of objects
-    // based on a nested JSON structure
-  }
-
-  addObject(object) {
-    this._objects.push(object);
-  }
-
-  removeObject(object) {
-    this._objects = this._objects.filter(obj => {
-      return obj != object;
-    });
-  }
-
-  getObjects() {
-    return this._objects;
-  }
-
-  getCamera() {
-    return this._camera;
-  }
-}
-
-module.exports = Scene;
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-const ModelStaticVBO = __webpack_require__(15);
-const Matrix = __webpack_require__(5);
-const SceneObject = __webpack_require__(19);
-
-
-class StaticObject extends SceneObject {
-
-  constructor(modelName) {
-    super();
-    this.modelName = modelName;
-  }
-
-  _init(models) {
-    const model = models.find(m => { return m.getName() == this.modelName; });
-    if (!model) {
-      throw 'StaticObject: could not find object by name: ' + this.modelName;
-    }
-    this.modelStaticVBO = new ModelStaticVBO(model);
-    this.init = true;
-  }
-
-  render(gl, projectionMatrix, modelViewMatrix, materials, models) {
-    if (!this.init) {
-      this._init(models);
-    }
-
-    const mvMatrix = this.transform.clone();
-    mvMatrix.multiply(modelViewMatrix);
-    this.modelStaticVBO.render(gl, projectionMatrix, mvMatrix, materials);
-    this.subObjects.forEach(subObject => {
-      subObject.render(gl, projectionMatrix, mvMatrix, materials, models);
-    });
-  }
-
-}
-
-module.exports = StaticObject;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-const Renderer = __webpack_require__(9);
-const Scene = __webpack_require__(0);
-const StaticObject = __webpack_require__(1);
-
-
-module.exports = {
-	Renderer: Renderer,
-  Scene: Scene,
-  SceneObject: StaticObject
-};
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-class Model {
-
-  constructor(modelName) {
-    this.name = modelName;
-    this.vertices = [];
-    this.textureCoords = [];
-    this.vertexNormals = [];
-    this.polygons = [];
-  }
-
-  getName() {
-    return this.name;
-  }
-
-  addVertex(x, y, z) {
-    this.vertices.push({x: x, y: y, z: z});
-  }
-
-  addTextureCoords(u, v, w) {
-    this.textureCoords.push({u: u, v: v, w: w});
-  }
-
-  addVertexNormal(x, y, z) {
-    this.vertexNormals.push({x: x, y: y, z: z});
-  }
-
-  addPolygon(polygon) {
-    this.polygons.push(polygon);
-  }
-
-  // Returns an array listed all the names of all materials
-  // used by the polygons of this model.
-  getMaterialsUsed() {
-    let materials = [];
-    this.polygons.forEach((p) => {
-      if (materials.indexOf(p.materialName) === -1)
-        materials.push(p.materialName);
-    });
-    return materials;
-  }
-
-  getPolygonsByMaterial(materialName) {
-    return this.polygons.filter((p) => {
-      return p.materialName === materialName;
-    });
-  }
-
-}
-
-module.exports = Model;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-class Polygon {
-
-  constructor(materialName) {
-    this.materialName = materialName;
-    this.vertices = [];
-  }
-
-  addVertex(vertexIndex, textureCoordsIndex, normalIndex) {
-    this.vertices.push({
-      vertexIndex:        vertexIndex,
-      textureCoordsIndex: textureCoordsIndex,
-      normalIndex:        normalIndex
-    });
-  }
-
-}
-
-module.exports = Polygon;
-
-/***/ }),
-/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -415,7 +223,96 @@ module.exports = Matrix;
 
 
 /***/ }),
-/* 6 */
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const Camera = __webpack_require__(16);
+
+
+class Scene {
+
+  constructor(json) {
+    this._camera = new Camera();
+    this._objects = [];
+    this.init(json);
+  }
+
+  init(json) {
+    // TODO initialize camera and hierarchy of objects
+    // based on a nested JSON structure
+  }
+
+  addObject(object) {
+    this._objects.push(object);
+  }
+
+  removeObject(object) {
+    this._objects = this._objects.filter(obj => {
+      return obj != object;
+    });
+  }
+
+  getObjects() {
+    return this._objects;
+  }
+
+  getCamera() {
+    return this._camera;
+  }
+}
+
+module.exports = Scene;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const ModelStaticVBO = __webpack_require__(11);
+const Matrix = __webpack_require__(0);
+const SceneObject = __webpack_require__(17);
+
+
+class StaticObject extends SceneObject {
+
+  constructor(modelName) {
+    super();
+    this.modelName = modelName;
+  }
+
+  _init(models) {
+    const model = models.find(m => { return m.getName() == this.modelName; });
+    if (!model) {
+      throw 'StaticObject: could not find object by name: ' + this.modelName;
+    }
+    this.modelStaticVBO = new ModelStaticVBO(model);
+    this.init = true;
+  }
+
+  render(gl, projectionMatrix, modelViewMatrix, materials, models) {
+    if (!this.init) {
+      this._init(models);
+    }
+
+    const mvMatrix = this.transform.clone();
+    mvMatrix.multiply(modelViewMatrix);
+    this.modelStaticVBO.render(gl, projectionMatrix, mvMatrix, materials);
+    this.subObjects.forEach(subObject => {
+      subObject.render(gl, projectionMatrix, mvMatrix, materials, models);
+    });
+  }
+
+}
+
+module.exports = StaticObject;
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -454,14 +351,14 @@ class ImageManager {
 module.exports = ImageManager;
 
 /***/ }),
-/* 7 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const ImageManager = __webpack_require__(6);
-const Texture = __webpack_require__(30);
+const ImageManager = __webpack_require__(3);
+const Texture = __webpack_require__(15);
 
 
 class Material {
@@ -494,6 +391,10 @@ class Material {
     this.illum = illumModelNumber;
   }
 
+  getIllum() {
+    return this.illum;
+  }
+
   setAmbientColor(color) {
     this.Ka = color;
   }
@@ -512,6 +413,10 @@ class Material {
 
   setAmbientTextureImageURL(textureImageURL) {
   	this.textureImageURL = textureImageURL;
+  }
+
+  getAmbientTextureImageURL() {
+    return this.textureImageURL;
   }
 
   setDiffuseTextureImageURL(texture) {
@@ -547,192 +452,19 @@ class Material {
 module.exports = Material;
 
 /***/ }),
-/* 8 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const Model = __webpack_require__(3);
-const Polygon = __webpack_require__(4);
-
-
-class OBJFile {
-
-  constructor(fileContents) {
-    this._reset();
-    this.fileContents = fileContents;
-  }
-
-  _reset() {
-    this.models = [];
-    this.currentMaterial = '';
-    this.materialLibs = [];
-  }
-
-  parse() {
-    this._reset();
-
-    const lines = this.fileContents.split("\n");
-    for(let i = 0; i < lines.length; i++) {
-      const line = this._stripComments(lines[i]);
-
-      const lineItems = line.replace(/\s\s+/g, ' ').trim().split(' ');
-      
-      switch(lineItems[0].toLowerCase())
-      {
-        case 'o':  // Start A New Model
-          this._parseObject(lineItems);
-          break;
-        case 'g': // Start a new polygon group
-          throw "NOT IMPLEMENTED";
-          break;
-        case 'v':  // Define a vertex for the current model
-          this._parseVertexCoords(lineItems);
-          break;
-        case 'vt': // Texture Coords
-          this._parseTextureCoords(lineItems);
-          break;
-        case 'vn': // Define a vertex normal for the current model
-          this._parseVertexNormal(lineItems);
-          break;
-        case 's':  // Smooth shading statement
-          this._parseSmoothShadingStatement(lineItems);
-          break;
-        case 'f': // Define a Face/Polygon
-          this._parsePolygon(lineItems);
-          break;
-        case 'mtllib': // Reference to a material library file (.mtl)
-          this._parseMtlLib(lineItems);
-          break;
-        case 'usemtl': // Sets the current material to be applied to polygons defined from this point forward
-          this._parseUseMtl(lineItems);
-          break;
-      }
-
-    }
-
-    return {
-      models: this.models,
-      materialLibs: this.materialLibs
-    };
-  }
-
-  _getDefaultModelName() {
-    return 'default';
-  }
-
-  _currentModel() {
-    if(this.models.length == 0)
-      this.models.push(new Model(this._getDefaultModelName()));
-
-    return this.models[this.models.length - 1];
-  }
-
-  _stripComments(lineString) {
-    let commentIndex = lineString.indexOf('#');
-    if(commentIndex > -1)
-      return lineString.substring(0, commentIndex);
-    else
-      return lineString;
-  }
-
-  _parseObject(lineItems) {
-    let modelName = lineItems.length >= 2 ? lineItems[1] : this._getDefaultModelName();
-    this.models.push(new Model(modelName)); // Attach to list of models to be returned
-  }
-
-  _parseVertexCoords(lineItems) {
-    let x = lineItems.length >= 2 ? parseFloat(lineItems[1]) : 0.0;
-    let y = lineItems.length >= 3 ? parseFloat(lineItems[2]) : 0.0;
-    let z = lineItems.length >= 4 ? parseFloat(lineItems[3]) : 0.0;
-    
-    this._currentModel().addVertex(x, y, z);
-  }
-
-  _parseTextureCoords(lineItems) {
-    let u = lineItems.length >= 2 ? parseFloat(lineItems[1]) : 0.0;
-    let v = lineItems.length >= 3 ? parseFloat(lineItems[2]) : 0.0;
-    let w = lineItems.length >= 4 ? parseFloat(lineItems[3]) : 0.0;
-    
-    this._currentModel().addTextureCoords(u, v, w);
-  }
-
-  _parseVertexNormal(lineItems) {
-    let x = lineItems.length >= 2 ? parseFloat(lineItems[1]) : 0.0;
-    let y = lineItems.length >= 3 ? parseFloat(lineItems[2]) : 0.0;
-    let z = lineItems.length >= 4 ? parseFloat(lineItems[3]) : 0.0;
-    
-    this._currentModel().addVertexNormal(x, y, z);
-  }
-
-  _parsePolygon(lineItems) {
-    let totalVertices = (lineItems.length - 1);
-    if(totalVertices < 3)
-      throw ("Face statement has less than 3 vertices" + this.filePath + this.lineNumber);
-    
-    let polygon = new Polygon(this.currentMaterial);
-    for(let i = 0; i<totalVertices; i++)
-    {
-      let vertexString = lineItems[i + 1];
-      let vertexValues = vertexString.split("/");
-      
-      if(vertexValues.length < 1 || vertexValues.length > 3)
-        throw ("Two many values (separated by /) for a single vertex" + this.filePath + this.lineNumber);
-      
-      let vertexIndex = 0;
-      let textureCoordsIndex = 0;
-      let vertexNormalIndex = 0;
-      vertexIndex = parseInt(vertexValues[0]);
-      if(vertexValues.length > 1 && (!vertexValues[1] == ""))
-        textureCoordsIndex = parseInt(vertexValues[1]);
-      if(vertexValues.length > 2)
-        vertexNormalIndex = parseInt(vertexValues[2]);
-      
-      if (vertexIndex == 0)
-        throw "Faces uses invalid vertex index of 0";
-
-      // Negative vertex indices refer to the nth last defined vertex
-      // convert these to postive indices for simplicity
-      if (vertexIndex < 0)
-        vertexIndex = this._currentModel().vertices.length + 1 + vertexIndex;
-
-      polygon.addVertex(vertexIndex, textureCoordsIndex, vertexNormalIndex);
-    }
-    this._currentModel().addPolygon(polygon);
-  }
-
-  _parseMtlLib(lineItems) {
-    if(lineItems.length >= 2)
-      this.materialLibs.push(lineItems[1]);
-  }
-
-  _parseUseMtl(lineItems) {
-    if(lineItems.length >= 2)
-      this.currentMaterial = lineItems[1];
-  }
-
-  _parseSmoothShadingStatement(lineItems) {
-    throw "NOT IMPLEMENTED";
-  }
-}
-
-module.exports = OBJFile;
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-const OBJFile = __webpack_require__(8);
-const MTLFile = __webpack_require__(17);
-const ShaderProgram = __webpack_require__(16);
-const DefaultVertexShaderSource = __webpack_require__(14);
-const DefaultFragmentShaderSource = __webpack_require__(13);
-const TexturedVertexShaderSource = __webpack_require__(12);
-const TexturedFragmentShaderSource = __webpack_require__(11);
+const OBJFile = __webpack_require__(6);
+const MTLFile = __webpack_require__(14);
+const ShaderProgram = __webpack_require__(12);
+const DefaultVertexShaderSource = __webpack_require__(10);
+const DefaultFragmentShaderSource = __webpack_require__(9);
+const TexturedVertexShaderSource = __webpack_require__(8);
+const TexturedFragmentShaderSource = __webpack_require__(7);
 
 
 class Renderer {
@@ -760,7 +492,8 @@ class Renderer {
   loadOBJFile(objFileContents) {
     const objFile = new OBJFile(objFileContents);
     const { models, materialLibs } = objFile.parse();
-    models.forEach(model => {
+    models.forEach(modelJSON => {
+      const model = new Model(modelJSON);
       this.addModel(model);
     });
   }
@@ -846,38 +579,275 @@ class Renderer {
 
 module.exports = Renderer;
 
-/***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-module.exports = "# Blender v2.76 (sub 0) OBJ File: 'untitled.blend'\n# www.blender.org\nmtllib untitled.mtl\no Cube\nv 1.000000 -1.000000 -1.000000\nv 1.000000 -1.000000 1.000000\nv -1.000000 -1.000000 1.000000\nv -1.000000 -1.000000 -1.000000\nv 1.000000 1.000000 -0.999999\nv 0.999999 1.000000 1.000001\nv -1.000000 1.000000 1.000000\nv -1.000000 1.000000 -1.000000\nvn 0.000000 -1.000000 0.000000\nvn 0.000000 1.000000 0.000000\nvn 1.000000 0.000000 0.000000\nvn -0.000000 -0.000000 1.000000\nvn -1.000000 -0.000000 -0.000000\nvn 0.000000 0.000000 -1.000000\nusemtl Material\ns off\nf 1//1 2//1 3//1 4//1\nf 5//2 8//2 7//2 6//2\nf 1//3 5//3 6//3 2//3\nf 2//4 6//4 7//4 3//4\nf 3//5 7//5 8//5 4//5\nf 5//6 1//6 4//6 8//6"
 
 /***/ }),
-/* 11 */
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var OBJFile = function () {
+  function OBJFile(fileContents, defaultModelName) {
+    _classCallCheck(this, OBJFile);
+
+    this._reset();
+    this.fileContents = fileContents;
+    this.defaultModelName = defaultModelName || 'untitled';
+  }
+
+  _createClass(OBJFile, [{
+    key: '_reset',
+    value: function _reset() {
+      this.result = {
+        models: [],
+        materialLibraries: []
+      };
+      this.currentMaterial = '';
+      this.currentGroup = '';
+      this.smoothingGroup = 0;
+    }
+  }, {
+    key: 'parse',
+    value: function parse() {
+      this._reset();
+
+      var _stripComments = function _stripComments(lineString) {
+        var commentIndex = lineString.indexOf('#');
+        if (commentIndex > -1) {
+          return lineString.substring(0, commentIndex);
+        }
+        return lineString;
+      };
+
+      var lines = this.fileContents.split('\n');
+      for (var i = 0; i < lines.length; i += 1) {
+        var line = _stripComments(lines[i]);
+
+        var lineItems = line.replace(/\s\s+/g, ' ').trim().split(' ');
+
+        switch (lineItems[0].toLowerCase()) {
+          case 'o':
+            // Start A New Model
+            this._parseObject(lineItems);
+            break;
+          case 'g':
+            // Start a new polygon group
+            this._parseGroup(lineItems);
+            break;
+          case 'v':
+            // Define a vertex for the current model
+            this._parseVertexCoords(lineItems);
+            break;
+          case 'vt':
+            // Texture Coords
+            this._parseTextureCoords(lineItems);
+            break;
+          case 'vn':
+            // Define a vertex normal for the current model
+            this._parseVertexNormal(lineItems);
+            break;
+          case 's':
+            // Smooth shading statement
+            this._parseSmoothShadingStatement(lineItems);
+            break;
+          case 'f':
+            // Define a Face/Polygon
+            this._parsePolygon(lineItems);
+            break;
+          case 'mtllib':
+            // Reference to a material library file (.mtl)
+            this._parseMtlLib(lineItems);
+            break;
+          case 'usemtl':
+            // Sets the current material to be applied to polygons defined from this point forward
+            this._parseUseMtl(lineItems);
+            break;
+        }
+      }
+
+      return this.result;
+    }
+  }, {
+    key: '_currentModel',
+    value: function _currentModel() {
+      if (this.result.models.length == 0) {
+        this.result.models.push({
+          name: this.defaultModelName,
+          vertices: [],
+          textureCoords: [],
+          vertexNormals: [],
+          faces: []
+        });
+        this.currentGroup = '';
+        this.smoothingGroup = 0;
+      }
+
+      return this.result.models[this.result.models.length - 1];
+    }
+  }, {
+    key: '_parseObject',
+    value: function _parseObject(lineItems) {
+      var modelName = lineItems.length >= 2 ? lineItems[1] : this._getDefaultModelName();
+      this.result.models.push({
+        name: modelName,
+        vertices: [],
+        textureCoords: [],
+        vertexNormals: [],
+        faces: []
+      });
+      this.currentGroup = '';
+      this.smoothingGroup = 0;
+    }
+  }, {
+    key: '_parseGroup',
+    value: function _parseGroup(lineItems) {
+      if (lineItems.length != 2) {
+        throw 'Group statements must have exactly 1 argument (eg. g group_1)';
+      }
+
+      this.currentGroup = lineItems[1];
+    }
+  }, {
+    key: '_parseVertexCoords',
+    value: function _parseVertexCoords(lineItems) {
+      var x = lineItems.length >= 2 ? parseFloat(lineItems[1]) : 0.0;
+      var y = lineItems.length >= 3 ? parseFloat(lineItems[2]) : 0.0;
+      var z = lineItems.length >= 4 ? parseFloat(lineItems[3]) : 0.0;
+
+      this._currentModel().vertices.push({ x: x, y: y, z: z });
+    }
+  }, {
+    key: '_parseTextureCoords',
+    value: function _parseTextureCoords(lineItems) {
+      var u = lineItems.length >= 2 ? parseFloat(lineItems[1]) : 0.0;
+      var v = lineItems.length >= 3 ? parseFloat(lineItems[2]) : 0.0;
+      var w = lineItems.length >= 4 ? parseFloat(lineItems[3]) : 0.0;
+
+      this._currentModel().textureCoords.push({ u: u, v: v, w: w });
+    }
+  }, {
+    key: '_parseVertexNormal',
+    value: function _parseVertexNormal(lineItems) {
+      var x = lineItems.length >= 2 ? parseFloat(lineItems[1]) : 0.0;
+      var y = lineItems.length >= 3 ? parseFloat(lineItems[2]) : 0.0;
+      var z = lineItems.length >= 4 ? parseFloat(lineItems[3]) : 0.0;
+
+      this._currentModel().vertexNormals.push({ x: x, y: y, z: z });
+    }
+  }, {
+    key: '_parsePolygon',
+    value: function _parsePolygon(lineItems) {
+      var totalVertices = lineItems.length - 1;
+      if (totalVertices < 3) {
+        throw 'Face statement has less than 3 vertices' + this.filePath + this.lineNumber;
+      }
+
+      var face = {
+        material: this.currentMaterial,
+        group: this.currentGroup,
+        smoothingGroup: this.smoothingGroup,
+        vertices: []
+      };
+
+      for (var i = 0; i < totalVertices; i += 1) {
+        var vertexString = lineItems[i + 1];
+        var vertexValues = vertexString.split('/');
+
+        if (vertexValues.length < 1 || vertexValues.length > 3) {
+          throw 'Two many values (separated by /) for a single vertex' + this.filePath + this.lineNumber;
+        }
+
+        var vertexIndex = 0;
+        var textureCoordsIndex = 0;
+        var vertexNormalIndex = 0;
+        vertexIndex = parseInt(vertexValues[0]);
+        if (vertexValues.length > 1 && !vertexValues[1] == '') {
+          textureCoordsIndex = parseInt(vertexValues[1]);
+        }
+        if (vertexValues.length > 2) {
+          vertexNormalIndex = parseInt(vertexValues[2]);
+        }
+
+        if (vertexIndex == 0) {
+          throw 'Faces uses invalid vertex index of 0';
+        }
+
+        // Negative vertex indices refer to the nth last defined vertex
+        // convert these to postive indices for simplicity
+        if (vertexIndex < 0) {
+          vertexIndex = this._currentModel().vertices.length + 1 + vertexIndex;
+        }
+
+        face.vertices.push({
+          vertexIndex: vertexIndex,
+          textureCoordsIndex: textureCoordsIndex,
+          vertexNormalIndex: vertexNormalIndex
+        });
+      }
+      this._currentModel().faces.push(face);
+    }
+  }, {
+    key: '_parseMtlLib',
+    value: function _parseMtlLib(lineItems) {
+      if (lineItems.length >= 2) {
+        this.result.materialLibraries.push(lineItems[1]);
+      }
+    }
+  }, {
+    key: '_parseUseMtl',
+    value: function _parseUseMtl(lineItems) {
+      if (lineItems.length >= 2) {
+        this.currentMaterial = lineItems[1];
+      }
+    }
+  }, {
+    key: '_parseSmoothShadingStatement',
+    value: function _parseSmoothShadingStatement(lineItems) {
+      if (lineItems.length != 2) {
+        throw 'Smoothing group statements must have exactly 1 argument (eg. s <number|off>)';
+      }
+
+      var groupNumber = lineItems[1].toLowerCase() == 'off' ? 0 : parseInt(lineItems[1]);
+      this.smoothingGroup = groupNumber;
+    }
+  }]);
+
+  return OBJFile;
+}();
+
+module.exports = OBJFile;
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports) {
 
 module.exports = "precision mediump float;\n\nvarying vec3 vTextureCoords;\n\nuniform sampler2D uSampler;\n\nvoid main(void) {\n  gl_FragColor = texture2D(uSampler, vec2(vTextureCoords.s, vTextureCoords.t));\n}"
 
 /***/ }),
-/* 12 */
+/* 8 */
 /***/ (function(module, exports) {
 
 module.exports = "attribute vec3 aVertexPosition;\nattribute vec4 aVertexColor;\nattribute vec3 aVertexTextureCoords;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec4 vColor;\nvarying vec3 vTextureCoords;\n\nvoid main(void) {\n  vColor = aVertexColor;\n  vTextureCoords = aVertexTextureCoords;\n\n  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n}"
 
 /***/ }),
-/* 13 */
+/* 9 */
 /***/ (function(module, exports) {
 
 module.exports = "precision mediump float;\n\nvarying vec4 vColor;\n\nvoid main(void) {\n  gl_FragColor = vColor;\n}"
 
 /***/ }),
-/* 14 */
+/* 10 */
 /***/ (function(module, exports) {
 
 module.exports = "attribute vec3 aVertexPosition;\nattribute vec4 aVertexColor;\nattribute vec3 aVertexTextureCoords;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec4 vColor;\n\nvoid main(void) {\n  vColor = aVertexColor;\n\n  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n}"
 
 /***/ }),
-/* 15 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1020,7 +990,7 @@ class ModelStaticVBO {
 module.exports = ModelStaticVBO;
 
 /***/ }),
-/* 16 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1084,10 +1054,32 @@ class ShaderProgram {
 module.exports = ShaderProgram;
 
 /***/ }),
-/* 17 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+
+const Renderer = __webpack_require__(5);
+const Scene = __webpack_require__(1);
+const StaticObject = __webpack_require__(2);
+
+
+module.exports = {
+	Renderer: Renderer,
+  Scene: Scene,
+  SceneObject: StaticObject
+};
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const Material = __webpack_require__(4);
 
 
 class MTLFile {
@@ -1104,8 +1096,10 @@ class MTLFile {
     this.filename = '';
   }
 
-  parse() {
+  parse(defaultMaterialName = 'default') {
     this._reset();
+
+    this.defaultMaterialName = defaultMaterialName;
 
     const lines = this.fileContents.split("\n");
 
@@ -1115,8 +1109,7 @@ class MTLFile {
 
       const lineItems = this._stripComments(line).replace(/\s\s+/g, ' ').trim().split(' ');
 
-     console.log(lineItems[0].toLowerCase());
-      if (lineItems.length == 0) {
+      if (lineItems.length == 0 || !lineItems[0]) {
         return; // Skip blank lines
       }
 
@@ -1209,9 +1202,18 @@ class MTLFile {
     return this.materials;
   }
 
+  _stripComments(lineString) {
+    let commentIndex = lineString.indexOf('#');
+    if(commentIndex > -1)
+      return lineString.substring(0, commentIndex);
+    else
+      return lineString;
+  }
+
   _getCurrentMaterial() {
     if (!this.currentMaterial) {
-      this.currentMaterial = new Material('default');
+      this.currentMaterial = new Material(this.defaultMaterialName);
+      this.materials.push(this.currentMaterial);
     }
     return this.currentMaterial;
   }
@@ -1237,7 +1239,6 @@ class MTLFile {
   // Ka spectral file.rfl factor
   // Ka xyz x y z
   _parseKa(lineItems) {
-    console.log('_parseKa');
     const color = this._parseKStatementRGB(lineItems);
     this._getCurrentMaterial().setAmbientColor(color);
   }
@@ -1268,9 +1269,9 @@ class MTLFile {
     }
 
     return {
-      red: parseFloat(lineItems[2]),
-      green: parseFloat(lineItems[3]),
-      blue: parseFloat(lineItems[4])
+      red: parseFloat(lineItems[1]),
+      green: parseFloat(lineItems[2]),
+      blue: parseFloat(lineItems[3])
     };
   }
 
@@ -1353,13 +1354,45 @@ class MTLFile {
 module.exports = MTLFile;
 
 /***/ }),
-/* 18 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const Matrix = __webpack_require__(5);
+class Texture {
+
+  /**
+   * image should be a new Image() kind of object.
+   * Image width/height should be a power of two!
+   */
+  constructor(gl, image) {
+    this.glTexture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+  }
+
+  use(gl) {
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
+  }
+
+}
+
+module.exports = Texture;
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const Matrix = __webpack_require__(0);
 
 
 class Camera {
@@ -1424,13 +1457,13 @@ class Camera {
 module.exports = Camera;
 
 /***/ }),
-/* 19 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const Matrix = __webpack_require__(5);
+const Matrix = __webpack_require__(0);
 
 
 class SceneObject {
@@ -1502,469 +1535,19 @@ class SceneObject {
 module.exports = SceneObject;
 
 /***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const Renderer = __webpack_require__(2).Renderer;
-const Scene = __webpack_require__(0);
-const sobj = __webpack_require__(10);
-const ImageManager = __webpack_require__(6);
-const Model = __webpack_require__(3);
-const Polygon = __webpack_require__(4);
-const StaticObject = __webpack_require__(1);
-const Material = __webpack_require__(7);
-
-
-module.exports = {
-
-  start: function() {
-    const canvas = document.getElementById('mycanvas');
-
-    const renderer = new Renderer(canvas);
-    const scene = new Scene();
-
-    const mat = new Material('mat');
-    mat.setAmbientColor({ red: 1, green: 0, blue: 0 });
-    renderer.addMaterial(mat);
-
-    // CREATE A MODEL (Containing just a single, colored triangle)
-    const m = new Model('modelName');
-    m.vertices = [
-     { x: 0.0, y: 0.5, z: 0.0 },
-     { x: -0.5, y: -0.5, z: 0.0 },
-     { x: 0.5, y: -0.5, z: 0.0 }
-    ];
-    renderer.addModel(m);
-
-    const triangle = new Polygon('mat');
-    triangle.addVertex(1, 0, 0);
-    triangle.addVertex(2, 0, 0);
-    triangle.addVertex(3, 0, 0);
-
-    m.polygons = [triangle];
-
-    // Create a static game object (that uses the model)
-    const gameObject = new StaticObject('modelName');
-
-    scene.addObject(gameObject);
-
-    renderer.renderScene(scene);
-  },
-
-  stop: function() {
-  }
-
-};
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const Renderer = __webpack_require__(2).Renderer;
-const Scene = __webpack_require__(0);
-const sobj = __webpack_require__(10);
-const ImageManager = __webpack_require__(6);
-const Model = __webpack_require__(3);
-const Polygon = __webpack_require__(4);
-const StaticObject = __webpack_require__(1);
-const Material = __webpack_require__(7);
-
-
-let _interval;
-
-module.exports = {
-
-  start: function() {
-    const canvas = document.getElementById('mycanvas');
-
-    const renderer = new Renderer(canvas);
-    const scene = new Scene();
-
-    // Load Materials
-    renderer.addMaterial(new Material('front', 1,0,0));
-    renderer.addMaterial(new Material('right', 0,1,0));
-    renderer.addMaterial(new Material('back2', 0,0,1));
-    renderer.addMaterial(new Material('left', 1,1,0));
-    renderer.addMaterial(new Material('top', 1,1,1));
-    renderer.addMaterial(new Material('bottom', 0.5, 0.5, 0.5));
-
-    // CREATE A MODEL (Containing just a single, colored triangle)
-    const cube = new Model('cube');
-    cube.vertices = [
-     { x: -0.5, y: 0.5, z: 0.5 },   // 1 Front, top left
-     { x: -0.5, y: -0.5, z: 0.5 },  // 2 Front, bottom left
-     { x: 0.5, y: -0.5, z: 0.5 },   // 3 Front, bottom right
-     { x: 0.5, y: 0.5, z: 0.5 },    // 4 Front, top right
-
-     { x: -0.5, y: 0.5, z: -0.5 },  // 5 Back, top left
-     { x: -0.5, y: -0.5, z: -0.5 }, // 6 Back, bottom left
-     { x: 0.5, y: -0.5, z: -0.5 },  // 7 Back, bottom right
-     { x: 0.5, y: 0.5, z: -0.5 }    // 8 Back, top right
-    ];
-    renderer.addModel(cube);
-
-    const front1 = new Polygon('front');
-    front1.addVertex(1, 0, 0);
-    front1.addVertex(2, 0, 0);
-    front1.addVertex(3, 0, 0);
-
-    const front2 = new Polygon('front');
-    front2.addVertex(4, 0, 0);
-    front2.addVertex(1, 0, 0);
-    front2.addVertex(3, 0, 0);
-
-    const leftSide1 = new Polygon('left');
-    leftSide1.addVertex(5, 0, 0);
-    leftSide1.addVertex(6, 0, 0);
-    leftSide1.addVertex(2, 0, 0);
-
-    const leftSide2 = new Polygon('left');
-    leftSide2.addVertex(5, 0, 0);
-    leftSide2.addVertex(2, 0, 0);
-    leftSide2.addVertex(1, 0, 0);
-
-    const rightSide1 = new Polygon('right');
-    rightSide1.addVertex(4, 0, 0);
-    rightSide1.addVertex(3, 0, 0);
-    rightSide1.addVertex(7, 0, 0);
-
-    const rightSide2 = new Polygon('right');
-    rightSide2.addVertex(4, 0, 0);
-    rightSide2.addVertex(7, 0, 0);
-    rightSide2.addVertex(8, 0, 0);
-
-    const back1 = new Polygon('back2');
-    back1.addVertex(5, 0, 0);
-    back1.addVertex(6, 0, 0);
-    back1.addVertex(7, 0, 0);
-
-    const back2 = new Polygon('back2');
-    back2.addVertex(8, 0, 0);
-    back2.addVertex(5, 0, 0);
-    back2.addVertex(7, 0, 0);
-
-    const top1 = new Polygon('top');
-    top1.addVertex(5, 0, 0);
-    top1.addVertex(1, 0, 0);
-    top1.addVertex(4, 0, 0);
-
-    const top2 = new Polygon('top');
-    top2.addVertex(5, 0, 0);
-    top2.addVertex(4, 0, 0);
-    top2.addVertex(8, 0, 0);
-
-    const bottom1 = new Polygon('bottom');
-    bottom1.addVertex(6, 0, 0);
-    bottom1.addVertex(2, 0, 0);
-    bottom1.addVertex(3, 0, 0);
-
-    const bottom2 = new Polygon('bottom');
-    bottom2.addVertex(6, 0, 0);
-    bottom2.addVertex(3, 0, 0);
-    bottom2.addVertex(7, 0, 0);
-
-    cube.polygons = [front1, front2, rightSide1, rightSide2, back1, back2, leftSide1, leftSide2, top1, top2, bottom1, bottom2];
-
-    // Create a static game object (that uses the model)
-    const gameObject = new StaticObject('cube');
-    gameObject.setPosition(0,0,0);
-
-    scene.addObject(gameObject);
-    gameObject.rotate(45, 1, 0, 0);
-
-    _interval = setInterval(() => {
-      gameObject.rotate(1, 0,1,0);
-      renderer.renderScene(scene);
-    }, 16);
-  },
-
-  stop: function() {
-    clearInterval(_interval);
-  }
-
-};
-
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const Renderer = __webpack_require__(2).Renderer;
-const Scene = __webpack_require__(0);
-const sobj = __webpack_require__(10);
-const ImageManager = __webpack_require__(6);
-const Model = __webpack_require__(3);
-const Polygon = __webpack_require__(4);
-const StaticObject = __webpack_require__(1);
-const Material = __webpack_require__(7);
-
-
-let _interval;
-
-module.exports = {
-
-  start: function() {
-    const canvas = document.getElementById('mycanvas');
-
-    const renderer = new Renderer(canvas);
-    const scene = new Scene();
-
-      // Load Materials
-      renderer.addMaterial(new Material('front', 1,0,0));
-      renderer.addMaterial(new Material('right', 0,1,0));
-      renderer.addMaterial(new Material('back2', 0,0,1));
-      renderer.addMaterial(new Material('left', 1,1,0));
-      renderer.addMaterial(new Material('top', 1,1,1));
-      renderer.addMaterial(new Material('bottom', 0.5, 0.5, 0.5));
-
-    scene.getCamera().usePerspectiveView();
-
-    // CREATE A MODEL (Containing just a single, colored triangle)
-    const cube = new Model('cube');
-    cube.vertices = [
-     { x: -0.5, y: 0.5, z: 0.5 },   // 1 Front, top left
-     { x: -0.5, y: -0.5, z: 0.5 },  // 2 Front, bottom left
-     { x: 0.5, y: -0.5, z: 0.5 },   // 3 Front, bottom right
-     { x: 0.5, y: 0.5, z: 0.5 },    // 4 Front, top right
-
-     { x: -0.5, y: 0.5, z: -0.5 },  // 5 Back, top left
-     { x: -0.5, y: -0.5, z: -0.5 }, // 6 Back, bottom left
-     { x: 0.5, y: -0.5, z: -0.5 },  // 7 Back, bottom right
-     { x: 0.5, y: 0.5, z: -0.5 }    // 8 Back, top right
-    ];
-    renderer.addModel(cube);
-
-    const front1 = new Polygon('front');
-    front1.addVertex(1, 0, 0);
-    front1.addVertex(2, 0, 0);
-    front1.addVertex(3, 0, 0);
-
-    const front2 = new Polygon('front');
-    front2.addVertex(4, 0, 0);
-    front2.addVertex(1, 0, 0);
-    front2.addVertex(3, 0, 0);
-
-    const leftSide1 = new Polygon('left');
-    leftSide1.addVertex(5, 0, 0);
-    leftSide1.addVertex(6, 0, 0);
-    leftSide1.addVertex(2, 0, 0);
-
-    const leftSide2 = new Polygon('left');
-    leftSide2.addVertex(5, 0, 0);
-    leftSide2.addVertex(2, 0, 0);
-    leftSide2.addVertex(1, 0, 0);
-
-    const rightSide1 = new Polygon('right');
-    rightSide1.addVertex(4, 0, 0);
-    rightSide1.addVertex(3, 0, 0);
-    rightSide1.addVertex(7, 0, 0);
-
-    const rightSide2 = new Polygon('right');
-    rightSide2.addVertex(4, 0, 0);
-    rightSide2.addVertex(7, 0, 0);
-    rightSide2.addVertex(8, 0, 0);
-
-    const back1 = new Polygon('back2');
-    back1.addVertex(5, 0, 0);
-    back1.addVertex(6, 0, 0);
-    back1.addVertex(7, 0, 0);
-
-    const back2 = new Polygon('back2');
-    back2.addVertex(8, 0, 0);
-    back2.addVertex(5, 0, 0);
-    back2.addVertex(7, 0, 0);
-
-    const top1 = new Polygon('top');
-    top1.addVertex(5, 0, 0);
-    top1.addVertex(1, 0, 0);
-    top1.addVertex(4, 0, 0);
-
-    const top2 = new Polygon('top');
-    top2.addVertex(5, 0, 0);
-    top2.addVertex(4, 0, 0);
-    top2.addVertex(8, 0, 0);
-
-    const bottom1 = new Polygon('bottom');
-    bottom1.addVertex(6, 0, 0);
-    bottom1.addVertex(2, 0, 0);
-    bottom1.addVertex(3, 0, 0);
-
-    const bottom2 = new Polygon('bottom');
-    bottom2.addVertex(6, 0, 0);
-    bottom2.addVertex(3, 0, 0);
-    bottom2.addVertex(7, 0, 0);
-
-    cube.polygons = [front1, front2, rightSide1, rightSide2, back1, back2, leftSide1, leftSide2, top1, top2, bottom1, bottom2];
-
-    // Create a static game object (that uses the model)
-    const gameObject = new StaticObject('cube');
-    gameObject.setPosition(0,0,0);
-
-    scene.addObject(gameObject);
-    gameObject.setPosition(0, -1, -5);
-
-    _interval = setInterval(() => {
-      renderer.renderScene(scene);
-    }, 16);
-  },
-
-  stop: function() {
-    clearInterval(_interval);
-  }
-
-};
-
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const Renderer = __webpack_require__(2).Renderer;
-const Scene = __webpack_require__(0);
-const ImageManager = __webpack_require__(6);
-const Model = __webpack_require__(3);
-const Polygon = __webpack_require__(4);
-const StaticObject = __webpack_require__(1);
-const Material = __webpack_require__(7);
-
-
-module.exports = {
-
-  start: function() {
-
-    const onImagesLoaded = () => {
-      const canvas = document.getElementById('mycanvas');
-
-      const renderer = new Renderer(canvas);
-      const scene = new Scene();
-
-      renderer.addMaterial(new Material('textured', 0,0,0, 'assets/images/brick.png'));
-
-      // CREATE A MODEL (Containing just a single, textured triangle)
-      const m = new Model('square');
-      m.vertices = [
-       { x: -0.5, y: 0.5, z: 0.0 },   // left, top
-       { x: -0.5, y: -0.5, z: 0.0 },  // left, bottom
-       { x: 0.5, y: -0.5, z: 0.0 },   // right, bottom
-       { x: 0.5, y: 0.5, z: 0.0 }     // right, top
-      ];
-      renderer.addModel(m);
-
-      m.addTextureCoords(0,0,0); // U = 0, V = 0  (upper left of texture image)
-      m.addTextureCoords(0,1,0); // U = 0, V = 1  (bottom: v = 1, left: u = 1)
-      m.addTextureCoords(1,1,0);
-      m.addTextureCoords(1,0,0);
-
-      const triangle = new Polygon('textured');
-      triangle.addVertex(1, 1, 0);
-      triangle.addVertex(2, 2, 0);
-      triangle.addVertex(3, 3, 0);
-
-      const triangle2 = new Polygon('textured');
-      triangle2.addVertex(1, 1, 0);
-      triangle2.addVertex(3, 3, 0);
-      triangle2.addVertex(4, 4, 0);
-
-      m.polygons = [triangle, triangle2];
-
-      // Create a static game object (that uses the model)
-      const gameObject = new StaticObject('square');
-
-      scene.addObject(gameObject);
-
-      renderer.renderScene(scene);
-    };
-
-    const onImagesLoadFailed = () => {
-      console.log("IMAGE LOADING FAILED");
-    };
-
-    ImageManager.loadImages(['assets/images/brick.png'], onImagesLoaded, onImagesLoadFailed);
-  },
-
-  stop: function() {
-  }
-
-};
-
-
-/***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const Renderer = __webpack_require__(2).Renderer;
-const Scene = __webpack_require__(0);
-const ImageManager = __webpack_require__(6);
-const OBJFile = __webpack_require__(8);
-const Model = __webpack_require__(3);
-const Polygon = __webpack_require__(4);
-const StaticObject = __webpack_require__(1);
-const Material = __webpack_require__(7);
-const objFileContents = __webpack_require__(27);
-
-let _interval;
-
-module.exports = {
-
-  start: function() {
-
-    const onImagesLoaded = () => {
-      const canvas = document.getElementById('mycanvas');
-
-      const renderer = new Renderer(canvas);
-      const scene = new Scene();
-
-      // Load Materials
-      renderer.addMaterial(new Material('front', 1,0,0));
-      renderer.addMaterial(new Material('right', 0,1,0));
-      renderer.addMaterial(new Material('back', 0,0,0, 'assets/images/brick.png'));
-      renderer.addMaterial(new Material('left', 1,1,0));
-      renderer.addMaterial(new Material('top', 1,1,1));
-      renderer.addMaterial(new Material('bottom', 0.5, 0.5, 0.5));
-
-      renderer.loadOBJFile(objFileContents);
-
-      // Create a static game object (that uses the model)
-      const gameObject = new StaticObject('default');
-      gameObject.setPosition(0,0,0);
-
-      scene.addObject(gameObject);
-
-      _interval = setInterval(() => {
-        gameObject.rotate(1, 0,1,0);
-        renderer.renderScene(scene);
-      }, 16);
-      
-    };
-
-    const onImagesLoadFailed = () => {
-      console.log("IMAGE LOADING FAILED");
-    };
-
-    ImageManager.loadImages(['assets/images/brick.png'], onImagesLoaded, onImagesLoadFailed);
-  },
-
-  stop: function() {
-    clearInterval(_interval);
-  }
-
-};
-
-
-/***/ }),
-/* 25 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const Scene = __webpack_require__(0);
-const ImageManager = __webpack_require__(6);
-const StaticObject = __webpack_require__(1);
-const Material = __webpack_require__(7);
-const groundObj = __webpack_require__(29);
-const boxObj = __webpack_require__(28);
-const Renderer = __webpack_require__(2).Renderer;
+const Scene = __webpack_require__(1);
+const ImageManager = __webpack_require__(3);
+const StaticObject = __webpack_require__(2);
+const Material = __webpack_require__(4);
+const groundObj = __webpack_require__(21);
+const boxObj = __webpack_require__(20);
+const Renderer = __webpack_require__(13).Renderer;
 
 
 let _interval; 
@@ -2035,25 +1618,28 @@ module.exports = {
 
 
 /***/ }),
-/* 26 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const HelloWorld = __webpack_require__(20);
-const RotatingCube = __webpack_require__(21);
-const Perspective = __webpack_require__(22);
-const TexturedSquare = __webpack_require__(23);
-const ObjFiles = __webpack_require__(24);
-const SubObjects = __webpack_require__(25);
+//const HelloWorld = require('./1_HelloWorld/HelloWorld.js');
+//const RotatingCube = require('./2_RotatingCube/RotatingCube.js');
+//const Perspective = require('./3_Perspective/Perspective.js');
+//const TexturedSquare = require('./4_TexturedSquare/TexturedSquare.js');
+//const ObjFiles = require('./5_ObjFiles/ObjFiles.js');
+const SubObjects = __webpack_require__(18);
 
-const examples = {
+/* const examples = {
 	'Hello World': HelloWorld,
 	'Textured Square': TexturedSquare,
 	'Rotating Cube': RotatingCube,
 	'Perspective': Perspective,
 	'Obj Files': ObjFiles,
 	'Sub-Objects': SubObjects
-};
+}; */
 
+const examples = {
+  'Sub-Objects': SubObjects
+};
 
 const showExample = (exampleName) => {
 	const radioButtons = document.querySelectorAll('input');
@@ -2099,54 +1685,16 @@ showExample('Sub-Objects');
 
 
 /***/ }),
-/* 27 */
-/***/ (function(module, exports) {
-
-module.exports = "v  -0.5  0.5  0.5     # 1  Front, top left\nv  -0.5 -0.5  0.5     # 2  Front, bottom left\nv   0.5 -0.5  0.5     # 3  Front, bottom right\nv   0.5  0.5  0.5     # 4  Front, top right\n\nv  -0.5  0.5 -0.5     # 5  Back, top left\nv  -0.5 -0.5 -0.5     # 6  Back, bottom left\nv   0.5 -0.5 -0.5     # 7  Back, bottom right\nv   0.5  0.5 -0.5     # 8  Back, top right\n\n\nvt  0, 0  # top left\nvt  0, 1  # bottom left\nvt  1, 1  # bottom right\nvt  1, 0  # top right\n\n\nusemtl front\nf  1 2 3   # Front\nf  4 1 3\n\nusemtl left\nf  5 6 2   # Left side\nf  5 2 1\n\nusemtl right\nf  4 3 7   # Right side\nf  4 7 8\n\nusemtl back\nf  5/1 6/2 7/3   # Back side\nf  8/4 5/1 7/3\n\nusemtl top\nf  5 1 4   # Top side\nf  5 4 8\n\nusemtl bottom\nf  6 2 3   # Bottom side\nf  6 3 7\n"
-
-/***/ }),
-/* 28 */
+/* 20 */
 /***/ (function(module, exports) {
 
 module.exports = "v  -1  1  1     # 1  Front, top left\nv  -1 -1  1     # 2  Front, bottom left\nv   1 -1  1     # 3  Front, bottom right\nv   1  1  1     # 4  Front, top right\n\nv  -1  1 -1     # 5  Back, top left\nv  -1 -1 -1     # 6  Back, bottom left\nv   1 -1 -1     # 7  Back, bottom right\nv   1  1 -1     # 8  Back, top right\n\n\nvt  0, 0  # top left\nvt  0, 1  # bottom left\nvt  1, 1  # bottom right\nvt  1, 0  # top right\n\n\nusemtl crate\n\nf  1/1 2/2 3/3   # Front\nf  4/4 1/1 3/3\n\nf  5/1 6/2 2/3   # Left side\nf  5/1 2/3 1/4\n\n\nf  4/3 3/2 7/1   # Right side\nf  4/1 7/3 8/2\n\n\nf  5/1 6/2 7/3   # Back side\nf  8/4 5/1 7/3\n\nf  5/1 1/2 4/3   # Top side\nf  5/1 4/3 8/4\n\nf  6/1 2/2 3/3   # Bottom side\nf  6/1 3/3 7/4\n"
 
 /***/ }),
-/* 29 */
+/* 21 */
 /***/ (function(module, exports) {
 
 module.exports = "o ground\n\nv -5, 0, -5\nv -5, 0,  5\nv  5, 0,  5\nv  5, 0, -5\n\nvt 0 0\nvt 0 1\nvt 1 1\nvt 1 0\n\nusemtl ground\n\nf 1/1 2/2 3/3\nf 3/3 4/4 1/1\n"
-
-/***/ }),
-/* 30 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-class Texture {
-
-  /**
-   * image should be a new Image() kind of object.
-   * Image width/height should be a power of two!
-   */
-  constructor(gl, image) {
-    this.glTexture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-    gl.generateMipmap(gl.TEXTURE_2D);
-    gl.bindTexture(gl.TEXTURE_2D, null);
-  }
-
-  use(gl) {
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
-  }
-
-}
-
-module.exports = Texture;
 
 /***/ })
 /******/ ]);

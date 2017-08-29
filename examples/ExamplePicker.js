@@ -1,19 +1,22 @@
-const HelloWorld = require('./1_HelloWorld/HelloWorld.js');
-const RotatingCube = require('./2_RotatingCube/RotatingCube.js');
-const Perspective = require('./3_Perspective/Perspective.js');
-const TexturedSquare = require('./4_TexturedSquare/TexturedSquare.js');
-const ObjFiles = require('./5_ObjFiles/ObjFiles.js');
+//const HelloWorld = require('./1_HelloWorld/HelloWorld.js');
+//const RotatingCube = require('./2_RotatingCube/RotatingCube.js');
+//const Perspective = require('./3_Perspective/Perspective.js');
+//const TexturedSquare = require('./4_TexturedSquare/TexturedSquare.js');
+//const ObjFiles = require('./5_ObjFiles/ObjFiles.js');
 const SubObjects = require('./6_SubObjects/SubObjects.js');
 
-const examples = {
+/* const examples = {
 	'Hello World': HelloWorld,
 	'Textured Square': TexturedSquare,
 	'Rotating Cube': RotatingCube,
 	'Perspective': Perspective,
 	'Obj Files': ObjFiles,
 	'Sub-Objects': SubObjects
-};
+}; */
 
+const examples = {
+  'Sub-Objects': SubObjects
+};
 
 const showExample = (exampleName) => {
 	const radioButtons = document.querySelectorAll('input');
