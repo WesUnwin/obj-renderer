@@ -1,19 +1,25 @@
 'use strict';
 
 const Camera = require('./Camera.js');
-
+const StaticObject = require('./StaticObject.js');
 
 class Scene {
 
   constructor(json) {
     this._camera = new Camera();
     this._objects = [];
-    this.init(json);
+    this.init(json || '{}');
   }
 
   init(json) {
-    // TODO initialize camera and hierarchy of objects
-    // based on a nested JSON structure
+    const scene = JSON.parse(json);
+
+    if (Array.isArray(scene.objects)) {
+      scene.objects.forEach(obj => {
+        const staticObject = new StaticObject(obj);
+        this.addObject(staticObject);
+      });
+    }
   }
 
   addObject(object) {

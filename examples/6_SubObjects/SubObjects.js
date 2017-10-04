@@ -37,17 +37,13 @@ module.exports = {
       renderer.loadOBJFile(groundObj, 'ground');
       renderer.loadOBJFile(boxObj, 'box');
 
-      const ground = new StaticObject('ground');
-      ground.setPosition(0, 0, 0);
+      const ground = new StaticObject({ modelName: 'ground', x: 0, y: 0, z: 0 });
       scene.addObject(ground);
 
-      const box = new StaticObject('box');
-      box.setPosition(0, 1, 0);
+      const box = new StaticObject({ modelName: 'box', x: 0, y: 1, z: 0 });
       scene.addObject(box);
 
-      const miniBox = new StaticObject('box');
-      miniBox.setScale(0.5, 0.5, 0.5);
-      miniBox.setPosition(3, 0, 0);
+      const miniBox = new StaticObject({ modelName: 'box', x: 3, y: 0, z: 0, sx: 0.5, sy: 0.5, sz: 0.5 });
       box.addObject(miniBox);
 
       let pitch = 0;
