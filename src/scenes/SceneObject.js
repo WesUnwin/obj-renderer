@@ -5,18 +5,31 @@ const Matrix = require('../Matrix.js');
 
 class SceneObject {
 
-  constructor(x, y, z) {
-    this.x = x || 0;
-    this.y = y || 0;
-    this.z = z || 0;
-    this.sx = 1;
-    this.sy = 1;
-    this.sz = 1;
-    this.pitch = 0; // in degrees
-    this.yaw = 0;
+  constructor(obj) {
+    this.name = obj.name;
+    this.transform = new Matrix(); // needs to be kept up to date with x,y,x, etc.
+    this.setPosition(
+      parseFloat(obj.x) || 0,
+      parseFloat(obj.y) || 0,
+      parseFloat(obj.z) || 0
+    );
+    this.setScale(
+      parseFloat(obj.sx) || 1,
+      parseFloat(obj.sy) || 1,
+      parseFloat(obj.sz) || 1
+    );
+    this.setPitch(parseFloat(obj.pitch) || 0);
+    this.setYaw(parseFloat(obj.yaw) || 0);
 
-	  this.transform = new Matrix(); // needs to be kept up to date with above values
     this.subObjects = [];
+    if (Array.isArray(obj.objects)) {
+      obj.objects.forEach(obj => {
+        const staticObject = new StaticObject(obj);
+        this.addObject(staticObject);
+      });
+    }
+
+    this._updateTransform();
   }
 
   resetTransform() {

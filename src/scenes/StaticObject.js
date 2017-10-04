@@ -7,28 +7,8 @@ const SceneObject = require('./SceneObject.js');
 class StaticObject extends SceneObject {
 
   constructor(obj) {
-    super();
-    this.name = obj.name;
+    super(obj);
     this.modelName = obj.modelName;
-    this.setPosition(
-      parseFloat(obj.x) || 0,
-      parseFloat(obj.y) || 0,
-      parseFloat(obj.z) || 0
-    );
-    this.setScale(
-      parseFloat(obj.sx) || 1,
-      parseFloat(obj.sy) || 1,
-      parseFloat(obj.sz) || 1
-    );
-    this.setPitch(parseFloat(obj.pitch) || 0);
-    this.setYaw(parseFloat(obj.yaw) || 0);
-
-    if (Array.isArray(obj.objects)) {
-      obj.objects.forEach(obj => {
-        const staticObject = new StaticObject(obj);
-        this.addObject(staticObject);
-      });
-    }
   }
 
   _init(models) {
