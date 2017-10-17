@@ -2,7 +2,6 @@
 
 const Matrix = require('../Matrix.js');
 
-
 class SceneObject {
 
   constructor(obj) {
@@ -22,12 +21,6 @@ class SceneObject {
     this.setYaw(parseFloat(obj.yaw) || 0);
 
     this.subObjects = [];
-    if (Array.isArray(obj.objects)) {
-      obj.objects.forEach(obj => {
-        const staticObject = new StaticObject(obj);
-        this.addObject(staticObject);
-      });
-    }
 
     this._updateTransform();
   }
@@ -80,6 +73,20 @@ class SceneObject {
     this.subObjects.push(object);
   }
 
+  find(objectName) {
+    const target = this.subObjects.find(obj => {
+      return obj.name === objectName
+    });
+
+    if (target) {
+      return target;
+    } else {
+      target = this.subObjects.find(obj => {
+        return obj.find(objectName);
+      });
+      return target;
+    }
+  }
 }
 
 module.exports = SceneObject;

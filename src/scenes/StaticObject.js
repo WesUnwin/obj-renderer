@@ -8,6 +8,14 @@ class StaticObject extends SceneObject {
 
   constructor(obj) {
     super(obj);
+
+    if (Array.isArray(obj.objects)) {
+      obj.objects.forEach(obj => {
+        const staticObject = new StaticObject(obj);
+        this.addObject(staticObject);
+      });
+    }
+
     this.modelName = obj.modelName;
   }
 

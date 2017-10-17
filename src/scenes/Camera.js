@@ -5,19 +5,32 @@ const Matrix = require('../Matrix.js');
 
 class Camera {
 
-  constructor() {
+  /**
+   *  {
+   *    x: ...,
+   *    y: ...,
+   *    z: ...,
+   *    yaw: ...,
+   *    pitch: ...
+   *  }
+   */
+  constructor(obj) {
+    const cam = obj || {};
+
     this._projectionMatrix = new Matrix();
+    this.usePerspectiveView();
 
-    this._x = 0;
-    this._y = 0;
-    this._z = 0;
+    this._x = cam.x || 0;
+    this._y = cam.y || 0;
+    this._z = cam.z || 0;
 
-    this._pitch = 0; // in degrees
-    this._yaw = 0; // in degrees
+    this._pitch = cam.pitch || 0; // in degrees
+    this._yaw = cam.yaw || 0; // in degrees
 
     // _sceneTransform is the necessary transform done against the scene to render everything
     // from the camera's perspective at position _x, _y, _z and rotations: _yaw and _pitch
     this._sceneTransform = new Matrix(); // needs to be kept up to date with above values
+    this._updateSceneTransform();
   }
 
   getProjectionMatrix() {

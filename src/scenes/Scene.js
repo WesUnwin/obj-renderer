@@ -6,14 +6,21 @@ const StaticObject = require('./StaticObject.js');
 class Scene {
 
   constructor(json) {
-    this._camera = new Camera();
-    this._objects = [];
-    this.init(json || '{}');
+    this.init(json || {});
   }
 
+  /**
+   * {
+   *   camera: {...},
+   *   objects: [...]
+   * }
+   */
   init(json) {
-    const scene = JSON.parse(json);
+    const scene = json;
 
+    this._camera = new Camera(scene.json);
+
+    this._objects = [];
     if (Array.isArray(scene.objects)) {
       scene.objects.forEach(obj => {
         const staticObject = new StaticObject(obj);
@@ -34,6 +41,21 @@ class Scene {
 
   getObjects() {
     return this._objects;
+  }
+
+  find(objectName) {
+    const target = this._objects.find(obj => {
+      return obj.name === objectName
+    });
+
+    if (target) {
+      return target;
+    } else {
+      target = this._objects.find(obj => {
+        return obj.find(objectName);
+      });
+      return target;
+    }
   }
 
   getCamera() {

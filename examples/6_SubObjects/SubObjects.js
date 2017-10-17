@@ -19,12 +19,7 @@ module.exports = {
       const canvas = document.getElementById('mycanvas');
 
       const renderer = new Renderer(canvas);
-      const scene = new Scene();
 
-      const camera = scene.getCamera();
-      camera.usePerspectiveView();
-      camera.setPosition(0, 2,10);
-      camera.setYaw(-20);
 
       const groundMaterial = new Material('ground');
       groundMaterial.setAmbientTextureImageURL('assets/images/grass.png');
@@ -37,22 +32,58 @@ module.exports = {
       renderer.loadOBJFile(groundObj, 'ground');
       renderer.loadOBJFile(boxObj, 'box');
 
-      const ground = new StaticObject({ modelName: 'ground', x: 0, y: 0, z: 0 });
-      scene.addObject(ground);
 
-      const box = new StaticObject({ modelName: 'box', x: 0, y: 1, z: 0 });
-      scene.addObject(box);
+      const scene = new Scene({
+        camera: {
+          x: 0,
+          y: 2,
+          z: 10,
+          yaw: -20
+        },
+        objects: [
+          { 
+            modelName: 'ground',
+            x: 0,
+            y: 0,
+            z: 0
+          },
+          {
+            name: 'parentBox',
+            modelName: 'box',
+            x: 0,
+            y: 1,
+            z: 0,
+            objects: [
+              { 
+                name: 'childBox',
+                modelName: 'box',
+                x: 3,
+                y: 0,
+                z: 0,
+                sx: 0.5,
+                sy: 0.5,
+                sz: 0.5
+              }
+            ]
+          }
+        ]
+      });
 
-      const miniBox = new StaticObject({ modelName: 'box', x: 3, y: 0, z: 0, sx: 0.5, sy: 0.5, sz: 0.5 });
-      box.addObject(miniBox);
+      const camera = scene.getCamera();
+      camera.usePerspectiveView();
+      camera.setPosition(0, 2,10);
+      camera.setYaw(-20);
+
+      const parentBox = scene.find('parentBox');
+      const childBox = parentBox.find('childBox');
 
       let pitch = 0;
       _interval = setInterval(() => {
         pitch += 1;
         if (pitch >= 360) pitch = 0;
 
-        box.setPitch(pitch);
-        miniBox.setPitch(pitch);
+        parentBox.setPitch(pitch);
+        childBox.setPitch(pitch);
 
         renderer.renderScene(scene);
       }, 15);
