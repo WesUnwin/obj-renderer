@@ -27,8 +27,8 @@ renderer.renderScene(myScene); // where myScene is an instance of require('obj-r
 
 | Method | Description |
 | --- | --- |
-| `constructor(canvasElement, viewportX, viewportY, viewportWidth, viewportHeight)` | Creates a renderer instance for drawing the given HTML canvas element.  |
-| `setViewPort(x, y, width, height)` | Changes the viewport (the area of the canvas to render to). |
+| `constructor(canvasElement, viewportX, viewportY, viewportWidth, viewportHeight)` | Creates a renderer instance for drawing to an HTML canvas element. If no viewport arguments are given, the entire area of the canvas is used. |
+| `setViewPort(x, y, width, height)` | Changes the area of the canvas that the final rendered image should be drawn to. |
 | `loadOBJFile(objFileContents, defaultModelName)` | Loads an object file contents (as a string) into the renderer. This adds to the collection of models that this renderer can draw. If the obj file does not assign a string name to model(s) in the file the model will adopt a name of the given defaultModelName. |
 
 # Scene
