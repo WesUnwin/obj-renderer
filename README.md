@@ -25,6 +25,12 @@ const renderer = new Renderer(canvas);
 renderer.renderScene(myScene); // where myScene is an instance of require('obj-renderer').Scene
 ```
 
+| Method | Description |
+| --- | --- |
+| `constructor(canvasElement, viewportX, viewportY, viewportWidth, viewportHeight)` | Creates a renderer instance for drawing the given HTML canvas element.  |
+| `setViewPort(x, y, width, height)` | Changes the viewport (the area of the canvas to render to). |
+| `loadOBJFile(objFileContents, defaultModelName)` | Loads an object file contents (as a string) into the renderer. This adds to the collection of models that this renderer can draw. If the obj file does not assign a string name to model(s) in the file the model will adopt a name of the given defaultModelName. |
+
 # Scene
 A scene object represents a 3D world, with a camera, and an array scene objects.
 The objects can themselves have objects, forming a hierarchy of objects under the scene.
