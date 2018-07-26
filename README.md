@@ -21,8 +21,16 @@ rendering a given scene over a canvas, and limits the rendering to a rectangular
 ```javascript
 const Renderer = require('obj-renderer').Renderer;
 
+// Set rendering parameters
+renderer.setClearColor(0, 0, 255); // blue backdrop
+
+// Load model(s) from .obj files
+const boxObj = require('raw-loader!./Crate.obj'); // gets file's contents as a string
+renderer.loadOBJFile(boxObj, 'Crate');
+
+// Render a scene
 const renderer = new Renderer(canvas);
-renderer.renderScene(myScene); // where myScene is an instance of require('obj-renderer').Scene
+renderer.renderScene(myScene);
 ```
 
 | Method | Description |
@@ -55,6 +63,25 @@ A scene can be constructed and initialized by passing in an object literal:
         x: 0,
         y: 0,
         z: 0
+      },
+      {
+        name: 'parentBox',
+        modelName: 'Crate',
+        x: 0,
+        y: 1,
+        z: 0,
+        objects: [
+          { 
+            name: 'childBox',
+            modelName: 'Crate',
+            x: 3,
+            y: 0,
+            z: 0,
+            sx: 0.5,
+            sy: 0.5,
+            sz: 0.5
+          }
+        ]
       }
     ]
   });
@@ -84,6 +111,11 @@ that may or may not render a model).
 ```javascript
   const SceneObject = require('obj-renderer').SceneObject;
 
+  const anObject = new SceneObject({ modelName: 'Crate', x: 0, y: 0, z: 0 });
+
+  anObject.setScale(1, 2, 1); // Stretch vertically by a factor of two
+
+  anObject.rotate(45, 0, 1, 0); // Then rotate it 45 degrees to the left
 ```
 
 | Method | Description |
