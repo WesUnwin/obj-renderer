@@ -21,15 +21,18 @@ rendering a given scene over a canvas, and limits the rendering to a rectangular
 ```javascript
 const Renderer = require('obj-renderer').Renderer;
 
-// Create a renderer for drawing to a HTML canvas element
+// Create a renderer for drawing to an HTML canvas element
 const renderer = new Renderer(canvas);
 
 // Customize rendering parameters
 renderer.setClearColor(0, 0, 255); // blue backdrop
 
-// Load model data from .obj files
+// Load models from .obj files.
+// These are referenced by the objects in a scene to draw models to given locations in the scene.
 const boxObj = require('raw-loader!./Crate.obj'); // gets file's contents as a string
-renderer.loadOBJFile(boxObj);
+const otherModels = require('raw-loader!./OtherModels.obj');
+renderer.loadOBJFile(boxObj, 'Crate');
+renderer.loadOBJFile(otherModels);
 
 // Draw a scene of objects to the canvas
 renderer.renderScene(myScene);
