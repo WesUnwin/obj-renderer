@@ -27,11 +27,11 @@ const renderer = new Renderer(canvas);
 // Customize rendering parameters
 renderer.setClearColor(0, 0, 255); // blue backdrop
 
-// Load models from .obj files.
-// These are referenced by the objects in a scene to draw models to given locations in the scene.
-const boxObj = require('raw-loader!./Crate.obj'); // gets file's contents as a string
+// Load model(s) from .obj files.
+// These are then referenced by the objects in a scene to draw models to given locations within the scene.
+const crateModel = require('raw-loader!./Crate.obj'); // gets file's contents as a string
 const otherModels = require('raw-loader!./OtherModels.obj');
-renderer.loadOBJFile(boxObj, 'Crate');
+renderer.loadOBJFile(crateModel, 'Crate'); // Gives an untitled object (one with no preceding "o modelName" statement) a name
 renderer.loadOBJFile(otherModels);
 
 // Draw a scene of objects to the canvas
