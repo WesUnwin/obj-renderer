@@ -90,7 +90,7 @@ that may or may not render a model).
 | --- | --- |
 | `constructor(json)` | Creates a new scene object initializing with the given values and optionally sub-objects |
 | `resetTransform()` | Resets the position to (0,0,0) and rotation to (0,0). |
-| `setPosition(x)` | Sets the position of the object relative to its parent, to the given coordinates. |
+| `setPosition(x, y, z)` | Sets the position of the object relative to its parent, to the given coordinates. |
 | `setScale(sx, sy, sz)` | Sets the scaling factors, scaling the object by the given multiplication factors along the x, y, and z axis. |
 | `setPitch(degrees)` | Sets the pitch rotation in degrees, a positive value rotates the object counter-clockwise from looking downwards on the object from the sky. |
 | `setYaw(degrees)` | Sets the yaw rotation in degrees, a positive value tilts the object upwards from the horizon. |
