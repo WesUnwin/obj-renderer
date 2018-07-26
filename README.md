@@ -94,4 +94,7 @@ that may or may not render a model).
 | `setScale(sx, sy, sz)` | Sets the scaling factors, scaling the object by the given multiplication factors along the x, y, and z axis. |
 | `setPitch(degrees)` | Sets the pitch rotation in degrees, a positive value rotates the object counter-clockwise from looking downwards on the object from the sky. |
 | `setYaw(degrees)` | Sets the yaw rotation in degrees, a positive value tilts the object upwards from the horizon. |
-
+| `rotate(degrees, x, y, z)` | Rotates the object (in addition to its current position/rotation) the specified degrees clockwise around the vector formed from looking in the direction of point x,y,z from being situated at the origin (0,0,0). |
+| `scale(sx, sy, sz)` | Scales the object by the given factors, across the x, y, z axis. |
+| `addObject(object)` | Adds a scene object as a child object of this object. |
+| `find(objectName)` | Finds the first object that is a descendent of this object with the given object name. |
