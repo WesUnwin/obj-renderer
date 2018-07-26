@@ -116,11 +116,16 @@ that may or may not render a model).
 ```javascript
   const SceneObject = require('obj-renderer').SceneObject;
 
-  const anObject = new SceneObject({ modelName: 'Crate', x: 0, y: 0, z: 0 });
+  const myObject = new SceneObject({ modelName: 'Crate', x: 0, y: 0, z: 0 });
 
-  anObject.setScale(1, 2, 1); // Stretch vertically by a factor of two
+  myObject.setScale(1, 2, 1); // Stretch vertically by a factor of two
+  myObject.rotate(45, 0, 1, 0); // Then rotate it 45 degrees to the left
 
-  anObject.rotate(45, 0, 1, 0); // Then rotate it 45 degrees to the left
+  // Add any sub-objects
+  myObject.addObject(new SceneObject({ name: 'childObject', modelName: null }));
+
+  // Add the object (and its children) to a scene:
+  myScene.addObject(myObject);
 ```
 
 | Method | Description |
