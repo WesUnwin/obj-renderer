@@ -68,3 +68,30 @@ A scene can be constructed and initialized by passing in an object literal:
 | `find(objectName)` | Returns the first scene object in the scene's hierarchy of objects with the given name. |
 | `getCamera()` | Returns the Camera object associated with this scene. |
 
+
+## Scene Objects
+A scene object represents a 3D object that can be placed in a scene.
+Each scene object can be directly attached to the scene, or another object within a scene.
+
+Each scene object has a position (x, y, z) and a rotation (pitch, yaw), that position it relative
+to its parent object (or the scene itself for top-level objects).
+
+A scene object can be assigned a model name or not.
+When assigned a model name, that model is rendered at the position of the scene object.
+Scene objects with no model name will not render anything (but can be used to group child objects
+that may or may not render a model).
+
+```javascript
+  const SceneObject = require('obj-renderer').SceneObject;
+
+```
+
+| Method | Description |
+| --- | --- |
+| `constructor(json)` | Creates a new scene object initializing with the given values and optionally sub-objects |
+| `resetTransform()` | Resets the position to (0,0,0) and rotation to (0,0). |
+| `setPosition(x)` | Sets the position of the object relative to its parent, to the given coordinates. |
+| `setScale(sx, sy, sz)` | Sets the scaling factors, scaling the object by the given multiplication factors along the x, y, and z axis. |
+| `setPitch(degrees)` | Sets the pitch rotation in degrees, a positive value rotates the object counter-clockwise from looking downwards on the object from the sky. |
+| `setYaw(degrees)` | Sets the yaw rotation in degrees, a positive value tilts the object upwards from the horizon. |
+
