@@ -39,7 +39,7 @@ renderer.renderScene(myScene);
 ```
 
 | Method | Description |
-| --- | --- |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------- |
 | `constructor(canvasElement, viewportX, viewportY, viewportWidth, viewportHeight)` | Creates a renderer instance for drawing to an HTML canvas element. If no viewport arguments are given, the entire area of the canvas is used. |
 | `setViewPort(x, y, width, height)` | Changes the area of the canvas that the final rendered image should be drawn to. |
 | `loadOBJFile(objFileContents, defaultModelName)` | Loads all models defined in the given .obj file (file contents should be passed in as a string), adding them to the renderers list of models. Models not assigned a name via a preceeding "o modelName" statement are assigned the defaultModelName. |
@@ -129,7 +129,7 @@ that may or may not render a model).
 ```
 
 | Method | Description |
-| --- | --- |
+| ------------------------- | ----------------------------------------------------------------------------------------- |
 | `constructor(json)` | Creates a new scene object initializing with the given values and optionally sub-objects |
 | `resetTransform()` | Resets the position to (0,0,0) and rotation to (0,0). |
 | `setPosition(x, y, z)` | Sets the position of the object relative to its parent, to the given coordinates. |
