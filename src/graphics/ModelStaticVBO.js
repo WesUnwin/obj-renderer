@@ -32,10 +32,11 @@ class ModelStaticVBO {
 
       // Color data
       var colorAttribute = gl.getAttribLocation(shaderProgram.getWebGLProgram(), 'aVertexColor');
-      gl.enableVertexAttribArray(colorAttribute);
-
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexColorBuffer);
-      gl.vertexAttribPointer(colorAttribute, 4, gl.FLOAT, false, 0, 0);
+      if (colorAttribute != -1) {
+        gl.enableVertexAttribArray(colorAttribute);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexColorBuffer);
+        gl.vertexAttribPointer(colorAttribute, 4, gl.FLOAT, false, 0, 0);
+      }
 
       // Texture Coord. data
       var textureCoordsAttribute = gl.getAttribLocation(shaderProgram.getWebGLProgram(), 'aVertexTextureCoords');
