@@ -60,7 +60,7 @@ A scene can be constructed and initialized by passing in an object literal:
       x: 0,
       y: 2,
       z: 10,
-      yaw: -20
+      rx: -20
     },
     objects: [
       { 
@@ -84,7 +84,10 @@ A scene can be constructed and initialized by passing in an object literal:
             z: 0,
             sx: 0.5,
             sy: 0.5,
-            sz: 0.5
+            sz: 0.5,
+            rx: 0,
+            ry: 0,
+            rz: 0
           }
         ]
       }
@@ -105,8 +108,25 @@ A scene can be constructed and initialized by passing in an object literal:
 A scene object represents a 3D object that can be placed in a scene.
 Each scene object can be directly attached to the scene, or another object within a scene.
 
-Each scene object has a position (x, y, z) and a rotation (pitch, yaw), that position it relative
+Each scene object has a position, scale and rotation, that positions it relative
 to its parent object (or the scene itself for top-level objects).
+
+### Rotation:
+The rotation of an object is specified by three Euler angles, which are applied sequentially in order of x, y then z, relative to the parent object.
+- rx rotates the object in degrees, clockwise (when facing the direction the x-axis points) around the x-axis.
+- ry rotates the object in degrees, clockwise (when facing the direction the y-axis points) around the y-axis.
+- rz rotates the object in degrees, clockwise (when facing the direction the z-axis points) around the z-axis.
+
+### Scale:
+- sx scales the object by a float, in the x-axis
+- sy scales the object by a float, in the y-axis
+- sz scales the object by a float, in the z-axis
+
+### Position:
+Each object is positioned in space relative to its parent, by three signed floats, following a "left handed" coordinate system:
+- x increases to the right
+- y increases upwards
+- z increases towards the camera
 
 A scene object can be assigned a model name or not.
 When assigned a model name, that model is rendered at the position of the scene object.
@@ -119,7 +139,7 @@ that may or may not render a model).
   const myObject = new SceneObject({ modelName: 'Crate', x: 0, y: 0, z: 0 });
 
   myObject.setScale(1, 2, 1); // Stretch vertically by a factor of two
-  myObject.rotate(45, 0, 1, 0); // Then rotate it 45 degrees to the left
+  myObject.setRotation(45, 0, 1, 0); // Then rotate it 45 degrees to the left
 
   // Add any sub-objects
   myObject.addObject(new SceneObject({ name: 'childObject', modelName: null }));
@@ -131,9 +151,10 @@ that may or may not render a model).
 | Method | Description |
 | ------------------------- | ----------------------------------------------------------------------------------------- |
 | `constructor(json)` | Creates a new scene object initializing with the given values and optionally sub-objects |
-| `resetTransform()` | Resets the position to (0,0,0) and rotation to (0,0). |
+| `resetTransform()` | Resets the position to (0,0,0) and rotation to (0,0,0). |
 | `setPosition(x, y, z)` | Sets the position of the object relative to its parent, to the given coordinates. |
 | `setScale(sx, sy, sz)` | Sets the scaling factors, scaling the object by the given multiplication factors along the x, y, and z axis. |
+| `setRotation(rx, ry, rz)` | Sets the rotation, in euler angles clockwise around the x, y an z axis. |
 | `setPitch(degrees)` | Sets the pitch rotation in degrees, a positive value rotates the object counter-clockwise from looking downwards on the object from the sky. |
 | `setYaw(degrees)` | Sets the yaw rotation in degrees, a positive value tilts the object upwards from the horizon. |
 | `rotate(degrees, x, y, z)` | Rotates the object (in addition to its current position/rotation) the specified degrees clockwise around the vector formed from looking in the direction of point x,y,z from being situated at the origin (0,0,0). |

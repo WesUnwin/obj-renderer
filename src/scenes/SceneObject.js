@@ -17,8 +17,11 @@ class SceneObject {
       parseFloat(obj.sy) || 1,
       parseFloat(obj.sz) || 1
     );
-    this.setPitch(parseFloat(obj.pitch) || 0);
-    this.setYaw(parseFloat(obj.yaw) || 0);
+    this.setRotation(
+      parseFloat(obj.rx) || 0,
+      parseFloat(obj.ry) || 0,
+      parseFloat(obj.rz) || 0
+    );
 
     this.subObjects = [];
 
@@ -43,20 +46,26 @@ class SceneObject {
     this._updateTransform();
   }
 
-  setPitch(degrees) {
-    this.pitch = degrees;
+  setRotation(rx, ry, rz) {
+    this.rx = rx;
+    this.ry = ry;
+    this.rz = rz;
     this._updateTransform();
   }
 
+  setPitch(degrees) {
+    this.setRotation(this.rx, degrees, this.rz);
+  }
+
   setYaw(degrees) {
-    this.yaw = degrees;
-    this._updateTransform();
+    this.setRotation(degrees, this.ry, this.rz);
   }
 
   _updateTransform() {
     this.transform.loadIdentity();
-    this.transform.rotate(this.yaw, 1,0,0);
-    this.transform.rotate(this.pitch, 0,1,0);
+    this.transform.rotate(this.rx, 1,0,0);
+    this.transform.rotate(this.ry, 0,1,0);
+    this.transform.rotate(this.rz, 0,0,1);
     this.transform.scale(this.sx, this.sy, this.sz);
     this.transform.setTranslation(this.x, this.y, this.z);
   }

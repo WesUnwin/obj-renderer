@@ -10,8 +10,9 @@ class Camera {
    *    x: ...,
    *    y: ...,
    *    z: ...,
-   *    yaw: ...,
-   *    pitch: ...
+   *    rx: ...,
+   *    ry: ...,
+   *    rz: ...
    *  }
    */
   constructor(obj) {
@@ -24,8 +25,9 @@ class Camera {
     this._y = cam.y || 0;
     this._z = cam.z || 0;
 
-    this._pitch = cam.pitch || 0; // in degrees
-    this._yaw = cam.yaw || 0; // in degrees
+    this.rx = cam.rx || 0;
+    this.ry = cam.ry || 0;
+    this.rz = cam.rz || 0;
 
     // _sceneTransform is the necessary transform done against the scene to render everything
     // from the camera's perspective at position _x, _y, _z and rotations: _yaw and _pitch
@@ -56,20 +58,26 @@ class Camera {
     this._updateSceneTransform();
   }
 
-  setPitch(degrees) {
-    this._pitch = degrees;
+  setRotation(rx, ry, rz) {
+    this.rx = rx;
+    this.ry = ry;
+    this.rz = rz;
     this._updateSceneTransform();
   }
 
+  setPitch(degrees) {
+    this.setRotation(this.rx, degrees, this.rz);
+  }
+
   setYaw(degrees) {
-    this._yaw = degrees;
-    this._updateSceneTransform();
+    this.setRotation(degrees, this.ry, this.rz);
   }
 
   _updateSceneTransform() {
     this._sceneTransform.loadIdentity();
-    this._sceneTransform.rotate(-1 * this._yaw, 1,0,0);
-    this._sceneTransform.rotate(-1 * this._pitch, 0,1,0);
+    this._sceneTransform.rotate(-1 * this.rx, 1,0,0);
+    this._sceneTransform.rotate(-1 * this.ry, 0,1,0);
+    this._sceneTransform.rotate(-1 * this.rz, 0,0,1);
     this._sceneTransform.setTranslation(-1 * this._x, -1 * this._y, -1 * this._z);
   }
 

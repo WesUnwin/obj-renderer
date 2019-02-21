@@ -71,7 +71,7 @@ module.exports = {
 
       const camera = scene.getCamera();
       camera.usePerspectiveView();
-      camera.setPosition(0, 2,10);
+      camera.setPosition(0, 2, 10);
       camera.setYaw(-20);
 
       const parentBox = scene.find('parentBox');
