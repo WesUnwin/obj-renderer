@@ -5,7 +5,7 @@
   "main": "src/main.js",
   "scripts": {
     "build": "webpack --config webpack.config.js",
-    "examples": "webpack-dev-server --content-base examples/ --quiet",
+    "examples": "webpack-dev-server --content-base examples/",
     "test": "jest"
   },
   "author": "Wes Unwin",
