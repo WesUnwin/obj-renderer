@@ -1,7 +1,7 @@
 'use strict';
 
-const ImageManager = require('graphics/ImageManager.js');
-const Texture = require('materials/Texture.js');
+const ImageManager = require('../graphics/ImageManager.js');
+const Texture = require('./Texture.js');
 
 
 class Material {

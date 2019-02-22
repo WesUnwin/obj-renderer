@@ -1,13 +1,13 @@
 'use strict';
 
 const OBJFile = require('obj-file-parser');
-const MTLFile = require('materials/MTLFile.js');
+const MTLFile = require('../materials/MTLFile.js');
 const ShaderProgram = require('./ShaderProgram.js');
-const DefaultVertexShaderSource = require('raw-loader!../shaders/vshader.shader');
-const DefaultFragmentShaderSource = require('raw-loader!../shaders/fshader.shader');
-const TexturedVertexShaderSource = require('raw-loader!../shaders/TexVShader.shader');
-const TexturedFragmentShaderSource = require('raw-loader!../shaders/TexFShader.shader');
-const Model = require('modeling/Model.js');
+const DefaultVertexShaderSource = require('../shaders/vshader.js');
+const DefaultFragmentShaderSource = require('../shaders/fshader.js');
+const TexturedVertexShaderSource = require('../shaders/TexVShader.js');
+const TexturedFragmentShaderSource = require('../shaders/TexFShader.js');
+const Model = require('../modeling/Model.js');
 
 class Renderer {
 
