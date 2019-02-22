@@ -1,12 +1,12 @@
 {
   "name": "obj-renderer",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A simple WebGL based graphical rendering engine, that works with .OBJ 3D files.",
-  "main": "build/main.js",
+  "main": "dist/main.js",
   "scripts": {
-    "build": "webpack --config webpack.config.js",
+    "build": "babel src -d dist",
     "prepublish": "npm run build",
-    "examples": "webpack-dev-server --content-base examples/",
+    "examples": "webpack --config webpack.config.js && webpack-dev-server --content-base examples/",
     "test": "jest"
   },
   "author": "Wes Unwin",
@@ -24,7 +24,11 @@
     "jest": "^20.0.4",
     "watchify": "~3.7.0",
     "webpack": "^2.2.0",
-    "webpack-dev-server": "^2.2.0"
+    "webpack-dev-server": "^2.2.0",
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-es2015": "^7.0.0-beta.53"
   },
   "jest": {
     "verbose": true,

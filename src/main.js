@@ -6,7 +6,7 @@ const StaticObject = require('scenes/StaticObject.js');
 
 
 module.exports = {
-	Renderer: Renderer,
+  Renderer: Renderer,
   Scene: Scene,
   SceneObject: StaticObject
 };

@@ -3,8 +3,7 @@ const path = require('path');
 module.exports = {
 	
   entry: {
-    examples: './examples/ExamplePicker.js',
-    main: './src/main.js'
+    examples: './examples/ExamplePicker.js'
   },
 
   output: {
