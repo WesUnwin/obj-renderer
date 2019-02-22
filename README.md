@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/obj-renderer.svg)](https://badge.fury.io/js/obj-renderer)
+
 # OBJ Renderer
 
 A simple library to parse and render Wavefront 3D (.OBJ) files
@@ -8,10 +10,6 @@ and Material Template Library (.MTL) files.
 ```javascript
 npm install obj-renderer
 ```
-
-## Under Construction
-This library is actively being developed and will soon reach
-a usable state. Stay tuned for updates!
 
 ## Examples
 This repository comes with an easy to run demonstration using webpack development server.
