@@ -1,6 +1,6 @@
 {
   "name": "obj-renderer",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A simple WebGL based graphical rendering engine, that works with .OBJ 3D files.",
   "main": "dist/main.js",
   "scripts": {
