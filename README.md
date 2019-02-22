@@ -13,6 +13,13 @@ npm install obj-renderer
 This library is actively being developed and will soon reach
 a usable state. Stay tuned for updates!
 
+## Examples
+This repository comes with an easy to run demonstration using webpack development server.
+To see the example application, clone this repo, run npm install, then npm run examples.
+Then open localhost:8080 in a browser tab.
+
+![Screenshot](docs/screenshot.png)
+
 ## Renderer
 The principle type of object used with this library is a Renderer. A renderer performs the task of
 rendering a given scene over a canvas, and limits the rendering to a rectangular area of the canvas
