@@ -1,6 +1,6 @@
 {
   "name": "obj-renderer",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A simple WebGL based graphical rendering engine, that works with .OBJ 3D files.",
   "main": "dist/main.js",
   "scripts": {
@@ -11,6 +11,14 @@
   },
   "author": "Wes Unwin",
   "license": "BSD-2-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WesUnwin/obj-renderer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/WesUnwin/obj-renderer/issues"
+  },
+  "homepage": "https://github.com/WesUnwin/obj-renderer#readme",
   "dependencies": {
     "babel-preset-es2015": "^6.16.0",
     "babelify": "^7.3.0",
