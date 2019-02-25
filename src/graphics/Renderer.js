@@ -1,7 +1,7 @@
 'use strict';
 
 const OBJFile = require('obj-file-parser');
-const MTLFile = require('../materials/MTLFile.js');
+const MaterialManager = require('../materials/MaterialManager.js');
 const ShaderProgram = require('./ShaderProgram.js');
 const DefaultVertexShaderSource = require('../shaders/vshader.js');
 const DefaultFragmentShaderSource = require('../shaders/fshader.js');
@@ -18,7 +18,8 @@ class Renderer {
 		this._gl = gl;
 
     this._models = [];
-    this._materials = [];
+
+    this._materialManager = new MaterialManager();
 
 		this.setViewPort(viewportX || 0, viewportY || 0, viewportWidth || canvasElement.width, viewportHeight || canvasElement.height);
     window.defaultShaderProgram = new ShaderProgram(this._gl, DefaultVertexShaderSource, DefaultFragmentShaderSource);
@@ -58,14 +59,11 @@ class Renderer {
   }
 
   loadMTLFile(mtlFileContents) {
-    const mtlFile = new MTLFile(mtlFileContents);
+    this._materialManager.addMaterialsFromFile(mtlFileContents);
   }
 
   addMaterial(material) {
-    if (this._materials.some(mat => { return mat.getName() == material.getName(); })) {
-      throw `Scene materials must have unique names - a material already with name: ${material.getName()} already exists`;
-    }
-    this._materials.push(material);
+    this._materialManager.addMaterial(material);
   }
 
   _setRenderingDefaults() {
@@ -113,8 +111,9 @@ class Renderer {
     const modelViewMatrix = camera.getModelViewMatrix();
 
     const objects = scene.getObjects();
+    const materials = this._materialManager.getMaterials();
     objects.forEach(obj => {
-      obj.render(this._gl, projMatrix, modelViewMatrix, this._materials, this._models);
+      obj.render(this._gl, projMatrix, modelViewMatrix, materials, this._models);
     });
   }
 }
