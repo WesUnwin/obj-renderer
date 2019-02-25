@@ -21,11 +21,11 @@ module.exports = {
       const renderer = new Renderer(canvas);
 
 
-      const groundMaterial = new Material('ground');
+      const groundMaterial = new Material({ name: 'ground' });
       groundMaterial.setAmbientTextureImageURL('assets/images/grass.png');
       renderer.addMaterial(groundMaterial);
 
-      const crate = new Material('crate', 0,0,0, 'assets/images/Crate.png');
+      const crate = new Material({ name: 'crate' });
       crate.setAmbientTextureImageURL('assets/images/Crate.png');
       renderer.addMaterial(crate);
 

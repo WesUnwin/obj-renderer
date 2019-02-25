@@ -6,17 +6,19 @@ const Texture = require('./Texture.js');
 
 class Material {
 
-  constructor(name) {
-    this.name = name || '';
+  constructor(materialJSON) {
+    const json = materialJSON || {};
 
-    this.illum = 0;
+    this.name = json.name || '';
+
+    this.illum = json.illum || 0;
 
     this.textureImageURL = null;
     this.texture = null;
 
-    this.Ka = { red: 0, green: 0, blue: 0 };
-    this.Kd = { red: 0, green: 0, blue: 0 };
-    this.Ks = { red: 0, green: 0, blue: 0 };
+    this.Ka = json.Ka || { red: 0, green: 0, blue: 0 };
+    this.Kd = json.Kd || { red: 0, green: 0, blue: 0 };
+    this.Ks = json.Ks || { red: 0, green: 0, blue: 0 };
   }
 
   load(gl) {
